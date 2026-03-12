@@ -1,12 +1,12 @@
 ---
 name: vibestack
-description: Set up vibestack conventions for an existing project — fills out CLAUDE.md, ops.sh, docs, and TODO.md based on the actual codebase.
+description: Set up VibeStack conventions for an existing project — fills out CLAUDE.md, ops.sh, docs, and TODO.md based on the actual codebase.
 user_invocable: true
 ---
 
-# Vibestack Setup
+# VibeStack Setup
 
-Analyze the current project and configure all vibestack files with project-specific content.
+Analyze the current project and configure all VibeStack files with project-specific content.
 
 ## Steps
 
@@ -31,7 +31,7 @@ Update the CLAUDE.md template sections with real project information:
 - **Architecture** — Key components and how they connect. Be concise.
 - **Conventions** — Any conventions you can infer from the code (naming patterns, test organization, error handling style, etc.).
 
-Leave the Commands, Key Workflows, and Skills sections as-is — they describe vibestack conventions that don't change per project.
+Leave the Commands, Key Workflows, and Skills sections as-is — they describe VibeStack conventions that don't change per project.
 
 ### 3. Fill out ops.sh
 

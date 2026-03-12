@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Vibestack E2E Test Runner
+# VibeStack E2E Test Runner
 #
 # Builds Docker images, runs tests in containers, destroys everything after.
 # All containers are ephemeral — nothing persists after the run.
@@ -114,7 +114,7 @@ run_test() {
 
 # ── Build images ────────────────────────────────────────
 
-echo -e "${CYAN}${BOLD}Vibestack E2E Tests${RESET}"
+echo -e "${CYAN}${BOLD}VibeStack E2E Tests${RESET}"
 echo ""
 
 images_needed=()

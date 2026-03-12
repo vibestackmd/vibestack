@@ -1,6 +1,6 @@
 # Extras
 
-Optional add-ons that complement the core Vibestack conventions.
+Optional add-ons that complement the core VibeStack conventions.
 
 ## CI Guards
 

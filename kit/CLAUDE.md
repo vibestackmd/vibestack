@@ -62,7 +62,7 @@ The `docs/` folder is the single source of truth for institutional knowledge. Se
 - `cli-first` — Use CLI tools and `.env*` files for third-party services
 
 **Task skills** (invoked via `/command`):
-- `/vibestack` — Set up vibestack conventions for an existing project (CLAUDE.md, ops.sh, docs, TODO.md)
+- `/vibestack` — Set up VibeStack conventions for an existing project (CLAUDE.md, ops.sh, docs, TODO.md)
 - `/docs` — Capture conversation learnings into docs and clean up stale content
 - `/todo` — Work through TODO.md tasks sequentially (`/todo populate` to re-analyze the codebase and seed the next batch of tasks)
 - `/squad` — Analyze the project and generate domain-specific rules and specialist subagents (`/squad refresh` to update)

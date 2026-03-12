@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# Vibestack Installer
-# Adds Vibestack convention files to the current project.
+# VibeStack Installer
+# Adds VibeStack convention files to the current project.
 #
 # Usage:
 #   curl -fsSL https://raw.githubusercontent.com/tylerthebuildor/vibestack/main/install.sh | bash
@@ -15,7 +15,7 @@ YELLOW="\033[1;33m"
 DIM="\033[2m"
 RESET="\033[0m"
 
-echo -e "${CYAN}🌈 Vibestack Installer${RESET}"
+echo -e "${CYAN}🧱 VibeStack Installer${RESET}"
 echo ""
 
 # Project-specific files — never overwrite, these contain user content
@@ -29,7 +29,7 @@ PROJECT_FILES=(
   "docs/skills-and-commands.md"
 )
 
-# Vibestack-managed files — prompt to overwrite on re-runs so upstream
+# VibeStack-managed files — prompt to overwrite on re-runs so upstream
 # fixes (hook paths, skill updates) can be picked up
 MANAGED_FILES=(
   ".claude/skills/vibestack/SKILL.md"
@@ -214,7 +214,7 @@ esac
 
 echo -e "${CYAN}── Optional: Dev Environment Setup ──${RESET}"
 echo ""
-echo "Vibestack ships an opinionated dev-tools installer that sets up your entire"
+echo "VibeStack ships an opinionated dev-tools installer that sets up your entire"
 echo "development environment in one pass. It's designed so every developer on"
 echo "a team has the same tools available — and so Claude has CLI access to the"
 echo "most popular platforms."
@@ -242,7 +242,7 @@ elif $is_windows_native; then
   echo -e "  ${YELLOW}Detected: Windows (native shell)${RESET}"
   echo ""
   echo "  The dev-tools installer runs inside WSL (Windows Subsystem for Linux)."
-  echo "  Vibestack includes a PowerShell bootstrap that sets up WSL + Ubuntu"
+  echo "  VibeStack includes a PowerShell bootstrap that sets up WSL + Ubuntu"
   echo "  and then runs the dev-tools installer inside it automatically."
   echo ""
   echo "  To set it up, open PowerShell as Administrator and run:"

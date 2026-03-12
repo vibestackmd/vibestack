@@ -2,7 +2,7 @@
 
 Reusable GitHub Actions workflows that enforce code quality, test coverage, security, and style standards. Drop a tiny `ci.yml` into any repo and get instant, language-specific quality gates.
 
-Part of [Vibestack](../../README.md) extras.
+Part of [VibeStack](../../README.md) extras.
 
 ## What It Enforces
 

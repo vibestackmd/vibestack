@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Test the main vibestack installer (project convention files)
+# Test the main VibeStack installer (project convention files)
 set -euo pipefail
 
 CYAN="\033[0;36m"
@@ -40,7 +40,7 @@ assert_file_executable() {
   fi
 }
 
-echo -e "${CYAN}=== Test: Main Vibestack Installer ===${RESET}"
+echo -e "${CYAN}=== Test: Main VibeStack Installer ===${RESET}"
 echo ""
 
 # Run the installer (skip dev-tools to keep output clean and test focused)

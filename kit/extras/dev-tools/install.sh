@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Vibestack Dev Tools Installer (cross-platform: macOS + Linux/WSL Ubuntu)
+# VibeStack Dev Tools Installer (cross-platform: macOS + Linux/WSL Ubuntu)
 #
 # Sets up common developer CLIs. Safe to re-run — skips installed tools/logins.
 #
@@ -23,7 +23,7 @@ RESET="\033[0m"
 DIVIDER="────────────────────────────────────────────────────────"
 
 echo ""
-echo -e "${CYAN}${BOLD}Vibestack Dev Tools Installer${RESET}"
+echo -e "${CYAN}${BOLD}VibeStack Dev Tools Installer${RESET}"
 echo "macOS or Linux/WSL — common dev CLIs"
 echo "Each tool is optional — answer the prompts to pick what you need."
 echo "Safe to re-run: already-installed tools and active logins are skipped."
@@ -792,7 +792,7 @@ fi
 # Clean up malformed claw alias from a previous run (raw ANSI escape codes baked in)
 if grep -q '\\033\[' "$SHELL_RC" 2>/dev/null && grep -q 'claw' "$SHELL_RC" 2>/dev/null; then
   sed -i '/\\033\[.*claw/d' "$SHELL_RC" 2>/dev/null || true
-  sed -i '/^# Vibestack:.*permission/d' "$SHELL_RC" 2>/dev/null || true
+  sed -i '/^# VibeStack:.*permission/d' "$SHELL_RC" 2>/dev/null || true
   ok "Removed malformed claw alias from $SHELL_RC."
 fi
 
@@ -803,13 +803,13 @@ else
   echo ""
   echo -e "    ${DIM}${CLAW_ALIAS}${RESET}"
   echo ""
-  echo "  Vibestack's philosophy is that AI agents should run uninterrupted."
+  echo "  VibeStack's philosophy is that AI agents should run uninterrupted."
   echo "  Safety belongs in CI — linters, tests, and pre-commit hooks — not"
   echo "  in interactive permission prompts that slow the agent down."
   echo ""
   if ask "  Add the claw alias to $SHELL_RC?"; then
     echo "" >> "$SHELL_RC"
-    echo "# Vibestack: run Claude without permission prompts (safety enforced via CI)" >> "$SHELL_RC"
+    echo "# VibeStack: run Claude without permission prompts (safety enforced via CI)" >> "$SHELL_RC"
     echo "$CLAW_ALIAS" >> "$SHELL_RC"
     ok "Added to $SHELL_RC — available after restarting your terminal."
     track "claw alias" "installed"

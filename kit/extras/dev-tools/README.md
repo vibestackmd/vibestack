@@ -2,7 +2,7 @@
 
 Interactive installer that sets up a developer environment for AI-assisted development. Works on **macOS** and **Linux/WSL Ubuntu**. Each tool is optional — the script prompts before installing anything.
 
-Part of [Vibestack](../../README.md) extras.
+Part of [VibeStack](../../README.md) extras.
 
 ## Quick Start
 

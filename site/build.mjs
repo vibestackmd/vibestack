@@ -9,7 +9,7 @@ const html = `<!DOCTYPE html>
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Vibestack — A project convention kit for AI-assisted development</title>
+  <title>VibeStack — Give your AI agents the context to build, not just guess</title>
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <meta name="description" content="Drop a small set of opinionated files into any project to help both you and your AI agents work effectively as the codebase grows.">
   <style>

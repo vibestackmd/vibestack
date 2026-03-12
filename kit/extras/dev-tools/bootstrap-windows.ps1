@@ -1,6 +1,6 @@
 # bootstrap-windows.ps1
 #
-# Vibestack Windows Bootstrap: Installs WSL + Ubuntu + Hyper terminal so you
+# VibeStack Windows Bootstrap: Installs WSL + Ubuntu + Hyper terminal so you
 # can run the cross-platform dev-tools installer (install.sh) inside Linux.
 #
 # Safe to re-run — skips steps that are already done.
@@ -34,7 +34,7 @@ for ($i = 0; $i -lt $args.Count; $i++) {
 }
 
 Write-Host ""
-Write-Host "Vibestack Windows Bootstrap" -ForegroundColor Cyan
+Write-Host "VibeStack Windows Bootstrap" -ForegroundColor Cyan
 Write-Host "Sets up WSL + Ubuntu + Hyper terminal, then runs the dev-tools installer inside Linux." -ForegroundColor Cyan
 Write-Host "Safe to re-run — already-completed steps are skipped." -ForegroundColor Cyan
 Write-Host ""

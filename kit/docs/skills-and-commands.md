@@ -103,6 +103,6 @@ This kit ships with skills you can use as-is or as examples for writing your own
 - `cli-first` — Convention for using CLI tools and environment variables when interacting with third-party services. Auto-loads when working with external services, deployments, or infrastructure.
 
 **Task skills** (invoked via `/command`):
-- `/vibestack` — Set up vibestack conventions for an existing project. Analyzes the codebase to fill out CLAUDE.md, ops.sh, docs, and TODO.md with project-specific content. Run this after installing the kit into a repo.
+- `/vibestack` — Set up VibeStack conventions for an existing project. Analyzes the codebase to fill out CLAUDE.md, ops.sh, docs, and TODO.md with project-specific content. Run this after installing the kit into a repo.
 - `/docs` — Captures conversation learnings into docs and cleans up the docs folder. Reviews the conversation for decisions, architectural changes, and insights worth preserving, then writes them to the right place in `docs/`. Also scans for stale references, redundancy, and outdated examples.
 - `/todo` — Works through TODO.md tasks sequentially. Reads the file, claims uncompleted items, executes them, and marks them done. Optionally pass a number to limit how many tasks to run (e.g., `/todo 3`). Use `/todo populate` to re-analyze the codebase and seed the next batch of highest-impact tasks — it clears completed items, preserves in-progress work, and adds 10-20 new rank-ordered tasks prioritized by production readiness.

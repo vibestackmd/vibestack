@@ -1,4 +1,4 @@
-import { readFileSync, writeFileSync, mkdirSync } from 'fs';
+import { readFileSync, writeFileSync, mkdirSync, cpSync } from 'fs';
 import { marked } from 'marked';
 
 const readme = readFileSync('../README.md', 'utf-8');
@@ -10,6 +10,7 @@ const html = `<!DOCTYPE html>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Vibestack — A project convention kit for AI-assisted development</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <meta name="description" content="Drop a small set of opinionated files into any project to help both you and your AI agents work effectively as the codebase grows.">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -82,5 +83,6 @@ const html = `<!DOCTYPE html>
 </html>`;
 
 mkdirSync('public', { recursive: true });
+cpSync('static', 'public', { recursive: true });
 writeFileSync('public/index.html', html);
 console.log('Built public/index.html');

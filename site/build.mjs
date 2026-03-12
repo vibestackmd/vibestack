@@ -56,14 +56,16 @@ const html = `<!DOCTYPE html>
     }
     .copy-btn {
       position: absolute;
-      top: 8px;
-      right: 8px;
-      background: #161b22;
+      top: 6px;
+      right: 6px;
+      background: #21262d;
       border: 1px solid #30363d;
       border-radius: 6px;
       color: #8b949e;
       cursor: pointer;
-      padding: 4px;
+      width: 32px;
+      height: 32px;
+      padding: 0;
       line-height: 0;
       display: flex;
       align-items: center;

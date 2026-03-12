@@ -56,7 +56,8 @@ const html = `<!DOCTYPE html>
     }
     .copy-btn {
       position: absolute;
-      top: 6px;
+      top: 50%;
+      transform: translateY(-50%);
       right: 6px;
       background: #21262d;
       border: 1px solid #30363d;

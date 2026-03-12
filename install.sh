@@ -248,6 +248,7 @@ elif $is_windows_native; then
   echo "  To set it up, open PowerShell as Administrator and run:"
   echo ""
   echo -e "    ${CYAN}Invoke-WebRequest -Uri \"${DEV_TOOLS_REPO}/bootstrap-windows.ps1\" -OutFile \"\$env:TEMP\\bootstrap-windows.ps1\"${RESET}"
+  echo -e "    ${CYAN}(Get-Content \"\$env:TEMP\\bootstrap-windows.ps1\" -Raw) | Set-Content \"\$env:TEMP\\bootstrap-windows.ps1\"${RESET}"
   echo -e "    ${CYAN}powershell -ExecutionPolicy Bypass -File \"\$env:TEMP\\bootstrap-windows.ps1\"${RESET}"
   echo ""
   echo "  This will:"

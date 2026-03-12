@@ -8,6 +8,9 @@
     No dependencies. No lock-in. Just markdown and a shell script.
   </p>
   <p align="center">
+    <a href="https://github.com/tylerthebuildor/vibestack">GitHub</a> · <a href="https://vibestack.md">Website</a>
+  </p>
+  <p align="center">
     <a href="#-the-conventions">Conventions</a> · <a href="#-the-opinions">Opinions</a> · <a href="#-philosophy">Philosophy</a>
   </p>
 </p>

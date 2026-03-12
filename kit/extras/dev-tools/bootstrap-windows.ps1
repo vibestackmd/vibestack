@@ -125,6 +125,21 @@ if ($hasUbuntu) {
         Exit 0
     }
 
+    if ($ubuntuOutput -match "HYPERV_NOT_INSTALLED|Virtual Machine Platform|virtualization") {
+        Write-Host "  Virtualization is not enabled on this machine." -ForegroundColor Red
+        Write-Host ""
+        Write-Host "  WSL 2 requires hardware virtualization. To fix:" -ForegroundColor Yellow
+        Write-Host "    1. Restart your computer and enter BIOS (usually F2, F10, Del, or Esc during boot)" -ForegroundColor Yellow
+        Write-Host "    2. Find and enable virtualization:" -ForegroundColor Yellow
+        Write-Host "         Intel: 'Intel Virtualization Technology' or 'VT-x'" -ForegroundColor Yellow
+        Write-Host "         AMD:   'SVM Mode' or 'AMD-V'" -ForegroundColor Yellow
+        Write-Host "       (Usually under Advanced > CPU Configuration)" -ForegroundColor Yellow
+        Write-Host "    3. Save, exit BIOS, and re-run this script" -ForegroundColor Yellow
+        Write-Host ""
+        Read-Host "Press Enter to exit"
+        Exit 1
+    }
+
     if ($LASTEXITCODE -ne 0) {
         Write-Host "  Ubuntu install failed. Try manually: wsl --install -d Ubuntu" -ForegroundColor Red
         Read-Host "Press Enter to exit"

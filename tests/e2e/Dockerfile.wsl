@@ -1,0 +1,17 @@
+# Simulated WSL — Ubuntu with a fake /proc/version containing "microsoft"
+FROM ubuntu:24.04
+
+ENV DEBIAN_FRONTEND=noninteractive
+ENV NONINTERACTIVE=1
+ENV HOME=/root
+ENV USER=root
+ENV SHELL=/bin/bash
+
+RUN apt-get update && apt-get install -y curl ca-certificates sudo python3 && rm -rf /var/lib/apt/lists/*
+
+# Fake /proc/version so the installer thinks we're in WSL
+# /proc is special in Docker — we create a flag file the test script
+# uses to bind-mount over /proc/version at runtime
+RUN echo "Linux version 5.15.153.1-microsoft-standard-WSL2" > /wsl-proc-version
+
+WORKDIR /workspace

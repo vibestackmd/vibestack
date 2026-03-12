@@ -1,0 +1,25 @@
+# Ubuntu with common tools pre-installed — tests the "skip existing" paths
+FROM ubuntu:24.04
+
+ENV DEBIAN_FRONTEND=noninteractive
+ENV NONINTERACTIVE=1
+ENV HOME=/root
+ENV USER=root
+ENV SHELL=/bin/bash
+
+RUN apt-get update && apt-get install -y \
+    curl \
+    ca-certificates \
+    sudo \
+    python3 \
+    git \
+    zsh \
+    postgresql-client \
+    && rm -rf /var/lib/apt/lists/*
+
+# Pre-create some vibestack files to test the "already exists" skip behavior
+RUN mkdir -p /workspace && \
+    echo "# Existing CLAUDE.md" > /workspace/CLAUDE.md && \
+    echo "# Existing TODO" > /workspace/TODO.md
+
+WORKDIR /workspace

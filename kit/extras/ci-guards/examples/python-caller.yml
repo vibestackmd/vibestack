@@ -1,0 +1,22 @@
+# Copy this to .github/workflows/ci.yml in your Python project
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+  quality-gate:
+    uses: tylerthebuildor/shared-ci-guards/.github/workflows/ci-python.yml@main
+    with:
+      python-version: "3.12"
+      coverage-threshold: 75
+      package-manager: "pip"     # "pip", "poetry", or "uv"
+      # source-directory: "src"  # if code isn't at repo root
+      # mutation-enabled: true
+      # mutation-score: 60
+      # working-directory: "."
+      # enable-ai-feedback: true
+    secrets: inherit

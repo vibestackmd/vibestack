@@ -1,0 +1,20 @@
+# Copy this to .github/workflows/ci.yml in your Node/TS project
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+  quality-gate:
+    uses: tylerthebuildor/shared-ci-guards/.github/workflows/ci-node.yml@main
+    with:
+      node-version: "20"
+      coverage-threshold: 75
+      # mutation-enabled: true   # opt-in — adds ~5-15 min
+      # mutation-score: 60       # minimum mutants killed %
+      # working-directory: "."   # change for monorepos
+      # enable-ai-feedback: true # Claude explains failures
+    secrets: inherit

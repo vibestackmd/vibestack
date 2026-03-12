@@ -1,0 +1,13 @@
+# Fresh Ubuntu — tests the Linux install path from scratch
+FROM ubuntu:24.04
+
+ENV DEBIAN_FRONTEND=noninteractive
+ENV NONINTERACTIVE=1
+ENV HOME=/root
+ENV USER=root
+ENV SHELL=/bin/bash
+
+# Minimal base — the installers should handle everything else
+RUN apt-get update && apt-get install -y curl ca-certificates sudo python3 && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /workspace

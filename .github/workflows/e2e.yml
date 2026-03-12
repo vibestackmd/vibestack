@@ -1,0 +1,51 @@
+name: E2E Tests
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "install.sh"
+      - "kit/**"
+      - "tests/**"
+      - ".github/workflows/e2e.yml"
+  pull_request:
+    paths:
+      - "install.sh"
+      - "kit/**"
+      - "tests/**"
+      - ".github/workflows/e2e.yml"
+  workflow_dispatch:
+
+jobs:
+  e2e-quick:
+    name: "Quick (main installer + skip behavior)"
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run quick tests
+        run: |
+          chmod +x tests/e2e/run.sh
+          ./tests/e2e/run.sh preinstalled
+
+  e2e-ubuntu:
+    name: "Ubuntu (full install)"
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run Ubuntu main installer test
+        run: |
+          chmod +x tests/e2e/run.sh
+          ./tests/e2e/run.sh ubuntu
+
+  e2e-wsl:
+    name: "WSL simulation"
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run WSL test
+        run: |
+          chmod +x tests/e2e/run.sh
+          ./tests/e2e/run.sh wsl

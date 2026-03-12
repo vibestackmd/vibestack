@@ -26,22 +26,58 @@ Then run `/vibestack` inside Claude Code to auto-fill everything for your projec
 
 Five files:
 
-| File | Purpose |
-|------|---------|
-| `CLAUDE.md` | Quick-start reference card — tells any contributor (human or AI) what this project is, how it's built, how to work in it |
-| `TODO.md` | Lightweight task tracker with a protocol for parallel work so agents don't collide |
-| `ops.sh` | Single entry point for build, test, run, deploy — `./ops.sh build`, `./ops.sh test`, `./ops.sh deploy prod` |
-| `docs/` | Living knowledge base — the docs you write today prevent your AI from re-discovering the same lessons tomorrow |
-| `.claude/skills/` | Teach AI your project's conventions and workflows via reusable skills |
+<table>
+  <tr>
+    <td><code>CLAUDE.md</code></td>
+    <td>&nbsp;&nbsp;&nbsp;</td>
+    <td>Quick-start reference card — tells any contributor (human or AI) what this project is, how it's built, how to work in it</td>
+  </tr>
+  <tr>
+    <td><code>TODO.md</code></td>
+    <td></td>
+    <td>Lightweight task tracker with a protocol for parallel work so agents don't collide</td>
+  </tr>
+  <tr>
+    <td><code>ops.sh</code></td>
+    <td></td>
+    <td>Single entry point for build, test, run, deploy — <code>./ops.sh build</code>, <code>./ops.sh test</code>, <code>./ops.sh deploy prod</code></td>
+  </tr>
+  <tr>
+    <td><code>docs/</code></td>
+    <td></td>
+    <td>Living knowledge base — the docs you write today prevent your AI from re-discovering the same lessons tomorrow</td>
+  </tr>
+  <tr>
+    <td><code>.claude/skills/</code></td>
+    <td></td>
+    <td>Teach AI your project's conventions and workflows via reusable skills</td>
+  </tr>
+</table>
 
 ## Skills
 
-| Command | What it does |
-|---------|-------------|
-| `/vibestack` | Analyzes your project and fills out CLAUDE.md, ops.sh, docs, and TODO.md with project-specific content |
-| `/squad` | Generates domain-specific rules and specialist subagents so Claude auto-loads the right context per file |
-| `/todo` | Works through TODO.md tasks sequentially. `/todo populate` seeds the next batch ranked by impact |
-| `/docs` | Captures conversation learnings into your docs folder and cleans up stale content |
+<table>
+  <tr>
+    <td><code>/vibestack</code></td>
+    <td>&nbsp;&nbsp;&nbsp;</td>
+    <td>Analyzes your project and fills out CLAUDE.md, ops.sh, docs, and TODO.md with project-specific content</td>
+  </tr>
+  <tr>
+    <td><code>/squad</code></td>
+    <td></td>
+    <td>Generates domain-specific rules and specialist subagents so Claude auto-loads the right context per file</td>
+  </tr>
+  <tr>
+    <td><code>/todo</code></td>
+    <td></td>
+    <td>Works through TODO.md tasks sequentially. <code>/todo populate</code> seeds the next batch ranked by impact</td>
+  </tr>
+  <tr>
+    <td><code>/docs</code></td>
+    <td></td>
+    <td>Captures conversation learnings into your docs folder and cleans up stale content</td>
+  </tr>
+</table>
 
 Also includes `cli-first` — a reference skill that teaches your AI to use platform CLIs and check `.env*` files instead of making raw API calls.
 
@@ -104,22 +140,6 @@ AI agents write bad code sometimes. The answer isn't slowing your agent down —
 ### Finish Notification
 
 When Claude finishes a task, your machine plays a chime and announces the project name out loud (macOS `say`, Linux `espeak`). Kick off a task, walk away, get an audio alert when it's done.
-
----
-
-## Philosophy
-
-**Opinionated but not intrusive.** Strong opinions about structure, zero lock-in. It's just files — delete them and move on.
-
-**Conventions over configuration.** No settings files to learn. Fill in templates, the conventions do the rest.
-
-**AI agents are team members.** Everything is written for both humans and AI. Your assistant is a first-class contributor that needs context to do good work.
-
-**CLI over dashboard.** Every major platform ships a CLI. Installing them gives your AI agent superpowers.
-
-**Bypass mode over permission prompts.** Let the agent work. Review the output. Catch issues at commit and deploy time.
-
-**Scale through structure.** A weekend project doesn't need this. But the moment your project outgrows a single prompt, structure is what keeps AI effective.
 
 ---
 

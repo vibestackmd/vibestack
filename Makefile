@@ -1,9 +1,12 @@
 VERSION := $(shell tr -d '[:space:]' < VERSION)
+MAJOR   := $(word 1,$(subst ., ,$(VERSION)))
+MINOR   := $(word 2,$(subst ., ,$(VERSION)))
+PATCH   := $(word 3,$(subst ., ,$(VERSION)))
 
-.PHONY: help dev build deploy plugin release test test-quick test-ubuntu test-wsl clean
+.PHONY: help dev build deploy plugin release-patch release-minor release-major test test-quick test-ubuntu test-wsl clean
 
 help: ## Show this help
-	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-14s\033[0m %s\n", $$1, $$2}'
+	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-16s\033[0m %s\n", $$1, $$2}'
 
 # ── Site ─────────────────────────────────────────────────
 
@@ -21,15 +24,29 @@ deploy: build ## Build and deploy site to Vercel
 plugin: ## Build Claude Code plugin to dist/
 	@./scripts/build-plugin.sh $(VERSION)
 
-release: plugin ## Tag and push a release (triggers GitHub Actions)
+release-patch: ## Bump patch version, tag, and push
+	$(call do-release,$(MAJOR).$(MINOR).$(shell echo $$(($(PATCH)+1))))
+
+release-minor: ## Bump minor version, tag, and push
+	$(call do-release,$(MAJOR).$(shell echo $$(($(MINOR)+1))).0)
+
+release-major: ## Bump major version, tag, and push
+	$(call do-release,$(shell echo $$(($(MAJOR)+1))).0.0)
+
+define do-release
 	@echo ""
-	@echo "  Version: v$(VERSION)"
+	@echo "  $(VERSION) → $(1)"
 	@echo ""
-	@read -p "  Tag v$(VERSION) and push? [y/N] " confirm && [ "$$confirm" = "y" ] || exit 1
-	git tag v$(VERSION)
-	git push origin v$(VERSION)
+	@read -p "  Release v$(1)? [y/N] " confirm && [ "$$confirm" = "y" ] || exit 1
+	@echo "$(1)" > VERSION
+	@git add VERSION
+	@git commit -m "release v$(1)"
+	@./scripts/build-plugin.sh $(1)
+	@git tag v$(1)
+	@git push origin main v$(1)
 	@echo ""
-	@echo "  \033[32mPushed v$(VERSION) — GitHub Actions will create the release.\033[0m"
+	@echo "  \033[32mPushed v$(1) — GitHub Actions will create the release.\033[0m"
+endef
 
 # ── Tests ────────────────────────────────────────────────
 

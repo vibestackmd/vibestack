@@ -6,14 +6,14 @@
     Opinionated project structure, skills, and tooling for AI-assisted development.
   </p>
   <p align="center">
-    <a href="https://github.com/tylerthebuildor/vibestack">GitHub</a> · <a href="https://vibestack.md">Website</a>
+    <a href="https://github.com/vibestackmd/vibestack">GitHub</a> · <a href="https://vibestack.md">Website</a>
   </p>
 </p>
 
 ## Install
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/tylerthebuildor/vibestack/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/vibestackmd/vibestack/main/install.sh | bash
 ```
 
 Run from the root of your project. Existing files are never overwritten.
@@ -72,7 +72,9 @@ Five files:
 
 <br />
 
-Also includes `cli-first` — a reference skill that teaches your AI to use platform CLIs and check `.env*` files instead of making raw API calls.
+Also includes reference skills that auto-load as context:
+- `cli-first` — teaches your AI to use platform CLIs and check `.env*` files instead of making raw API calls
+- `lsp` — teaches your AI to use language servers for type checking, go-to-definition, find-references, and post-change validation
 
 ---
 
@@ -83,24 +85,24 @@ Also includes `cli-first` — a reference skill that teaches your AI to use plat
 Reusable GitHub Actions workflows: lint, test coverage, security scans, code smell checks on every PR. Supports Node/TypeScript, Python, Rust, and Go.
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/tylerthebuildor/vibestack/main/kit/extras/ci-guards/install.sh | bash -s -- <language>
+curl -fsSL https://raw.githubusercontent.com/vibestackmd/vibestack/main/kit/extras/ci-guards/install.sh | bash -s -- <language>
 ```
 
 ### Dev Tools Installer
 
-One-pass installer for platform CLIs (aws, vercel, etc.) — giving your AI agent direct infrastructure access from the terminal.
+One-pass installer for platform CLIs (aws, vercel, etc.) and language servers (typescript-language-server, pyright, rust-analyzer, gopls) — giving your AI agent direct infrastructure access and code intelligence from the terminal.
 
 **macOS / Linux / WSL:**
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/tylerthebuildor/vibestack/main/kit/extras/dev-tools/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/vibestackmd/vibestack/main/kit/extras/dev-tools/install.sh | bash
 ```
 
 **Windows:** Run the bootstrap script first to set up WSL + Ubuntu:
 
 ```powershell
 # PowerShell (as Administrator)
-Invoke-RestMethod "https://raw.githubusercontent.com/tylerthebuildor/vibestack/main/kit/extras/dev-tools/bootstrap-windows.ps1" | Set-Content "$env:TEMP\bootstrap-windows.ps1"; powershell -ExecutionPolicy Bypass -File "$env:TEMP\bootstrap-windows.ps1"
+Invoke-RestMethod "https://raw.githubusercontent.com/vibestackmd/vibestack/main/kit/extras/dev-tools/bootstrap-windows.ps1" | Set-Content "$env:TEMP\bootstrap-windows.ps1"; powershell -ExecutionPolicy Bypass -File "$env:TEMP\bootstrap-windows.ps1"
 ```
 
 ### The `claw` Alias

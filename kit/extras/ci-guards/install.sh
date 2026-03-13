@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-REPO="tylerthebuildor/vibestack"
+REPO="vibestackmd/vibestack"
 BRANCH="main"
 BASE_URL="https://raw.githubusercontent.com/${REPO}/${BRANCH}/kit/extras/ci-guards/examples"
 DEST=".github/workflows/ci.yml"

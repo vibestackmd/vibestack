@@ -262,7 +262,7 @@ if (Test-Path $installScript) {
 } else {
     Write-Host "  install.sh not found next to this script — running from GitHub..." -ForegroundColor Yellow
     Write-Host ""
-    wsl -d Ubuntu -- bash -c "curl -fsSL https://raw.githubusercontent.com/tylerthebuildor/vibestack/main/kit/extras/dev-tools/install.sh | bash"
+    wsl -d Ubuntu -- bash -c "curl -fsSL https://raw.githubusercontent.com/vibestackmd/vibestack/main/kit/extras/dev-tools/install.sh | bash"
 }
 
 # ── Done ──────────────────────────────────────────────────
@@ -277,7 +277,7 @@ Write-Host ""
 Write-Host "  2. Your Windows drives are at /mnt/c/, /mnt/d/, etc." -ForegroundColor White
 Write-Host ""
 Write-Host "  3. To re-run just the dev tools installer later:" -ForegroundColor White
-Write-Host "       curl -fsSL https://raw.githubusercontent.com/tylerthebuildor/vibestack/main/kit/extras/dev-tools/install.sh | bash" -ForegroundColor DarkGray
+Write-Host "       curl -fsSL https://raw.githubusercontent.com/vibestackmd/vibestack/main/kit/extras/dev-tools/install.sh | bash" -ForegroundColor DarkGray
 Write-Host ""
 
 Read-Host "Press Enter to exit"

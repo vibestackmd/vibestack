@@ -9,7 +9,7 @@ on:
 
 jobs:
   quality-gate:
-    uses: tylerthebuildor/shared-ci-guards/.github/workflows/ci-rust.yml@main
+    uses: vibestackmd/shared-ci-guards/.github/workflows/ci-rust.yml@main
     with:
       rust-version: "stable"
       coverage-threshold: 75

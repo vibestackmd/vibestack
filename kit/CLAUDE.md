@@ -60,6 +60,7 @@ The `docs/` folder is the single source of truth for institutional knowledge. Se
 
 **Reference skills** (auto-loaded as context):
 - `cli-first` — Use CLI tools and `.env*` files for third-party services
+- `lsp` — Use language servers for type checking, references, and code navigation
 
 **Task skills** (invoked via `/command`):
 - `/vibestack` — Set up VibeStack conventions for an existing project (CLAUDE.md, ops.sh, docs, TODO.md)

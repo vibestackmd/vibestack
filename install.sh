@@ -3,11 +3,11 @@
 # Adds VibeStack convention files to the current project.
 #
 # Usage:
-#   curl -fsSL https://raw.githubusercontent.com/tylerthebuildor/vibestack/main/install.sh | bash
+#   curl -fsSL https://raw.githubusercontent.com/vibestackmd/vibestack/main/install.sh | bash
 
 set -euo pipefail
 
-REPO="https://raw.githubusercontent.com/tylerthebuildor/vibestack/main/kit"
+REPO="https://raw.githubusercontent.com/vibestackmd/vibestack/main/kit"
 
 CYAN="\033[0;36m"
 GREEN="\033[0;32m"
@@ -34,6 +34,7 @@ PROJECT_FILES=(
 MANAGED_FILES=(
   ".claude/skills/vibestack/SKILL.md"
   ".claude/skills/cli-first/SKILL.md"
+  ".claude/skills/lsp/SKILL.md"
   ".claude/skills/docs/SKILL.md"
   ".claude/skills/squad/SKILL.md"
   ".claude/skills/todo/SKILL.md"
@@ -198,7 +199,7 @@ echo -e "${GREEN}Done!${RESET} Added $installed, updated $updated, merged $merge
 
 # ── Optional: Dev Tools Installer ───────────────────────
 
-DEV_TOOLS_REPO="https://raw.githubusercontent.com/tylerthebuildor/vibestack/main/kit/extras/dev-tools"
+DEV_TOOLS_REPO="https://raw.githubusercontent.com/vibestackmd/vibestack/main/kit/extras/dev-tools"
 
 # Detect platform
 is_windows_native=false

@@ -7,7 +7,7 @@ Optional add-ons that complement the core VibeStack conventions.
 Reusable GitHub Actions workflows that enforce code quality, test coverage, security, and style standards on every PR. Supports Node/TypeScript, Python, Rust, and Go. One command drops a caller workflow into your repo:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/tylerthebuildor/vibestack/main/kit/extras/ci-guards/install.sh | bash -s -- <language>
+curl -fsSL https://raw.githubusercontent.com/vibestackmd/vibestack/main/kit/extras/ci-guards/install.sh | bash -s -- <language>
 ```
 
 See [ci-guards/README.md](ci-guards/README.md) for setup details and configuration options.

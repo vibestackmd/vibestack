@@ -9,7 +9,7 @@ on:
 
 jobs:
   quality-gate:
-    uses: tylerthebuildor/shared-ci-guards/.github/workflows/ci-python.yml@main
+    uses: vibestackmd/shared-ci-guards/.github/workflows/ci-python.yml@main
     with:
       python-version: "3.12"
       coverage-threshold: 75

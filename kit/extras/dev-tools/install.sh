@@ -5,7 +5,7 @@
 # Sets up common developer CLIs. Safe to re-run — skips installed tools/logins.
 #
 # Usage:
-#   curl -fsSL https://raw.githubusercontent.com/tylerthebuildor/vibestack/main/kit/extras/dev-tools/install.sh | bash
+#   curl -fsSL https://raw.githubusercontent.com/vibestackmd/vibestack/main/kit/extras/dev-tools/install.sh | bash
 #   or ./install.sh (if cloned)
 
 set -uo pipefail
@@ -106,9 +106,9 @@ ok() {
   echo -e "  ${GREEN}✓${RESET} $1"
 }
 
-# macOS: 15 (Homebrew + Xcode CLT + Oh My Zsh, no Prerequisites/Zsh)
-# Linux: 15 (Prerequisites + Zsh + Oh My Zsh, no Homebrew/Xcode CLT)
-total=15
+# macOS: 16 (Homebrew + Xcode CLT + Oh My Zsh, no Prerequisites/Zsh)
+# Linux: 16 (Prerequisites + Zsh + Oh My Zsh, no Homebrew/Xcode CLT)
+total=16
 step=1
 
 section() {
@@ -552,6 +552,86 @@ if command -v zoxide >/dev/null 2>&1; then
     echo "$ZOXIDE_HOOK_BASH" >> "$HOME/.bashrc"
     ok "Added zoxide hook to ~/.bashrc."
   fi
+fi
+
+# ── Language Servers (LSP) ──────────────────────────────
+# Gives AI agents and editors rich code intelligence (go-to-definition,
+# diagnostics, completions). Only installs servers for runtimes already present.
+
+section "Language Servers (LSP)"
+
+lsp_any_installed=false
+
+# TypeScript / JavaScript — typescript-language-server (npm)
+if command -v node >/dev/null 2>&1; then
+  if command -v typescript-language-server >/dev/null 2>&1; then
+    ok "typescript-language-server — already installed."
+  elif ask "  Install typescript-language-server (TypeScript/JS LSP)?"; then
+    npm install -g typescript typescript-language-server
+    lsp_any_installed=true
+    track "typescript-language-server" "installed"
+  else
+    track "typescript-language-server" "skipped"
+  fi
+  echo ""
+else
+  echo -e "  ${DIM}Node.js not installed — skipping typescript-language-server.${RESET}"
+  echo ""
+fi
+
+# Python — pyright (npm, by Microsoft — industry standard)
+if command -v node >/dev/null 2>&1; then
+  if command -v pyright >/dev/null 2>&1; then
+    ok "pyright — already installed."
+  elif ask "  Install pyright (Python LSP)?"; then
+    npm install -g pyright
+    lsp_any_installed=true
+    track "pyright" "installed"
+  else
+    track "pyright" "skipped"
+  fi
+  echo ""
+else
+  echo -e "  ${DIM}Node.js not installed — skipping pyright.${RESET}"
+  echo ""
+fi
+
+# Rust — rust-analyzer (rustup component)
+if command -v rustup >/dev/null 2>&1; then
+  if rustup component list --installed 2>/dev/null | grep -q rust-analyzer; then
+    ok "rust-analyzer — already installed."
+  elif ask "  Install rust-analyzer (Rust LSP)?"; then
+    rustup component add rust-analyzer
+    lsp_any_installed=true
+    track "rust-analyzer" "installed"
+  else
+    track "rust-analyzer" "skipped"
+  fi
+  echo ""
+else
+  echo -e "  ${DIM}Rust not installed — skipping rust-analyzer.${RESET}"
+  echo ""
+fi
+
+# Go — gopls (official Go LSP)
+if command -v go >/dev/null 2>&1; then
+  if command -v gopls >/dev/null 2>&1; then
+    ok "gopls — already installed."
+  elif ask "  Install gopls (Go LSP)?"; then
+    go install golang.org/x/tools/gopls@latest
+    lsp_any_installed=true
+    track "gopls" "installed"
+  else
+    track "gopls" "skipped"
+  fi
+  echo ""
+else
+  echo -e "  ${DIM}Go not installed — skipping gopls.${RESET}"
+  echo ""
+fi
+
+if $lsp_any_installed; then
+  reload_config
 fi
 
 # ── 8. Developer CLIs ───────────────────────────────────

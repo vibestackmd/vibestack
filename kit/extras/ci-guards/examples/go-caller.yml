@@ -9,7 +9,7 @@ on:
 
 jobs:
   quality-gate:
-    uses: tylerthebuildor/shared-ci-guards/.github/workflows/ci-go.yml@main
+    uses: vibestackmd/shared-ci-guards/.github/workflows/ci-go.yml@main
     with:
       go-version: "1.22"
       coverage-threshold: 75

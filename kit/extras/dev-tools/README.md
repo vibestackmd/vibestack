@@ -9,7 +9,7 @@ Part of [VibeStack](../../README.md) extras.
 **macOS / Linux / WSL:**
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/tylerthebuildor/vibestack/main/kit/extras/dev-tools/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/vibestackmd/vibestack/main/kit/extras/dev-tools/install.sh | bash
 ```
 
 **Windows (sets up WSL + Ubuntu first, then runs the installer):**
@@ -24,7 +24,7 @@ Or if you haven't cloned the repo:
 
 ```powershell
 # Download and run
-Invoke-RestMethod "https://raw.githubusercontent.com/tylerthebuildor/vibestack/main/kit/extras/dev-tools/bootstrap-windows.ps1" | Set-Content "$env:TEMP\bootstrap-windows.ps1"; powershell -ExecutionPolicy Bypass -File "$env:TEMP\bootstrap-windows.ps1"
+Invoke-RestMethod "https://raw.githubusercontent.com/vibestackmd/vibestack/main/kit/extras/dev-tools/bootstrap-windows.ps1" | Set-Content "$env:TEMP\bootstrap-windows.ps1"; powershell -ExecutionPolicy Bypass -File "$env:TEMP\bootstrap-windows.ps1"
 ```
 
 Safe to re-run — already-installed tools and active logins are automatically skipped.

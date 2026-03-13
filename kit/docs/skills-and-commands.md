@@ -101,6 +101,7 @@ This kit ships with skills you can use as-is or as examples for writing your own
 
 **Reference skills** (auto-loaded as context):
 - `cli-first` — Convention for using CLI tools and environment variables when interacting with third-party services. Auto-loads when working with external services, deployments, or infrastructure.
+- `lsp` — Convention for using language server tools (LSP) to get precise type info, find references, and navigate definitions. Auto-loads when doing refactors, debugging type errors, or working across multiple files.
 
 **Task skills** (invoked via `/command`):
 - `/vibestack` — Set up VibeStack conventions for an existing project. Analyzes the codebase to fill out CLAUDE.md, ops.sh, docs, and TODO.md with project-specific content. Run this after installing the kit into a repo.

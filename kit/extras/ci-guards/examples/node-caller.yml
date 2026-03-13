@@ -9,7 +9,7 @@ on:
 
 jobs:
   quality-gate:
-    uses: tylerthebuildor/shared-ci-guards/.github/workflows/ci-node.yml@main
+    uses: vibestackmd/shared-ci-guards/.github/workflows/ci-node.yml@main
     with:
       node-version: "20"
       coverage-threshold: 75

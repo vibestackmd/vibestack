@@ -37,27 +37,27 @@ Run one of the install commands below from your project root. It creates `.githu
 
 Node / TypeScript:
 ```bash
-curl -fsSL https://raw.githubusercontent.com/tylerthebuildor/vibestack/main/kit/extras/ci-guards/install.sh | bash -s -- node
+curl -fsSL https://raw.githubusercontent.com/vibestackmd/vibestack/main/kit/extras/ci-guards/install.sh | bash -s -- node
 ```
 
 Python:
 ```bash
-curl -fsSL https://raw.githubusercontent.com/tylerthebuildor/vibestack/main/kit/extras/ci-guards/install.sh | bash -s -- python
+curl -fsSL https://raw.githubusercontent.com/vibestackmd/vibestack/main/kit/extras/ci-guards/install.sh | bash -s -- python
 ```
 
 Rust:
 ```bash
-curl -fsSL https://raw.githubusercontent.com/tylerthebuildor/vibestack/main/kit/extras/ci-guards/install.sh | bash -s -- rust
+curl -fsSL https://raw.githubusercontent.com/vibestackmd/vibestack/main/kit/extras/ci-guards/install.sh | bash -s -- rust
 ```
 
 Go:
 ```bash
-curl -fsSL https://raw.githubusercontent.com/tylerthebuildor/vibestack/main/kit/extras/ci-guards/install.sh | bash -s -- go
+curl -fsSL https://raw.githubusercontent.com/vibestackmd/vibestack/main/kit/extras/ci-guards/install.sh | bash -s -- go
 ```
 
 Custom output path:
 ```bash
-curl -fsSL https://raw.githubusercontent.com/tylerthebuildor/vibestack/main/kit/extras/ci-guards/install.sh | bash -s -- node -o .github/workflows/ci-node.yml
+curl -fsSL https://raw.githubusercontent.com/vibestackmd/vibestack/main/kit/extras/ci-guards/install.sh | bash -s -- node -o .github/workflows/ci-node.yml
 ```
 
 #### Or curl the workflow directly
@@ -69,22 +69,22 @@ mkdir -p .github/workflows
 
 Node / TypeScript:
 ```bash
-curl -fsSL https://raw.githubusercontent.com/tylerthebuildor/vibestack/main/kit/extras/ci-guards/examples/node-caller.yml -o .github/workflows/ci.yml
+curl -fsSL https://raw.githubusercontent.com/vibestackmd/vibestack/main/kit/extras/ci-guards/examples/node-caller.yml -o .github/workflows/ci.yml
 ```
 
 Python:
 ```bash
-curl -fsSL https://raw.githubusercontent.com/tylerthebuildor/vibestack/main/kit/extras/ci-guards/examples/python-caller.yml -o .github/workflows/ci.yml
+curl -fsSL https://raw.githubusercontent.com/vibestackmd/vibestack/main/kit/extras/ci-guards/examples/python-caller.yml -o .github/workflows/ci.yml
 ```
 
 Rust:
 ```bash
-curl -fsSL https://raw.githubusercontent.com/tylerthebuildor/vibestack/main/kit/extras/ci-guards/examples/rust-caller.yml -o .github/workflows/ci.yml
+curl -fsSL https://raw.githubusercontent.com/vibestackmd/vibestack/main/kit/extras/ci-guards/examples/rust-caller.yml -o .github/workflows/ci.yml
 ```
 
 Go:
 ```bash
-curl -fsSL https://raw.githubusercontent.com/tylerthebuildor/vibestack/main/kit/extras/ci-guards/examples/go-caller.yml -o .github/workflows/ci.yml
+curl -fsSL https://raw.githubusercontent.com/vibestackmd/vibestack/main/kit/extras/ci-guards/examples/go-caller.yml -o .github/workflows/ci.yml
 ```
 
 
@@ -101,7 +101,7 @@ on:
 
 jobs:
   quality-gate:
-    uses: tylerthebuildor/shared-ci-guards/.github/workflows/ci-node.yml@main
+    uses: vibestackmd/shared-ci-guards/.github/workflows/ci-node.yml@main
     with:
       node-version: "20"
       coverage-threshold: 75
@@ -149,7 +149,7 @@ These are called automatically by the language guards, but can also be used inde
 ```yaml
 jobs:
   security:
-    uses: tylerthebuildor/shared-ci-guards/.github/workflows/security-scan.yml@main
+    uses: vibestackmd/shared-ci-guards/.github/workflows/security-scan.yml@main
     with:
       severity: "HIGH"  # CRITICAL, HIGH, MEDIUM, LOW
 ```
@@ -159,7 +159,7 @@ jobs:
 ```yaml
 jobs:
   smells:
-    uses: tylerthebuildor/shared-ci-guards/.github/workflows/no-smell-check.yml@main
+    uses: vibestackmd/shared-ci-guards/.github/workflows/no-smell-check.yml@main
     with:
       block-todo: true
       block-unsafe-patterns: true
@@ -174,7 +174,7 @@ Requires `ANTHROPIC_API_KEY` secret. Posts a Claude-generated PR comment explain
 ```yaml
 jobs:
   sonar:
-    uses: tylerthebuildor/shared-ci-guards/.github/workflows/code-quality.yml@main
+    uses: vibestackmd/shared-ci-guards/.github/workflows/code-quality.yml@main
     with:
       project-key: "my-org_my-repo"
       organization: "my-org"
@@ -216,4 +216,4 @@ Code Quality: SonarCloud (optional)
 ## Notes
 
 - **gitleaks on private repos** requires a [gitleaks license](https://gitleaks.io/) or a `GITLEAKS_LICENSE` secret. On public repos it works for free.
-- **The reusable workflows live in the [shared-ci-guards](https://github.com/tylerthebuildor/shared-ci-guards) repo** on GitHub. The caller YMLs installed by this script reference them via `uses: tylerthebuildor/shared-ci-guards/.github/workflows/...@main`. That repo must be public (or accessible within your GitHub org) for the references to work.
+- **The reusable workflows live in the [shared-ci-guards](https://github.com/vibestackmd/shared-ci-guards) repo** on GitHub. The caller YMLs installed by this script reference them via `uses: vibestackmd/shared-ci-guards/.github/workflows/...@main`. That repo must be public (or accessible within your GitHub org) for the references to work.

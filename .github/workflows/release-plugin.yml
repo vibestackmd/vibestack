@@ -1,0 +1,100 @@
+name: Release Plugin
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Extract version from tag
+        id: version
+        run: echo "version=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
+
+      - name: Verify VERSION file matches tag
+        run: |
+          file_version=$(tr -d '[:space:]' < VERSION)
+          tag_version="${{ steps.version.outputs.version }}"
+          if [[ "$file_version" != "$tag_version" ]]; then
+            echo "::error::VERSION file ($file_version) does not match tag ($tag_version)"
+            exit 1
+          fi
+
+      - name: Build plugin
+        run: |
+          chmod +x scripts/build-plugin.sh
+          scripts/build-plugin.sh "${{ steps.version.outputs.version }}"
+
+      - name: Inspect plugin output
+        run: |
+          echo "::group::Plugin tree"
+          find dist/plugin -type f | sort
+          echo "::endgroup::"
+          echo "::group::plugin.json"
+          cat dist/plugin/.claude-plugin/plugin.json
+          echo "::endgroup::"
+          echo "::group::settings.json"
+          cat dist/plugin/settings.json
+          echo "::endgroup::"
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/vibestack-plugin-${{ steps.version.outputs.version }}.tar.gz
+          generate_release_notes: true
+          body: |
+            ## VibeStack Plugin v${{ steps.version.outputs.version }}
+
+            ### Install
+
+            ```
+            /plugin install vibestackmd/vibestack
+            ```
+
+            Or download the tarball and extract to `~/.claude/plugins/vibestack/`.
+
+            ### What's included
+
+            **Skills:** `/vibestack`, `/todo`, `/squad`, `/docs`, `cli-first` (ref), `lsp` (ref)
+            **Hooks:** finish notification (audio chime), status line
+
+      - name: Update marketplace.json on main
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          TARBALL_URL="https://github.com/vibestackmd/vibestack/releases/download/v${VERSION}/vibestack-plugin-${VERSION}.tar.gz"
+
+          python3 -c "
+          import json
+          marketplace = {
+              'name': 'vibestack',
+              'version': '${VERSION}',
+              'description': 'Opinionated project structure, skills, and tooling for AI-assisted development.',
+              'author': 'vibestackmd',
+              'repository': 'https://github.com/vibestackmd/vibestack',
+              'download': '${TARBALL_URL}',
+              'skills': ['vibestack', 'todo', 'squad', 'docs', 'cli-first', 'lsp'],
+              'hooks': ['notify-done', 'statusline']
+          }
+          with open('marketplace.json', 'w') as f:
+              json.dump(marketplace, f, indent=2)
+              f.write('\n')
+          "
+
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git fetch origin main
+          git checkout main
+          git add marketplace.json
+          if git diff --cached --quiet; then
+            echo "marketplace.json unchanged"
+          else
+            git commit -m "chore: update marketplace.json for v${VERSION}"
+            git push origin main
+          fi

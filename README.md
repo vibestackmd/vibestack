@@ -12,6 +12,20 @@
 
 ## Install
 
+### Option A: Claude Code Plugin
+
+Install VibeStack as a plugin to get skills, hooks, and workflows across all your projects:
+
+```
+/plugin install vibestackmd/vibestack
+```
+
+Then run `/vibestack` inside any project to scaffold the project-level files (CLAUDE.md, ops.sh, docs, TODO.md).
+
+### Option B: One-Line Installer
+
+Adds the full VibeStack kit — plugin content plus project templates — directly into your current project:
+
 ```bash
 curl -fsSL https://raw.githubusercontent.com/vibestackmd/vibestack/main/install.sh | bash
 ```

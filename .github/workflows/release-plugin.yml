@@ -28,9 +28,7 @@ jobs:
           fi
 
       - name: Build plugin
-        run: |
-          chmod +x scripts/build-plugin.sh
-          scripts/build-plugin.sh "${{ steps.version.outputs.version }}"
+        run: make plugin
 
       - name: Inspect plugin output
         run: |

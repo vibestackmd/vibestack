@@ -2,8 +2,8 @@
 # Build the VibeStack Claude Code plugin from kit/ sources.
 #
 # Usage:
-#   ./scripts/build-plugin.sh          # uses VERSION file
-#   ./scripts/build-plugin.sh 0.2.0    # override version
+#   make plugin
+#   ./build-plugin.sh 0.2.0    # override version
 
 set -euo pipefail
 

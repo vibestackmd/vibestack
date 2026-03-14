@@ -106,9 +106,9 @@ ok() {
   echo -e "  ${GREEN}✓${RESET} $1"
 }
 
-# macOS: 16 (Homebrew + Xcode CLT + Oh My Zsh, no Prerequisites/Zsh)
-# Linux: 16 (Prerequisites + Zsh + Oh My Zsh, no Homebrew/Xcode CLT)
-total=16
+# macOS: 15 (Homebrew + Xcode CLT + Oh My Zsh, no Prerequisites/Zsh)
+# Linux: 15 (Prerequisites + Zsh + Oh My Zsh, no Homebrew/Xcode CLT)
+total=15
 step=1
 
 section() {
@@ -513,47 +513,6 @@ else
 fi
 reload_config
 
-# ── Zoxide (z) ──────────────────────────────────────────
-
-section "Zoxide (z — smart directory jumper)"
-if command -v zoxide >/dev/null 2>&1; then
-  ok "Already installed."
-else
-  echo "  zoxide lets you jump to frequently-used directories with 'z foo'"
-  echo "  instead of typing full paths."
-  echo ""
-  if ask "  Install zoxide?"; then
-    if [[ "$OS" == "macos" ]]; then
-      brew install zoxide
-    else
-      curl -sSfL https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | sh
-    fi
-    track "Zoxide" "installed"
-  else
-    track "Zoxide" "skipped"
-  fi
-fi
-
-# Add zoxide shell hook if installed but not yet in RC files
-if command -v zoxide >/dev/null 2>&1; then
-  ZOXIDE_HOOK='eval "$(zoxide init zsh)"'
-  ZOXIDE_HOOK_BASH='eval "$(zoxide init bash)"'
-
-  if [[ -f "$HOME/.zshrc" ]] && ! grep -qF "zoxide init" "$HOME/.zshrc"; then
-    echo '' >> "$HOME/.zshrc"
-    echo '# Zoxide (smart cd)' >> "$HOME/.zshrc"
-    echo "$ZOXIDE_HOOK" >> "$HOME/.zshrc"
-    ok "Added zoxide hook to ~/.zshrc."
-  fi
-
-  if [[ -f "$HOME/.bashrc" ]] && ! grep -qF "zoxide init" "$HOME/.bashrc"; then
-    echo '' >> "$HOME/.bashrc"
-    echo '# Zoxide (smart cd)' >> "$HOME/.bashrc"
-    echo "$ZOXIDE_HOOK_BASH" >> "$HOME/.bashrc"
-    ok "Added zoxide hook to ~/.bashrc."
-  fi
-fi
-
 # ── Language Servers (LSP) ──────────────────────────────
 # Gives AI agents and editors rich code intelligence (go-to-definition,
 # diagnostics, completions). Only installs servers for runtimes already present.
@@ -876,8 +835,17 @@ if grep -q '\\033\[' "$SHELL_RC" 2>/dev/null && grep -q 'claw' "$SHELL_RC" 2>/de
   ok "Removed malformed claw alias from $SHELL_RC."
 fi
 
-if grep -qF "alias claw=" "$SHELL_RC" 2>/dev/null; then
-  ok "claw alias — already configured in $SHELL_RC."
+# Check all common RC files, not just the detected one
+claw_found=false
+for rc in "$HOME/.zshrc" "$HOME/.bashrc" "$HOME/.bash_profile" "$HOME/.profile"; do
+  if [[ -f "$rc" ]] && grep -qF "alias claw=" "$rc" 2>/dev/null; then
+    claw_found=true
+    break
+  fi
+done
+
+if $claw_found; then
+  ok "claw alias — already configured."
 else
   echo -e "  The ${BOLD}claw${RESET} alias runs Claude in bypass-permissions mode:"
   echo ""
@@ -951,8 +919,16 @@ fi
 # ── 12. Vim Syntax Highlighting ──────────────────────────
 
 section "Vim Syntax Highlighting"
-if [[ -f "$HOME/.vimrc" ]] && grep -q 'syntax on\|syntax enable' "$HOME/.vimrc" 2>/dev/null; then
-  ok "Already configured in ~/.vimrc."
+vim_configured=false
+for vf in "$HOME/.vimrc" "$HOME/.vim/vimrc" "$HOME/.config/nvim/init.vim" "$HOME/.config/nvim/init.lua"; do
+  if [[ -f "$vf" ]]; then
+    vim_configured=true
+    break
+  fi
+done
+
+if $vim_configured; then
+  ok "Vim config already exists — skipping."
 else
   echo "  Adds syntax highlighting, line numbers, and sensible defaults to Vim."
   echo ""

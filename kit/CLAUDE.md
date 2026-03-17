@@ -10,23 +10,26 @@
 
 ## Commands
 
-All operations go through `ops.sh` — the single entry point for build, run, test, and deploy. Run `./ops.sh help` for the full list.
+All operations go through the `Makefile` — the single entry point for build, run, test, and deploy. Run `make help` for the full list.
 
 ```bash
-./ops.sh build
-./ops.sh test
-./ops.sh run
-./ops.sh deploy <target>
-./ops.sh logs <target>
-./ops.sh status
+make build
+make test
+make run
+make deploy TARGET=prod
+make logs TARGET=prod
+make status
 ```
+
+Complex commands that need real bash logic live in `scripts/` and are called from Makefile targets.
 
 ## Project Structure
 
 ```
 src/
 docs/           # Living documentation (see docs/README.md)
-ops.sh          # Project CLI — single entry point for all operations
+Makefile        # Project operations — single entry point for all commands
+scripts/        # Complex build/deploy scripts called from Makefile
 TODO.md         # Task tracking (see TODO Workflow below)
 .claude/
   skills/       # Claude skills — conventions and slash commands
@@ -63,7 +66,7 @@ The `docs/` folder is the single source of truth for institutional knowledge. Se
 - `lsp` — Use language servers for type checking, references, and code navigation
 
 **Task skills** (invoked via `/command`):
-- `/vibestack` — Set up VibeStack conventions for an existing project (CLAUDE.md, ops.sh, docs, TODO.md)
+- `/vibestack` — Set up VibeStack conventions for an existing project (CLAUDE.md, Makefile, docs, TODO.md)
 - `/docs` — Capture conversation learnings into docs and clean up stale content
 - `/todo` — Work through TODO.md tasks sequentially (`/todo populate` to re-analyze the codebase and seed the next batch of tasks)
 - `/squad` — Analyze the project and generate domain-specific rules and specialist subagents (`/squad refresh` to update)

@@ -31,7 +31,7 @@ If you just want the skills and hooks without project templates:
 /plugin install vibestackmd/vibestack
 ```
 
-Then run `/vibestack` inside any project to scaffold CLAUDE.md, ops.sh, docs, and TODO.md.
+Then run `/vibestack` inside any project to scaffold CLAUDE.md, Makefile, docs, and TODO.md.
 
 </details>
 
@@ -51,8 +51,8 @@ Five files:
     <td style="padding: 8px 16px;">Lightweight task tracker with a protocol for parallel work so agents don't collide</td>
   </tr>
   <tr>
-    <td><code>ops.sh</code></td>
-    <td style="padding: 8px 16px;">Single entry point for build, test, run, deploy — <code>./ops.sh build</code>, <code>./ops.sh test</code>, <code>./ops.sh deploy prod</code></td>
+    <td><code>Makefile</code></td>
+    <td style="padding: 8px 16px;">Project operations via <code>make</code> — <code>make build</code>, <code>make test</code>, <code>make deploy TARGET=prod</code>. Complex scripts go in <code>scripts/</code></td>
   </tr>
   <tr>
     <td><code>docs/</code></td>
@@ -69,7 +69,7 @@ Five files:
 <table>
   <tr>
     <td><code>/vibestack</code></td>
-    <td style="padding: 8px 16px;">Analyzes your project and fills out CLAUDE.md, ops.sh, docs, and TODO.md with project-specific content</td>
+    <td style="padding: 8px 16px;">Analyzes your project and fills out CLAUDE.md, Makefile, docs, and TODO.md with project-specific content</td>
   </tr>
   <tr>
     <td><code>/squad</code></td>
@@ -138,6 +138,10 @@ claw "refactor the auth module to use JWT"
 ## Opinions
 
 This is what makes VibeStack different. The conventions above give your project structure — the opinions below are why.
+
+### Makefile Over Shell Scripts
+
+Your project operations belong in a `Makefile`, not a bespoke shell script. `make` is universal, tab-completable, dependency-aware, and self-documenting. Keep targets thin — if something needs real bash logic, put it in `scripts/` and call it from the target. One command to rule them all: `make help`.
 
 ### Bypass Permissions
 

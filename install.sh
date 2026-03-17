@@ -22,7 +22,7 @@ echo ""
 PROJECT_FILES=(
   "CLAUDE.md"
   "TODO.md"
-  "ops.sh"
+  "Makefile"
   "docs/README.md"
   "docs/SUMMARY.md"
   "docs/index.md"
@@ -191,7 +191,6 @@ print(json.dumps(result, indent=2))
 done
 
 # Make scripts executable
-[[ -f "ops.sh" ]] && chmod +x ops.sh
 [[ -f ".claude/hooks/notify-done.sh" ]] && chmod +x .claude/hooks/notify-done.sh
 [[ -f ".claude/hooks/statusline.sh" ]] && chmod +x .claude/hooks/statusline.sh
 
@@ -277,5 +276,5 @@ fi
 echo ""
 echo "Next steps:"
 echo "  1. Run /vibestack in Claude Code to auto-configure everything for your project"
-echo "  2. Review the generated CLAUDE.md, ops.sh, docs/, and TODO.md"
+echo "  2. Review the generated CLAUDE.md, Makefile, docs/, and TODO.md"
 echo ""

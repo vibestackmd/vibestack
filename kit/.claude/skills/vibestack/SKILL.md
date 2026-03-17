@@ -1,6 +1,6 @@
 ---
 name: vibestack
-description: Set up VibeStack conventions for an existing project — fills out CLAUDE.md, ops.sh, docs, and TODO.md based on the actual codebase.
+description: Set up VibeStack conventions for an existing project — fills out CLAUDE.md, Makefile, docs, and TODO.md based on the actual codebase.
 user_invocable: true
 ---
 
@@ -33,9 +33,9 @@ Update the CLAUDE.md template sections with real project information:
 
 Leave the Commands, Key Workflows, and Skills sections as-is — they describe VibeStack conventions that don't change per project.
 
-### 3. Fill out ops.sh
+### 3. Fill out Makefile
 
-Replace the TODO placeholder commands with real commands based on what you discovered:
+Replace the TODO placeholder commands in the Makefile with real commands based on what you discovered:
 
 - **build** — The actual build command (`npm run build`, `cargo build --release`, `go build`, etc.)
 - **test** — The actual test command (`npm test`, `cargo test`, `pytest`, etc.)
@@ -46,7 +46,9 @@ Replace the TODO placeholder commands with real commands based on what you disco
 - **docs** — Pick the right doc server if a docs tool is present (mdbook, docusaurus, etc.), otherwise use `python3 -m http.server`.
 - **PROJECT_NAME** — Set to the actual project name.
 
-Add any additional project-specific commands that would be useful (e.g., `lint`, `migrate`, `seed`, `typecheck`). Follow the existing pattern in the file for adding new commands — add an elif block and update the help text.
+Add any additional project-specific targets that would be useful (e.g., `lint`, `migrate`, `seed`, `typecheck`). Follow the existing pattern — add a new `.PHONY` target with a `## Description` comment for the help output.
+
+**Important:** If a target needs more than a few lines of shell logic, put it in a `scripts/` file and call it from the Makefile target. Keep the Makefile declarative — the scripts folder is where complex bash lives.
 
 ### 4. Write initial docs
 

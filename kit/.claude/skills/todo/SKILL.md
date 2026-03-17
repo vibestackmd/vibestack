@@ -76,7 +76,7 @@ For each task, in order from top to bottom:
 1. **Claim it.** Update `TODO.md` to mark the item `[~]` (pending) before starting any work. This signals to parallel agents that it's taken.
 2. **Understand it.** Read the task description carefully. If the task references files, features, or systems you're unfamiliar with, read the relevant code and docs first.
 3. **Execute it.** Do the work described by the task. Use the full set of tools available — read files, edit code, run commands, search the codebase, whatever the task requires. Follow the project's conventions from CLAUDE.md.
-4. **Verify it.** If the task involves code changes, run relevant tests or checks (`./ops.sh test`, linting, type checking) to make sure nothing is broken. If a task is ambiguous about what "done" looks like, use your best judgment.
+4. **Verify it.** If the task involves code changes, run relevant tests or checks (`make test`, linting, type checking) to make sure nothing is broken. If a task is ambiguous about what "done" looks like, use your best judgment.
 5. **Mark it done.** Update `TODO.md` to mark the item `[x]`.
 6. **Move on.** Proceed to the next uncompleted task.
 

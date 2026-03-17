@@ -53,14 +53,14 @@ echo -e "${CYAN}--- Checking project files ---${RESET}"
 # Project convention files
 assert_file_exists "CLAUDE.md"
 assert_file_exists "TODO.md"
-assert_file_exists "ops.sh"
+assert_file_exists "Makefile"
 assert_file_exists "docs/README.md"
 assert_file_exists "docs/SUMMARY.md"
 assert_file_exists "docs/index.md"
 assert_file_exists "docs/skills-and-commands.md"
 
-# ops.sh should be executable
-assert_file_executable "ops.sh"
+# Makefile should contain help target
+assert_file_contains "Makefile" "help"
 
 echo ""
 echo -e "${CYAN}--- Checking managed files ---${RESET}"
@@ -94,7 +94,7 @@ assert_file_contains ".claude/skills/cli-first/SKILL.md" "cli-first"
 echo ""
 echo -e "${CYAN}--- Checking CLAUDE.md template ---${RESET}"
 
-assert_file_contains "CLAUDE.md" "ops.sh"
+assert_file_contains "CLAUDE.md" "Makefile"
 assert_file_contains "CLAUDE.md" "/squad"
 
 # ── Re-run test (idempotency) ──────────────────────────

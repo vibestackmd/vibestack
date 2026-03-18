@@ -1,10 +1,10 @@
 {
   "name": "vibestack",
-  "version": "0.1.3",
+  "version": "0.1.6",
   "description": "Opinionated project structure, skills, and tooling for AI-assisted development.",
   "author": "vibestackmd",
   "repository": "https://github.com/vibestackmd/vibestack",
-  "download": "https://github.com/vibestackmd/vibestack/releases/download/v0.1.3/vibestack-plugin-0.1.3.tar.gz",
+  "download": "https://github.com/vibestackmd/vibestack/releases/download/v0.1.6/vibestack-plugin-0.1.6.tar.gz",
   "skills": [
     "vibestack",
     "todo",

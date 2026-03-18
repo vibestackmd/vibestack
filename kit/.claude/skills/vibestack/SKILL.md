@@ -52,12 +52,10 @@ Add any additional project-specific targets that would be useful (e.g., `lint`, 
 
 ### 4. Write initial docs
 
-Based on what you learned about the project, create useful starter documentation in `docs/`:
+Based on what you learned about the project, create useful documentation in `docs/`:
 
-- **Update `docs/index.md`** — Replace the placeholder with a real project description and quick links.
 - **Create architecture doc** — If the project has enough structure to warrant one (multiple services, clear layers, non-obvious data flow), create `docs/architecture.md` with a high-level overview.
 - **Create any topical docs** — If you found non-obvious integration patterns, deployment workflows, or complex subsystems, document them.
-- **Update `docs/SUMMARY.md`** — Add entries for any new docs you created.
 
 Don't create docs just to have docs. Only write what would genuinely help a new contributor (human or AI) get up to speed faster.
 

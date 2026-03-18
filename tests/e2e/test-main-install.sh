@@ -54,10 +54,7 @@ echo -e "${CYAN}--- Checking project files ---${RESET}"
 assert_file_exists "CLAUDE.md"
 assert_file_exists "TODO.md"
 assert_file_exists "Makefile"
-assert_file_exists "docs/README.md"
-assert_file_exists "docs/SUMMARY.md"
-assert_file_exists "docs/index.md"
-assert_file_exists "docs/skills-and-commands.md"
+assert_file_exists "docs/vibestack.md"
 
 # Makefile should contain help target
 assert_file_contains "Makefile" "help"

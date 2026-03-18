@@ -23,10 +23,7 @@ PROJECT_FILES=(
   "CLAUDE.md"
   "TODO.md"
   "Makefile"
-  "docs/README.md"
-  "docs/SUMMARY.md"
-  "docs/index.md"
-  "docs/skills-and-commands.md"
+  "docs/vibestack.md"
 )
 
 # VibeStack-managed files — prompt to overwrite on re-runs so upstream

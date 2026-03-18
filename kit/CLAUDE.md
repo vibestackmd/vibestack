@@ -27,7 +27,7 @@ Complex commands that need real bash logic live in `scripts/` and are called fro
 
 ```
 src/
-docs/           # Living documentation (see docs/README.md)
+docs/           # Living documentation
 Makefile        # Project operations — single entry point for all commands
 scripts/        # Complex build/deploy scripts called from Makefile
 TODO.md         # Task tracking (see TODO Workflow below)
@@ -43,12 +43,11 @@ TODO.md         # Task tracking (see TODO Workflow below)
 
 ### Docs
 
-The `docs/` folder is the single source of truth for institutional knowledge. See `docs/README.md` for the full convention.
+The `docs/` folder is the single source of truth for institutional knowledge.
 
 **For AI agents:** Before starting work on an unfamiliar area, check `docs/` for existing context. When you learn something significant during a task — integration quirks, architectural decisions, incident learnings — write it up or update an existing doc. Don't wait to be asked.
 
-- Markdown files organized by topic in subdirectories
-- `docs/SUMMARY.md` is the table of contents — update it when adding or removing docs
+- Markdown files organized by topic — one topic per file
 - Write as if explaining to a new team member who may be an AI agent
 
 ### TODO
@@ -59,7 +58,7 @@ The `docs/` folder is the single source of truth for institutional knowledge. Se
 
 ### Skills
 
-`.claude/skills/` teaches Claude project-specific conventions and provides reusable workflows as slash commands. See `docs/skills-and-commands.md` for how to create new ones.
+`.claude/skills/` teaches Claude project-specific conventions and provides reusable workflows as slash commands. See `docs/vibestack.md` for how to create new ones.
 
 **Reference skills** (auto-loaded as context):
 - `cli-first` — Use CLI tools and `.env*` files for third-party services

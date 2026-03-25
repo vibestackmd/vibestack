@@ -34,6 +34,17 @@ Scan every file in `docs/` for:
 - **Redundancy** — information duplicated across multiple docs. Consolidate into the canonical location and remove or link from the other.
 - **Dead links** — references to files or sections that no longer exist.
 - **Outdated examples** — command examples, config snippets, or code samples that reference removed nodes, old flag names, or deprecated workflows.
+- **Historical cruft** — any content that describes how things *used to* work, old approaches, or previous designs. See the rules below for how to handle this.
+
+**Aggressively remove historical information.** Docs should describe how things work *now* and *why*, not how they used to work. Apply these rules:
+
+- If a section says "we used to do X but now we do Y" — rewrite it as "we do Y because [reason]." Delete the reference to X entirely.
+- If a past decision or incident encodes a lesson that the team is **strongly likely** to encounter again, keep the lesson — but reframe it as a current rule or guideline, not a historical narrative. Write "We do X because Y" not "We switched from A to X after incident Z."
+- "Potentially" relevant history is not worth keeping. Only preserve lessons where there's a **strong likelihood** the team will hit the same situation again.
+- If an entire doc has become historical (describes a removed feature, old architecture, completed migration), delete the file.
+- If removing historical content leaves a doc too thin to justify its own file, merge the remaining content into a related doc and delete the file.
+
+**Shrink the docs folder.** Every pass should aim to reduce or hold steady the number of files and total content. Combine small docs on related topics. Delete files that no longer carry weight. A lean, accurate docs folder is more valuable than a comprehensive but stale one.
 
 For each issue found:
 - Verify against the actual codebase (grep/read the source) before making changes.
@@ -73,7 +84,8 @@ After all changes, provide a brief summary of:
 
 ## Guidelines
 
-- **Verify before removing.** Always grep the codebase to confirm something is actually gone before deleting its documentation. Docs about historical incidents or past decisions should generally be preserved as-is.
-- **Preserve history.** Incident logs, postmortems, and changelog-style docs describe what happened at a point in time. Don't update these to match current state — they're historical records.
+- **Verify before removing.** Always grep the codebase to confirm something is actually gone before deleting its documentation.
+- **Current state over history.** Docs describe how things work now and why. Remove historical narratives, old approaches, and "we used to" content. If a past lesson is strongly likely to recur, encode it as a present-tense rule — not a story.
 - **Don't over-document.** If something is obvious from the code, it doesn't need a doc. Focus on decisions, architecture, non-obvious behavior, and operational knowledge.
 - **Keep structure flat.** Prefer fewer, well-organized files over many small ones. A doc with clear headers is easier to maintain than a folder of fragments.
+- **Trim every pass.** Aim to reduce or hold steady the total number of files and lines. Combine related docs, delete empty or historical ones. The docs folder should never just grow.

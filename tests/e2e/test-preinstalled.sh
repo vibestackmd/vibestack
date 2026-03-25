@@ -42,7 +42,6 @@ echo ""
 # Pre-existing files were created in the Dockerfile
 echo -e "${CYAN}--- Verifying pre-existing files ---${RESET}"
 assert_file_contains "/workspace/CLAUDE.md" "Existing CLAUDE.md"
-assert_file_contains "/workspace/TODO.md" "Existing TODO"
 
 echo ""
 echo -e "${CYAN}--- Running main installer ---${RESET}"
@@ -56,11 +55,12 @@ echo -e "${CYAN}--- Checking skip behavior ---${RESET}"
 
 # Pre-existing project files should be skipped
 assert_output_contains "$output" "skip.*CLAUDE.md"
-assert_output_contains "$output" "skip.*TODO.md"
 
 # Pre-existing file content should be preserved (not overwritten)
 assert_file_contains "/workspace/CLAUDE.md" "Existing CLAUDE.md"
-assert_file_contains "/workspace/TODO.md" "Existing TODO"
+
+# docs/vibestack.md should be skipped because docs/ has content
+assert_output_contains "$output" "skip.*vibestack.md"
 
 # Managed files should still be installed (they didn't exist before)
 if [[ -f ".claude/skills/vibestack/SKILL.md" ]]; then

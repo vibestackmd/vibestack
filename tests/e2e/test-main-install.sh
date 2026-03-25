@@ -52,7 +52,6 @@ echo -e "${CYAN}--- Checking project files ---${RESET}"
 
 # Project convention files
 assert_file_exists "CLAUDE.md"
-assert_file_exists "TODO.md"
 assert_file_exists "Makefile"
 assert_file_exists "docs/vibestack.md"
 

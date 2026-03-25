@@ -61,7 +61,9 @@ Don't create docs just to have docs. Only write what would genuinely help a new 
 
 ### 5. Seed TODO.md
 
-Replace the example tasks with a rank-ordered list of the most important engineering tasks to get this application production-ready. Think like a staff engineer driving a small startup toward shipping a rock-solid product — every task should earn its place on the list.
+If `TODO.md` doesn't exist, create it. If it already exists and has tasks, skip this step entirely — the user's existing task list takes priority.
+
+If creating from scratch, populate it with a rank-ordered list of the most important engineering tasks to get this application production-ready. Think like a staff engineer driving a small startup toward shipping a rock-solid product — every task should earn its place on the list.
 
 **How to build the list:**
 

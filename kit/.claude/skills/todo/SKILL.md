@@ -16,11 +16,11 @@ If `$ARGUMENTS` is `populate`, jump to the **Populate** section. Otherwise, foll
 
 ## Populate
 
-Analyze the codebase and repopulate TODO.md with the next set of highest-impact engineering tasks.
+Analyze the codebase and repopulate TODO.md with the next set of highest-impact engineering tasks. If TODO.md doesn't exist, create it.
 
 ### 1. Understand what's been done
 
-- Read `TODO.md` and note all completed (`[x]`) tasks — these represent work already done. Don't re-add them.
+- Read `TODO.md` if it exists and note all completed (`[x]`) tasks — these represent work already done. Don't re-add them.
 - Read the project's README, `docs/`, and any existing documentation for product goals, planned features, known limitations, and business context.
 - Scan the codebase: config files, directory structure, test coverage, CI/CD setup, error handling patterns, auth, logging, etc.
 
@@ -41,6 +41,14 @@ Think like a staff engineer driving a small startup toward a rock-solid producti
 
 ### 3. Write the list
 
+- If creating a new TODO.md, start with this header:
+  ```
+  # TODO
+
+  AGENTS: When prompted, complete tasks from the list below. Before starting work, mark the item as pending `[~]` so parallel agents don't collide. After completion, mark it `[x]`. Start at the top unless the user specifies otherwise.
+
+  ## Backlog
+  ```
 - Clear out completed tasks from the list (they're done — no need to keep them around).
 - Preserve any uncompleted (`[ ]`) or in-progress (`[~]`) tasks that are still relevant — re-rank them alongside the new tasks.
 - Add 10-20 new tasks, rank-ordered by impact.
@@ -60,7 +68,7 @@ Tell the user what you found and what the new priorities are. Call out the top 3
 ### 1. Read TODO.md
 
 - Read the project's `TODO.md` file.
-- If it doesn't exist, tell the user and stop.
+- If it doesn't exist, create one by running the **Populate** section above first, then continue.
 - Parse the task list. Understand the agent instructions at the top of the file — they define how you should handle tasks.
 
 ### 2. Identify work

@@ -21,8 +21,11 @@ echo ""
 # Project-specific files — never overwrite, these contain user content
 PROJECT_FILES=(
   "CLAUDE.md"
-  "TODO.md"
   "Makefile"
+)
+
+# Files only installed on fresh setup (empty or missing docs folder)
+BOOTSTRAP_FILES=(
   "docs/vibestack.md"
 )
 
@@ -76,6 +79,30 @@ for file in "${PROJECT_FILES[@]}"; do
 
   if [[ -f "$file" ]]; then
     echo -e "  ${YELLOW}skip${RESET}  $file (already exists)"
+    ((++skipped))
+    continue
+  fi
+
+  mkdir -p "$dir"
+  if curl -fsSL "$REPO/$file" -o "$file"; then
+    echo -e "  ${GREEN}add${RESET}   $file"
+    ((++installed))
+  else
+    echo -e "  ${YELLOW}fail${RESET}  $file"
+  fi
+done
+
+# Install bootstrap files only if docs/ is empty or doesn't exist
+docs_empty=true
+if [[ -d "docs" ]] && [[ -n "$(ls -A docs/ 2>/dev/null)" ]]; then
+  docs_empty=false
+fi
+
+for file in "${BOOTSTRAP_FILES[@]}"; do
+  dir=$(dirname "$file")
+
+  if ! $docs_empty; then
+    echo -e "  ${YELLOW}skip${RESET}  $file (docs/ already has content)"
     ((++skipped))
     continue
   fi
@@ -273,5 +300,5 @@ fi
 echo ""
 echo "Next steps:"
 echo "  1. Run /vibestack in Claude Code to auto-configure everything for your project"
-echo "  2. Review the generated CLAUDE.md, Makefile, docs/, and TODO.md"
+echo "  2. Review the generated CLAUDE.md and Makefile"
 echo ""

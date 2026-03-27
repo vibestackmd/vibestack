@@ -24,6 +24,7 @@ jobs:
           tag_version="${{ steps.version.outputs.version }}"
           if [[ "$file_version" != "$tag_version" ]]; then
             echo "::error::VERSION file ($file_version) does not match tag ($tag_version)"
+            echo "::error::Use 'make release-patch', 'make release-minor', or 'make release-major' to release."
             exit 1
           fi
 

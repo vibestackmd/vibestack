@@ -50,7 +50,18 @@ Add any additional project-specific targets that would be useful (e.g., `lint`, 
 
 **Important:** If a target needs more than a few lines of shell logic, put it in a `scripts/` file and call it from the Makefile target. Keep the Makefile declarative — the scripts folder is where complex bash lives.
 
-### 4. Write initial docs
+### 4. Update the README
+
+The project README should open with a **Commands** section listing all Makefile targets. This is the first thing a developer sees — make it immediately useful.
+
+- **Read the Makefile** and extract all documented targets.
+- **Categorize** if there are more than ~6 targets (e.g., "Development", "Testing", "Deployment", "Release"). Flat list is fine for fewer.
+- **Order by relevance** — most-used commands first within each category. Development and testing before release and deployment.
+- **Use a simple code block** for each command with a one-line description.
+- If the README doesn't exist yet, create one with the project name as the title, a one-line description, and the Commands section.
+- If a README already exists, add or update the Commands section at the top (after any existing title/badges/description).
+
+### 5. Write initial docs
 
 Based on what you learned about the project, create useful documentation in `docs/`:
 
@@ -59,7 +70,7 @@ Based on what you learned about the project, create useful documentation in `doc
 
 Don't create docs just to have docs. Only write what would genuinely help a new contributor (human or AI) get up to speed faster.
 
-### 5. Seed TODO.md
+### 6. Seed TODO.md
 
 If `TODO.md` doesn't exist, create it. If it already exists and has tasks, skip this step entirely — the user's existing task list takes priority.
 
@@ -89,7 +100,7 @@ If creating from scratch, populate it with a rank-ordered list of the most impor
 - Don't list things that are already done well. Only gaps and improvements.
 - Every item should be completable by a single engineer (or AI agent) in a reasonable scope of work.
 
-### 6. Summary
+### 7. Summary
 
 Tell the user what you set up and what still needs manual attention. Call out:
 

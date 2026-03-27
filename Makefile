@@ -35,6 +35,22 @@ release-major: ## Bump major version, tag, and push
 
 define do-release
 	@echo ""
+	@# ── Preflight checks ───────────────────────────────────
+	@branch=$$(git rev-parse --abbrev-ref HEAD); \
+	if [ "$$branch" != "main" ]; then \
+		echo "  \033[31mError: must be on main (currently on $$branch)\033[0m"; exit 1; \
+	fi
+	@if ! git diff --quiet || ! git diff --cached --quiet; then \
+		echo "  \033[31mError: working tree is dirty — commit or stash first\033[0m"; exit 1; \
+	fi
+	@git fetch origin main --quiet; \
+	if [ "$$(git rev-parse HEAD)" != "$$(git rev-parse origin/main)" ]; then \
+		echo "  \033[31mError: local main is out of sync with origin — pull first\033[0m"; exit 1; \
+	fi
+	@if git tag -l "v$(1)" | grep -q .; then \
+		echo "  \033[31mError: tag v$(1) already exists\033[0m"; exit 1; \
+	fi
+	@# ── Confirm and release ────────────────────────────────
 	@echo "  $(VERSION) → $(1)"
 	@echo ""
 	@read -p "  Release v$(1)? [y/N] " confirm && [ "$$confirm" = "y" ] || exit 1

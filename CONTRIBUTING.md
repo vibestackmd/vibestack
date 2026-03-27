@@ -20,7 +20,9 @@ make help
 | `make build` | Build the site |
 | `make deploy` | Build and deploy site to Vercel |
 | `make plugin` | Build the Claude Code plugin to `dist/` |
-| `make release` | Tag + push a release (triggers GitHub Actions) |
+| `make release-patch` | Bump patch version, tag, and push |
+| `make release-minor` | Bump minor version, tag, and push |
+| `make release-major` | Bump major version, tag, and push |
 | `make test` | Run quick E2E tests |
 | `make test-ubuntu` | Full Ubuntu install test (Docker) |
 | `make test-wsl` | WSL simulation test (Docker) |
@@ -53,9 +55,17 @@ Makefile                # Developer commands
 
 ## Releasing a New Plugin Version
 
-1. Update `VERSION` (e.g., `0.1.0` → `0.2.0`)
-2. Commit: `git commit -am "bump version to 0.2.0"`
-3. Run `make release` — tags and pushes, GitHub Actions builds the plugin and creates a release
+`VERSION` is the single source of truth for the current version. Never bump it manually or create tags by hand — always use the Makefile:
+
+```bash
+make release-patch   # 0.1.6 → 0.1.7
+make release-minor   # 0.1.7 → 0.2.0
+make release-major   # 0.2.0 → 1.0.0
+```
+
+This runs preflight checks (clean tree, on main, in sync with origin), runs E2E tests, bumps `VERSION`, commits, tags, and pushes. GitHub Actions builds the plugin and creates the release.
+
+**Do not** manually edit `VERSION`, create tags with `git tag`, or push tags separately — the CI will reject tags that don't match the VERSION file.
 
 ## Tests
 

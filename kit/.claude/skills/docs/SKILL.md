@@ -51,7 +51,20 @@ For each issue found:
 - Remove stale content cleanly — don't leave orphaned headers, empty sections, or dangling list items.
 - If a section becomes empty after cleanup, remove the section header too.
 
-### 4. Also check the project instructions file
+### 4. Update the README
+
+The project README should always open with a **Commands** section listing the current Makefile targets. This is the first thing a developer (or agent) sees — make it immediately useful.
+
+- **Read the Makefile** and extract all documented targets (those with `## comment` help strings).
+- **Categorize** targets if there are more than ~6 (e.g., "Development", "Testing", "Deployment", "Release"). If fewer, a flat list is fine.
+- **Order by relevance** — most-used commands first, within each category. Development and testing commands typically come before release and deployment.
+- **Use a simple code block** for each command with a one-line description. Match the format already used in CLAUDE.md's Commands section.
+- **Remove stale entries** — if a Makefile target was removed or renamed, update the README to match.
+- **Keep it current** — every `/docs` pass should re-verify that the README commands match the actual Makefile. This is not optional.
+
+If the README doesn't have a Commands section yet, add one at the top (after the project title/description).
+
+### 5. Also check the project instructions file
 
 Apply the same cleanup to CLAUDE.md (or equivalent). This file is loaded into every conversation, so accuracy matters most here:
 
@@ -60,7 +73,7 @@ Apply the same cleanup to CLAUDE.md (or equivalent). This file is loaded into ev
 - Remove references to deleted features, nodes, or config fields.
 - Keep it concise — CLAUDE.md should be a quick reference, not a detailed guide. Move lengthy explanations to docs/.
 
-### 5. Feynman clarity pass
+### 6. Feynman clarity pass
 
 Review everything you wrote or updated and apply a clarity pass:
 
@@ -74,7 +87,7 @@ Review everything you wrote or updated and apply a clarity pass:
 
 If a section is already clear and accurate, leave it alone. This pass is for improving what needs it, not rewriting everything.
 
-### 6. Summary
+### 7. Summary
 
 After all changes, provide a brief summary of:
 - What new information was captured and where

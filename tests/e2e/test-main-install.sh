@@ -62,12 +62,9 @@ USER_DIR="$HOME/.claude"
 echo ""
 echo -e "${CYAN}--- Skills installed at user level ---${RESET}"
 
-for skill in vibestack todo squad docs bosskey ideate cli-first developer-environment; do
+for skill in vibestack todo squad docs bosskey ideate cli-first developer-environment lsp; do
   assert_file_exists "$USER_DIR/skills/$skill/SKILL.md"
 done
-
-# lsp must NOT be installed in v2
-assert_file_absent "$USER_DIR/skills/lsp"
 
 echo ""
 echo -e "${CYAN}--- Skill template files ---${RESET}"

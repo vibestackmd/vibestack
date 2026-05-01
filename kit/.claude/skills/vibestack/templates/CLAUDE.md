@@ -61,6 +61,7 @@ VibeStack ships skills at the user level (`~/.claude/skills/`), so they're avail
 **Reference skills** (auto-loaded as context):
 - `cli-first` — Use CLI tools and `.env*` files for third-party services
 - `developer-environment` — Map of what's installed on the machine (languages, runtimes, DBs, cloud CLIs); populates itself on first use
+- `lsp` — Use language servers (TypeScript, Python, Rust, Go) for type checking, references, and post-change validation
 
 **Task skills** (invoked via `/command`):
 - `/vibestack` — Set up VibeStack conventions for an existing project (CLAUDE.md, Makefile, docs, TODO.md)

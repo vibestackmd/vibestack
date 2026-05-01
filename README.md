@@ -112,8 +112,7 @@ Plus reference skills that auto-load as context (no command needed):
 
 - `cli-first` — teaches your AI to use platform CLIs and check `.env*` files instead of making raw API calls
 - `developer-environment` — a self-populating map of what's installed on your machine (languages, runtimes, DBs, cloud CLIs) so Claude stops guessing whether tools are available
-
-LSP coverage is handled via official Claude Code plugins (`rust-analyzer-lsp`, etc.), not a skill.
+- `lsp` — teaches your AI to use language servers (TypeScript, Python, Rust, Go) for type checking, find-references, and post-change validation. Pairs with the official `*-lsp` plugins (auto-installed when you install VibeStack via `/plugin install`)
 
 ---
 

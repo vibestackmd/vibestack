@@ -26,7 +26,7 @@ rm -rf "$BUILD_DIR"
 mkdir -p "$BUILD_DIR/.claude-plugin"
 mkdir -p "$BUILD_DIR/hooks"
 
-SKILLS=(vibestack todo squad docs bosskey ideate cli-first developer-environment)
+SKILLS=(vibestack todo squad docs bosskey ideate cli-first developer-environment lsp)
 for skill in "${SKILLS[@]}"; do
   mkdir -p "$BUILD_DIR/skills/$skill"
 done
@@ -115,7 +115,13 @@ manifest = {
     "version": version,
     "description": "Opinionated user-level skills, hooks, and settings for AI-assisted development.",
     "author": "vibestackmd",
-    "repository": "https://github.com/vibestackmd/vibestack"
+    "repository": "https://github.com/vibestackmd/vibestack",
+    "dependencies": [
+        "typescript-lsp@claude-plugins-official",
+        "pyright-lsp@claude-plugins-official",
+        "rust-analyzer-lsp@claude-plugins-official",
+        "gopls-lsp@claude-plugins-official"
+    ]
 }
 
 with open(dest_path, "w") as f:

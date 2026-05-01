@@ -36,7 +36,7 @@ make clean           # Remove build artifacts
 ```
 install.sh              # Main installer (curl | bash entry point) — installs to ~/.claude/
 kit/                    # Files shipped to ~/.claude/ at install time
-  .claude/skills/       # Skills (vibestack, todo, squad, docs, bosskey, cli-first, developer-environment)
+  .claude/skills/       # Skills (vibestack, todo, squad, docs, bosskey, ideate, cli-first, developer-environment, lsp)
     vibestack/templates/  # Template files (CLAUDE.md, Makefile) emitted by /vibestack
   .claude/hooks/        # Hooks (notify-done, statusline)
   .claude/settings.json # Default user-level settings template (deep-merged on install)

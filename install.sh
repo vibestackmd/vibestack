@@ -31,6 +31,7 @@ SKILLS=(
   "ideate"
   "cli-first"
   "developer-environment"
+  "lsp"
 )
 
 # Extra files shipped alongside specific skills (path relative to ~/.claude/)

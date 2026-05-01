@@ -1,5 +1,15 @@
 #!/usr/bin/env bash
-# Test the v2 VibeStack installer — user-level install at ~/.claude/
+# Test the v2 VibeStack installer — user-level settings + plugin install bootstrap.
+#
+# In v2, install.sh ONLY:
+#   1. Detects/offers to install the Claude CLI
+#   2. Deep-merges ~/.claude/settings.json (with two clobber paths)
+#   3. Runs `claude plugin install` if Claude is available
+#
+# Skills, hooks, and templates come from the VibeStack plugin (not curl|bash).
+# In Docker, `claude` is NOT installed, so the plugin install branch is silently
+# skipped and the fallback message is printed instead.
+
 set -euo pipefail
 
 CYAN="\033[0;36m"
@@ -22,10 +32,10 @@ assert_file_exists() {
 
 assert_file_absent() {
   if [[ ! -e "$1" ]]; then
-    echo -e "  ${GREEN}PASS${RESET}  $1 not present (correct for v2)"
+    echo -e "  ${GREEN}PASS${RESET}  $1 not present (correct for v2 — plugin owns this)"
     ((++pass))
   else
-    echo -e "  ${RED}FAIL${RESET}  $1 should not exist (v2 doesn't install project-level files)"
+    echo -e "  ${RED}FAIL${RESET}  $1 should not exist (file drops moved to plugin install path)"
     ((++fail))
   fi
 }
@@ -40,12 +50,12 @@ assert_file_contains() {
   fi
 }
 
-assert_file_executable() {
-  if [[ -x "$1" ]]; then
-    echo -e "  ${GREEN}PASS${RESET}  $1 is executable"
+assert_output_contains() {
+  if echo "$1" | sed 's/\x1b\[[0-9;]*m//g' | grep -qE "$2"; then
+    echo -e "  ${GREEN}PASS${RESET}  Output contains '$2'"
     ((++pass))
   else
-    echo -e "  ${RED}FAIL${RESET}  $1 is not executable"
+    echo -e "  ${RED}FAIL${RESET}  Output missing '$2'"
     ((++fail))
   fi
 }
@@ -55,44 +65,22 @@ echo ""
 
 mkdir -p /workspace
 cd /workspace
-SKIP_DEVTOOLS=1 VIBESTACK_REPO="${VIBESTACK_REPO:-file:///vibestack/kit}" bash /vibestack/install.sh || true
+output=$(SKIP_DEVTOOLS=1 VIBESTACK_REPO="${VIBESTACK_REPO:-file:///vibestack/kit}" bash /vibestack/install.sh 2>&1) || true
+echo "$output"
 
 USER_DIR="$HOME/.claude"
 
 echo ""
-echo -e "${CYAN}--- Skills installed at user level ---${RESET}"
-
-for skill in vibestack todo squad docs bosskey ideate cli-first developer-environment lsp; do
-  assert_file_exists "$USER_DIR/skills/$skill/SKILL.md"
-done
-
-echo ""
-echo -e "${CYAN}--- Skill template files ---${RESET}"
-
-assert_file_exists "$USER_DIR/skills/vibestack/templates/CLAUDE.md"
-assert_file_exists "$USER_DIR/skills/vibestack/templates/Makefile"
-assert_file_contains "$USER_DIR/skills/vibestack/templates/Makefile" "help"
-
-echo ""
-echo -e "${CYAN}--- Hooks installed at user level ---${RESET}"
-
-assert_file_exists "$USER_DIR/hooks/notify-done.sh"
-assert_file_executable "$USER_DIR/hooks/notify-done.sh"
-assert_file_exists "$USER_DIR/hooks/statusline.sh"
-assert_file_executable "$USER_DIR/hooks/statusline.sh"
-
-echo ""
-echo -e "${CYAN}--- settings.json ---${RESET}"
+echo -e "${CYAN}--- settings.json was written ---${RESET}"
 
 assert_file_exists "$USER_DIR/settings.json"
 assert_file_contains "$USER_DIR/settings.json" "skipDangerousModePermissionPrompt"
 assert_file_contains "$USER_DIR/settings.json" "voiceEnabled"
 assert_file_contains "$USER_DIR/settings.json" "enabledPlugins"
 assert_file_contains "$USER_DIR/settings.json" "rust-analyzer-lsp"
-# Hooks should reference $HOME, not $CLAUDE_PROJECT_DIR
-assert_file_contains "$USER_DIR/settings.json" "\$HOME/.claude/hooks/statusline.sh"
+assert_file_contains "$USER_DIR/settings.json" "bypassPermissions"
 if grep -q "CLAUDE_PROJECT_DIR" "$USER_DIR/settings.json" 2>/dev/null; then
-  echo -e "  ${RED}FAIL${RESET}  settings.json still references \$CLAUDE_PROJECT_DIR (should be \$HOME at user level)"
+  echo -e "  ${RED}FAIL${RESET}  settings.json references \$CLAUDE_PROJECT_DIR"
   ((++fail))
 else
   echo -e "  ${GREEN}PASS${RESET}  settings.json does not reference \$CLAUDE_PROJECT_DIR"
@@ -100,35 +88,40 @@ else
 fi
 
 echo ""
+echo -e "${CYAN}--- File drops removed (plugin owns these) ---${RESET}"
+
+# These used to come from curl|bash directly. They now come from the plugin.
+assert_file_absent "$USER_DIR/skills"
+assert_file_absent "$USER_DIR/hooks"
+
+echo ""
 echo -e "${CYAN}--- Project directory remains untouched ---${RESET}"
 
-# v2 must NOT drop any project-level files
 assert_file_absent "/workspace/CLAUDE.md"
 assert_file_absent "/workspace/Makefile"
 assert_file_absent "/workspace/docs"
 assert_file_absent "/workspace/.claude"
 
 echo ""
-echo -e "${CYAN}--- Skill content sanity ---${RESET}"
+echo -e "${CYAN}--- Output messaging (Claude CLI absent in Docker) ---${RESET}"
 
-assert_file_contains "$USER_DIR/skills/vibestack/SKILL.md" "CLAUDE_SKILL_DIR"
-assert_file_contains "$USER_DIR/skills/vibestack/SKILL.md" "user_invocable: true"
-assert_file_contains "$USER_DIR/skills/cli-first/SKILL.md" "cli-first"
-assert_file_contains "$USER_DIR/skills/developer-environment/SKILL.md" "developer-environment"
-
-# ── Re-run test (idempotency) ──────────────────────────
+# In Docker, claude isn't installed and ask_yes returns true under NONINTERACTIVE=1.
+# Either: (a) the install attempt failed (curl can't reach claude.ai), and we get
+# the fallback message, OR (b) the install succeeded and plugin install ran.
+# We accept either — the script should not crash.
+assert_output_contains "$output" "Claude CLI"
 
 echo ""
 echo -e "${CYAN}--- Re-run installer (idempotency) ---${RESET}"
 
-output=$(SKIP_DEVTOOLS=1 VIBESTACK_REPO="${VIBESTACK_REPO:-file:///vibestack/kit}" bash /vibestack/install.sh 2>&1) || true
-clean_output=$(echo "$output" | sed 's/\x1b\[[0-9;]*m//g')
+output2=$(SKIP_DEVTOOLS=1 VIBESTACK_REPO="${VIBESTACK_REPO:-file:///vibestack/kit}" bash /vibestack/install.sh 2>&1) || true
+clean_output=$(echo "$output2" | sed 's/\x1b\[[0-9;]*m//g')
 
-if echo "$clean_output" | grep -qE "ok|up to date"; then
-  echo -e "  ${GREEN}PASS${RESET}  Re-run reports managed files up to date"
+if echo "$clean_output" | grep -qE "merge|Settings ready"; then
+  echo -e "  ${GREEN}PASS${RESET}  Re-run merges settings without crashing"
   ((++pass))
 else
-  echo -e "  ${RED}FAIL${RESET}  Re-run did not report managed files as up to date"
+  echo -e "  ${RED}FAIL${RESET}  Re-run did not report a successful settings merge"
   ((++fail))
 fi
 

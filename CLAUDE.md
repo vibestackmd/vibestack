@@ -2,14 +2,17 @@
 
 ## Project Overview
 
-VibeStack is a Claude Code plugin that gives AI agents project structure, skills, and conventions. It installs at the **user level** (`~/.claude/`) via `curl | bash` or `/plugin install vibestack`, so its skills and hooks apply across every project on the machine. Per-project scaffolding (CLAUDE.md, Makefile, docs/, TODO.md) is created on demand by the `/vibestack` slash command, not auto-installed.
+VibeStack is a Claude Code plugin that gives AI agents project structure, skills, and conventions. It installs at the **user level** (`~/.claude/`) via `curl | bash` (which also auto-installs the Claude CLI if missing and chain-installs declared plugin dependencies) or via `/plugin install vibestack@vibestackmd-vibestack` directly. Per-project scaffolding (CLAUDE.md, Makefile, docs/, TODO.md) is created on demand by the `/vibestack` slash command, not auto-installed.
+
+The plugin's manifest (`plugin.json`) declares **dependencies** on five official Anthropic plugins: four LSP integrations (`typescript-lsp`, `pyright-lsp`, `rust-analyzer-lsp`, `gopls-lsp`) and `frontend-design`. Cross-marketplace dependencies are allowed via `allowCrossMarketplaceDependenciesOn` in `marketplace.json`. Installing VibeStack chain-installs all five automatically.
 
 ## Tech Stack
 
 - **Site:** Next.js (in `site/`)
 - **Plugin/Kit:** Plain Markdown skills, bash hooks, JSON config (in `kit/`)
-- **Installer:** Bash (`install.sh`)
-- **Tests:** E2E bash tests, run in Docker for cross-platform coverage
+- **Installer:** Bash (`install.sh`) — detects/installs Claude CLI, drops kit files, deep-merges `~/.claude/settings.json`, runs `claude plugin install vibestack@vibestackmd-vibestack` to chain-install dependencies
+- **Plugin manifest:** Built by `scripts/build-plugin.sh` — generates `plugin.json` with `dependencies` array, rewrites `$HOME` and `$CLAUDE_PROJECT_DIR` hook paths to `${CLAUDE_PLUGIN_ROOT}` for plugin-distribution mode
+- **Tests:** E2E bash tests, run in Docker for cross-platform coverage. Note: tests run without `claude` on $PATH, so the plugin install branch is silently skipped — real validation requires running curl|bash on a real machine
 - **CI/CD:** GitHub Actions — releases triggered by version tags
 
 ## Commands
@@ -93,4 +96,6 @@ Common pitfalls:
 - Skills are plain Markdown (`SKILL.md`) — no build step
 - Installs are user-level (`~/.claude/`). Don't add per-project file drops back to `install.sh`; new project-scaffolding goes in the `/vibestack` skill instead.
 - Templates emitted by `/vibestack` live at `kit/.claude/skills/vibestack/templates/` — they are NOT this repo's own CLAUDE.md/Makefile.
+- **Settings.json merge is additive except for two clobber paths:** `skipDangerousModePermissionPrompt` and `permissions.defaultMode`. These are the framework's load-bearing opinions and overwrite existing user values. Don't add to the clobber list without strong justification.
+- **The plugin's `dependencies` field is the canonical place to declare which other plugins VibeStack assumes.** Don't add per-plugin install loops to `install.sh` — the dependencies array does it for free via chain-install.
 - The README is the single source of truth for the website

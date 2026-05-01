@@ -21,38 +21,14 @@ echo -e "${CYAN}▓▒░ VibeStack Installer${RESET}"
 echo -e "${DIM}Installing to $USER_DIR${RESET}"
 echo ""
 
-# Skills shipped to ~/.claude/skills/<name>/SKILL.md
-SKILLS=(
-  "vibestack"
-  "todo"
-  "squad"
-  "docs"
-  "bosskey"
-  "ideate"
-  "cli-first"
-  "developer-environment"
-  "lsp"
-)
-
-# Extra files shipped alongside specific skills (path relative to ~/.claude/)
-SKILL_EXTRAS=(
-  "skills/vibestack/templates/CLAUDE.md"
-  "skills/vibestack/templates/Makefile"
-)
-
-# Hooks shipped to ~/.claude/hooks/<name>.sh
-HOOKS=(
-  "notify-done.sh"
-  "statusline.sh"
-)
-
-# settings.json gets deep-merged into the user's existing file
+# Skills, hooks, and skill templates are NOT shipped by this script — they
+# come from the VibeStack Claude plugin (installed via `claude plugin install`
+# below). curl|bash only handles the things plugins can't: profile-level
+# settings.json keys, Claude CLI auto-install, and triggering the plugin install.
 SETTINGS_PATH=".claude/settings.json"
 
 installed=0
-skipped=0
 merged=0
-updated=0
 
 ask() {
   if [[ "${NONINTERACTIVE:-0}" == "1" ]]; then
@@ -74,65 +50,48 @@ ask_yes() {
   [[ ! "$choice" =~ ^[Nn]$ ]]
 }
 
-# install_managed: fetch a file from the kit and place it at a target path,
-# prompting the user if the file already exists and differs from upstream.
-install_managed() {
-  local src="$1" dest="$2"
-  local dir
-  dir=$(dirname "$dest")
+# ── Claude CLI preflight ──────────────────────────────────
+# VibeStack needs `claude` on $PATH so we can chain-install plugins on the
+# user's behalf. If it's missing, offer the official curl installer.
 
-  if [[ -f "$dest" ]]; then
-    local tmp
-    tmp=$(mktemp)
-    if curl -fsSL "$REPO/$src" -o "$tmp" 2>/dev/null; then
-      if diff -q "$dest" "$tmp" >/dev/null 2>&1; then
-        echo -e "  ${GREEN}ok${RESET}    ${dest/#$HOME/~} (up to date)"
-        rm -f "$tmp"
-        return
-      fi
-      echo -e "  ${YELLOW}update${RESET} ${dest/#$HOME/~} has upstream changes"
-      if ask_yes "         Overwrite with latest version?"; then
-        mv "$tmp" "$dest"
-        echo -e "  ${GREEN}update${RESET} ${dest/#$HOME/~}"
-        ((++updated))
+CLAUDE_AVAILABLE=false
+if command -v claude >/dev/null 2>&1; then
+  CLAUDE_AVAILABLE=true
+  echo -e "${DIM}Claude CLI detected: $(claude --version 2>/dev/null | head -1)${RESET}"
+else
+  echo -e "${YELLOW}Claude CLI not found on \$PATH.${RESET}"
+  echo "  VibeStack ships skills, hooks, and settings — but the LSP and frontend-design"
+  echo "  plugins need the Claude CLI to install. Without it, those plugins won't be set up."
+  echo ""
+  if ask_yes "  Install Claude CLI now (via official installer)?"; then
+    if curl -fsSL https://claude.ai/install.sh | bash; then
+      # The installer drops claude into ~/.local/bin or similar; pick it up
+      # for the rest of this script run.
+      for candidate in "$HOME/.local/bin" "$HOME/.claude/local/bin"; do
+        if [[ -x "$candidate/claude" ]]; then
+          export PATH="$candidate:$PATH"
+          break
+        fi
+      done
+      if command -v claude >/dev/null 2>&1; then
+        echo -e "  ${GREEN}Claude CLI installed.${RESET}"
+        CLAUDE_AVAILABLE=true
       else
-        echo -e "  ${YELLOW}skip${RESET}  ${dest/#$HOME/~} (kept existing)"
-        rm -f "$tmp"
-        ((++skipped))
+        echo -e "  ${YELLOW}Claude installer ran but \`claude\` is still not on \$PATH.${RESET}"
+        echo "  You may need to open a new shell. Plugin install will be skipped."
       fi
     else
-      echo -e "  ${YELLOW}fail${RESET}  ${dest/#$HOME/~}"
-      rm -f "$tmp"
+      echo -e "  ${YELLOW}Claude install failed. Plugin install will be skipped.${RESET}"
     fi
-    return
-  fi
-
-  mkdir -p "$dir"
-  if curl -fsSL "$REPO/$src" -o "$dest"; then
-    echo -e "  ${GREEN}add${RESET}   ${dest/#$HOME/~}"
-    ((++installed))
   else
-    echo -e "  ${YELLOW}fail${RESET}  ${dest/#$HOME/~}"
+    echo -e "  ${DIM}Skipping plugin install. You can install Claude CLI later from https://claude.ai/install.sh${RESET}"
   fi
-}
+fi
+echo ""
 
-# Install skills
-for skill in "${SKILLS[@]}"; do
-  install_managed ".claude/skills/$skill/SKILL.md" "$USER_DIR/skills/$skill/SKILL.md"
-done
-
-# Install skill extras (templates, etc.)
-for extra in "${SKILL_EXTRAS[@]}"; do
-  install_managed ".claude/$extra" "$USER_DIR/$extra"
-done
-
-# Install hooks
-for hook in "${HOOKS[@]}"; do
-  install_managed ".claude/hooks/$hook" "$USER_DIR/hooks/$hook"
-done
-chmod +x "$USER_DIR/hooks/notify-done.sh" "$USER_DIR/hooks/statusline.sh" 2>/dev/null || true
-
-# Deep-merge settings.json. Existing user values win; new keys are added.
+# Deep-merge settings.json. Existing user values win except for two clobber
+# paths (skipDangerousModePermissionPrompt and permissions.defaultMode), which
+# are the framework's load-bearing opinions and overwrite unconditionally.
 mkdir -p "$USER_DIR"
 tmp=$(mktemp)
 if ! curl -fsSL "$REPO/$SETTINGS_PATH" -o "$tmp"; then
@@ -145,6 +104,13 @@ elif [[ ! -f "$USER_DIR/settings.json" ]]; then
 else
   merged_json=$(/usr/bin/python3 -c "
 import json, sys
+
+# Paths VibeStack overrides unconditionally — these define the core opinion
+# of the framework and clobber any prior user setting after the merge.
+CLOBBER_PATHS = [
+    ('skipDangerousModePermissionPrompt',),
+    ('permissions', 'defaultMode'),
+]
 
 def deep_merge(base, incoming):
     for key, val in incoming.items():
@@ -159,12 +125,37 @@ def deep_merge(base, incoming):
         # else: keep the existing base value
     return base
 
+def get_path(d, path):
+    cur = d
+    for k in path:
+        if not isinstance(cur, dict) or k not in cur:
+            return None
+        cur = cur[k]
+    return cur
+
+def set_path(d, path, value):
+    cur = d
+    for k in path[:-1]:
+        if k not in cur or not isinstance(cur[k], dict):
+            cur[k] = {}
+        cur = cur[k]
+    cur[path[-1]] = value
+
 with open(sys.argv[1]) as f:
     existing = json.load(f)
 with open(sys.argv[2]) as f:
     incoming = json.load(f)
 
-print(json.dumps(deep_merge(existing, incoming), indent=2))
+merged = deep_merge(existing, incoming)
+
+# Apply clobbers after merge so VibeStack's load-bearing opinions win
+# regardless of what the user had before.
+for path in CLOBBER_PATHS:
+    val = get_path(incoming, path)
+    if val is not None:
+        set_path(merged, path, val)
+
+print(json.dumps(merged, indent=2))
 " "$USER_DIR/settings.json" "$tmp" 2>/dev/null)
 
   if [[ -n "$merged_json" ]]; then
@@ -178,7 +169,34 @@ print(json.dumps(deep_merge(existing, incoming), indent=2))
 fi
 
 echo ""
-echo -e "${GREEN}Done!${RESET} Added $installed, updated $updated, merged $merged, skipped $skipped."
+echo -e "${GREEN}Settings ready.${RESET} Added $installed, merged $merged."
+
+# ── Plugin install ──────────────────────────────────────
+# Install the VibeStack plugin via Claude. Its `dependencies` field chain-
+# installs the LSP plugins and frontend-design automatically. Cross-marketplace
+# resolution is allowed by marketplace.json's allowCrossMarketplaceDependenciesOn.
+# Skipped silently if claude isn't available.
+
+if $CLAUDE_AVAILABLE; then
+  echo ""
+  echo -e "${CYAN}── Installing Claude plugins ──${RESET}"
+  echo ""
+
+  # Add the VibeStack marketplace. claude-plugins-official is pre-configured,
+  # so all transitive deps (LSPs + frontend-design) resolve without extra adds.
+  if claude plugin marketplace add "vibestackmd/vibestack" >/dev/null 2>&1; then
+    echo -e "  ${GREEN}ok${RESET}    marketplace: vibestackmd/vibestack"
+  else
+    echo -e "  ${DIM}note${RESET}  marketplace: vibestackmd/vibestack (already added or failed — continuing)"
+  fi
+
+  # Install vibestack — its dependencies handle the rest.
+  if claude plugin install "vibestack@vibestackmd-vibestack" --scope user >/dev/null 2>&1; then
+    echo -e "  ${GREEN}ok${RESET}    vibestack@vibestackmd-vibestack (+ chain-installed dependencies)"
+  else
+    echo -e "  ${YELLOW}skip${RESET}  vibestack plugin install failed — run \`claude plugin install vibestack@vibestackmd-vibestack\` manually"
+  fi
+fi
 
 # ── Optional: Dev Tools Installer ───────────────────────
 
@@ -258,4 +276,12 @@ echo ""
 echo "Next steps:"
 echo "  • Open Claude Code in any project and run /vibestack to scaffold it"
 echo "  • All VibeStack skills are now available globally — no per-project install needed"
+if ! $CLAUDE_AVAILABLE; then
+  echo ""
+  echo "  ${YELLOW}Plugin install was skipped${RESET} (Claude CLI not available)."
+  echo "  Once you install Claude CLI, run these to finish setup:"
+  echo ""
+  echo "    claude plugin marketplace add vibestackmd/vibestack"
+  echo "    claude plugin install vibestack@vibestackmd-vibestack --scope user"
+fi
 echo ""

@@ -16,20 +16,25 @@
 curl -fsSL https://raw.githubusercontent.com/vibestackmd/vibestack/main/install.sh | bash
 ```
 
-Run from anywhere — VibeStack installs at the **user level** (`~/.claude/`), so its skills and hooks apply across every project on your machine. Existing values in `~/.claude/settings.json` are preserved (deep-merged, never clobbered).
+Run from anywhere. VibeStack installs at the **user level** (`~/.claude/`), so its skills and hooks apply across every project on your machine. The installer:
+
+1. **Detects the Claude CLI** and offers to install it via the official installer if missing — so you can hand this command to a friend who's never used Claude and they end up with a fully configured CLI.
+2. **Deep-merges `~/.claude/settings.json`** — your existing values are preserved. Two opinionated keys are clobbered (`permissions.defaultMode: "bypassPermissions"` and `skipDangerousModePermissionPrompt: true`) because the no-prompts experience is the whole point.
+3. **Chain-installs plugins** via `claude plugin install vibestack@vibestackmd-vibestack`. The plugin's manifest declares dependencies on the four official LSP plugins (TypeScript, Python, Rust, Go) and Anthropic's `frontend-design` — they all install automatically.
 
 Then run `/vibestack` inside any project to scaffold it.
 
 <details>
-<summary>Or install as a Claude Code plugin</summary>
+<summary>Or install via Claude plugin only (skips the curl|bash step)</summary>
 
 <br />
 
 ```
-/plugin install vibestackmd/vibestack
+/plugin marketplace add vibestackmd/vibestack
+/plugin install vibestack@vibestackmd-vibestack
 ```
 
-Lands at user level the same way as `curl | bash`.
+Same skills, hooks, and chain-installed plugins. You miss out on the opinionated profile-level settings (those need `~/.claude/settings.json` access, which only `curl | bash` can do).
 
 </details>
 
@@ -50,7 +55,11 @@ Lands at user level the same way as `curl | bash`.
   </tr>
   <tr>
     <td><code>~/.claude/settings.json</code></td>
-    <td style="padding: 8px 16px;">Opinionated defaults: skip-dangerous-mode prompt, voice on, official LSP plugins enabled</td>
+    <td style="padding: 8px 16px;">Opinionated defaults: <code>permissions.defaultMode: "bypassPermissions"</code>, no startup warning, voice on, official LSP plugins enabled</td>
+  </tr>
+  <tr>
+    <td>Chain-installed plugins</td>
+    <td style="padding: 8px 16px;">Official LSPs (<code>typescript-lsp</code>, <code>pyright-lsp</code>, <code>rust-analyzer-lsp</code>, <code>gopls-lsp</code>) and Anthropic's <code>frontend-design</code>. Declared as plugin dependencies, installed automatically by Claude on plugin install.</td>
   </tr>
 </table>
 
@@ -112,7 +121,7 @@ Plus reference skills that auto-load as context (no command needed):
 
 - `cli-first` — teaches your AI to use platform CLIs and check `.env*` files instead of making raw API calls
 - `developer-environment` — a self-populating map of what's installed on your machine (languages, runtimes, DBs, cloud CLIs) so Claude stops guessing whether tools are available
-- `lsp` — teaches your AI to use language servers (TypeScript, Python, Rust, Go) for type checking, find-references, and post-change validation. Pairs with the official `*-lsp` plugins (auto-installed when you install VibeStack via `/plugin install`)
+- `lsp` — teaches your AI to use language servers (TypeScript, Python, Rust, Go) for type checking, find-references, and post-change validation. Pairs with the official `*-lsp` plugins, which auto-install via VibeStack's plugin dependencies — no extra setup
 
 ---
 
@@ -167,7 +176,7 @@ Your project operations belong in a `Makefile`, not a bespoke shell script. `mak
 
 ### Bypass Permissions
 
-VibeStack ships with `skipDangerousModePermissionPrompt: true` and all tool permissions pre-approved. No "can I run this command?" prompts. Permission prompts kill flow and add no real safety. Code quality enforcement belongs in your CI pipeline and pre-commit hooks, not in an interactive approval flow.
+VibeStack ships with `permissions.defaultMode: "bypassPermissions"` and `skipDangerousModePermissionPrompt: true`. Every session starts in bypass mode with the entry warning suppressed. No "can I run this command?" prompts ever. Permission prompts kill flow and add no real safety. Code quality enforcement belongs in your CI pipeline and pre-commit hooks, not in an interactive approval flow. **These two keys are the only settings VibeStack overwrites unconditionally** — every other key in your existing `~/.claude/settings.json` is deep-merged.
 
 ### Squad Mode
 

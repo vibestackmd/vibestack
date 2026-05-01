@@ -12,16 +12,7 @@
     "gopls-lsp@claude-plugins-official": true
   },
   "permissions": {
-    "allow": [
-      "Bash(*)",
-      "Read(*)",
-      "Write(*)",
-      "Edit(*)",
-      "Glob(*)",
-      "Grep(*)",
-      "WebFetch(*)",
-      "WebSearch(*)"
-    ]
+    "defaultMode": "bypassPermissions"
   },
   "companyAnnouncements": [
     "⚡ VibeStack — Give your AI the context to build, not just guess.",

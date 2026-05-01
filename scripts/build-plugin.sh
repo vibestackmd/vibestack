@@ -120,7 +120,8 @@ manifest = {
         "typescript-lsp@claude-plugins-official",
         "pyright-lsp@claude-plugins-official",
         "rust-analyzer-lsp@claude-plugins-official",
-        "gopls-lsp@claude-plugins-official"
+        "gopls-lsp@claude-plugins-official",
+        "frontend-design@claude-plugins-official"
     ]
 }
 

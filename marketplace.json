@@ -16,5 +16,8 @@
   "hooks": [
     "notify-done",
     "statusline"
+  ],
+  "allowCrossMarketplaceDependenciesOn": [
+    "claude-plugins-official"
   ]
 }

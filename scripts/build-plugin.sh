@@ -26,7 +26,7 @@ rm -rf "$BUILD_DIR"
 mkdir -p "$BUILD_DIR/.claude-plugin"
 mkdir -p "$BUILD_DIR/hooks"
 
-SKILLS=(vibestack todo squad docs cli-first lsp)
+SKILLS=(vibestack todo squad docs bosskey ideate cli-first developer-environment)
 for skill in "${SKILLS[@]}"; do
   mkdir -p "$BUILD_DIR/skills/$skill"
 done
@@ -40,6 +40,12 @@ for skill in "${SKILLS[@]}"; do
   fi
   cp "$src" "$BUILD_DIR/skills/$skill/SKILL.md"
 done
+
+# Copy any sibling assets (e.g. templates/) that ship inside skill folders
+if [[ -d "$REPO_ROOT/kit/.claude/skills/vibestack/templates" ]]; then
+  cp -R "$REPO_ROOT/kit/.claude/skills/vibestack/templates" "$BUILD_DIR/skills/vibestack/"
+fi
+
 echo "  Skills: ${SKILLS[*]}"
 
 # ── Copy hooks ───────────────────────────────────────────
@@ -59,14 +65,18 @@ with open(src_path) as f:
 
 plugin = {}
 
+def rewrite_path(cmd: str) -> str:
+    # Rewrite both legacy ($CLAUDE_PROJECT_DIR) and v2 ($HOME) hook paths
+    # to the plugin-relative path so the plugin works once installed.
+    return (cmd
+            .replace("$CLAUDE_PROJECT_DIR/.claude/hooks/", "${CLAUDE_PLUGIN_ROOT}/hooks/")
+            .replace("$HOME/.claude/hooks/", "${CLAUDE_PLUGIN_ROOT}/hooks/"))
+
 # Rewrite statusLine command path
 if "statusLine" in src:
     sl = src["statusLine"].copy()
     if "command" in sl:
-        sl["command"] = sl["command"].replace(
-            "$CLAUDE_PROJECT_DIR/.claude/hooks/",
-            "${CLAUDE_PLUGIN_ROOT}/hooks/"
-        )
+        sl["command"] = rewrite_path(sl["command"])
     plugin["statusLine"] = sl
 
 # Rewrite hook command paths
@@ -81,10 +91,7 @@ if "hooks" in src:
                 for hook in h["hooks"]:
                     hk = hook.copy()
                     if "command" in hk:
-                        hk["command"] = hk["command"].replace(
-                            "$CLAUDE_PROJECT_DIR/.claude/hooks/",
-                            "${CLAUDE_PLUGIN_ROOT}/hooks/"
-                        )
+                        hk["command"] = rewrite_path(hk["command"])
                     new_hooks.append(hk)
                 h["hooks"] = new_hooks
             rewritten.append(h)
@@ -106,7 +113,7 @@ dest_path, version = sys.argv[1], sys.argv[2]
 manifest = {
     "name": "vibestack",
     "version": version,
-    "description": "Opinionated project structure, skills, and tooling for AI-assisted development.",
+    "description": "Opinionated user-level skills, hooks, and settings for AI-assisted development.",
     "author": "vibestackmd",
     "repository": "https://github.com/vibestackmd/vibestack"
 }
@@ -133,6 +140,12 @@ for skill in "${SKILLS[@]}"; do
   EXPECTED_FILES+=("skills/$skill/SKILL.md")
 done
 
+# vibestack ships starter templates inside its skill folder
+EXPECTED_FILES+=(
+  "skills/vibestack/templates/CLAUDE.md"
+  "skills/vibestack/templates/Makefile"
+)
+
 for f in "${EXPECTED_FILES[@]}"; do
   if [[ ! -f "$BUILD_DIR/$f" ]]; then
     echo -e "  ${RED}MISSING: $f${RESET}"
@@ -140,10 +153,10 @@ for f in "${EXPECTED_FILES[@]}"; do
   fi
 done
 
-# Verify no CLAUDE_PROJECT_DIR references leaked into plugin
-if grep -r 'CLAUDE_PROJECT_DIR' "$BUILD_DIR/" >/dev/null 2>&1; then
-  echo -e "  ${RED}ERROR: Found unrewritten \$CLAUDE_PROJECT_DIR references${RESET}"
-  grep -rl 'CLAUDE_PROJECT_DIR' "$BUILD_DIR/"
+# Verify no unrewritten host paths leaked into the plugin's settings.json
+if grep -E '\$CLAUDE_PROJECT_DIR|\$HOME/\.claude/hooks/' "$BUILD_DIR/settings.json" >/dev/null 2>&1; then
+  echo -e "  ${RED}ERROR: Found unrewritten host path references in settings.json${RESET}"
+  grep -nE '\$CLAUDE_PROJECT_DIR|\$HOME/\.claude/hooks/' "$BUILD_DIR/settings.json"
   ERRORS=$((ERRORS + 1))
 fi
 

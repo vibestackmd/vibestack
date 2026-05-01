@@ -38,7 +38,7 @@ echo ""
 echo -e "${CYAN}--- Running dev-tools installer ---${RESET}"
 
 export NONINTERACTIVE="${NONINTERACTIVE:-1}"
-bash /vibestack/kit/extras/dev-tools/install.sh || true
+bash /vibestack/extras/dev-tools/install.sh || true
 
 echo ""
 echo -e "${CYAN}--- Checking WSL-specific results ---${RESET}"

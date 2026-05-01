@@ -3,7 +3,7 @@ MAJOR   := $(word 1,$(subst ., ,$(VERSION)))
 MINOR   := $(word 2,$(subst ., ,$(VERSION)))
 PATCH   := $(word 3,$(subst ., ,$(VERSION)))
 
-.PHONY: help dev build deploy plugin release-patch release-minor release-major test test-quick test-ubuntu test-wsl clean
+.PHONY: help dev build deploy plugin release-patch release-minor release-major test test-quick test-ubuntu test-wsl test-local-marketplace clean
 
 help: ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-16s\033[0m %s\n", $$1, $$2}'
@@ -58,9 +58,9 @@ define do-release
 	@chmod +x tests/e2e/run.sh && ./tests/e2e/run.sh preinstalled
 	@echo ""
 	@echo "$(1)" > VERSION
-	@git add VERSION
-	@git commit -m "release v$(1)"
 	@./scripts/build-plugin.sh $(1)
+	@git add VERSION .claude-plugin/plugin.json .claude-plugin/marketplace.json
+	@git commit -m "release v$(1)"
 	@git tag v$(1)
 	@git push origin main v$(1)
 	@echo ""
@@ -79,6 +79,9 @@ test-ubuntu: ## Run full Ubuntu install test (Docker)
 
 test-wsl: ## Run WSL simulation test (Docker)
 	chmod +x tests/e2e/run.sh && ./tests/e2e/run.sh wsl
+
+test-local-marketplace: plugin ## Run E2E plugin install test against locally-built marketplace
+	chmod +x tests/e2e/run.sh && ./tests/e2e/run.sh local-marketplace
 
 # ── Misc ─────────────────────────────────────────────────
 

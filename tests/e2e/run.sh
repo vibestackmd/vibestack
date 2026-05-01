@@ -10,10 +10,15 @@
 #   ./tests/e2e/run.sh ubuntu       # Run a single suite
 #   ./tests/e2e/run.sh --quick      # Run only fast tests (main installer only)
 #
-# Suites: ubuntu, wsl, preinstalled
+# Suites: ubuntu, wsl, preinstalled, local-marketplace
 #
 # The "ubuntu" suite runs both the main installer and dev-tools installer
 # (installs real tools — takes ~5 min). Other suites are faster.
+#
+# The "local-marketplace" suite installs the real Claude CLI in the image and
+# runs install.sh against a locally-built marketplace at dist/test-marketplace
+# — this is the only suite that exercises the full plugin-install flow against
+# the about-to-ship plugin. Requires `make plugin` first.
 #
 # Requires: Docker
 
@@ -58,6 +63,8 @@ if [[ ${#SUITES[@]} -eq 0 ]]; then
   if $QUICK; then
     SUITES=("preinstalled")
   else
+    # local-marketplace is opt-in (requires `make plugin` first and pulls
+    # the real Claude CLI), so it's not in the default set.
     SUITES=("ubuntu" "wsl" "preinstalled")
   fi
 fi
@@ -80,6 +87,13 @@ trap cleanup EXIT
 build_image() {
   local name="$1"
   local dockerfile="$2"
+  # Skip rebuild if the image is already loaded — lets CI pre-build via
+  # docker/build-push-action with GHA cache and have run.sh reuse the result.
+  # Local devs still get a fresh build on first run.
+  if docker image inspect "${IMAGE_PREFIX}-${name}" >/dev/null 2>&1; then
+    echo -e "${CYAN}Image ${name} already loaded — skipping build${RESET}"
+    return
+  fi
   echo -e "${CYAN}Building ${name}...${RESET}"
   docker build -t "${IMAGE_PREFIX}-${name}" -f "$dockerfile" "$SCRIPT_DIR" --quiet
 }
@@ -121,9 +135,10 @@ for suite in "${SUITES[@]}"; do
     ubuntu) images_needed+=("ubuntu") ;;
     wsl) images_needed+=("wsl") ;;
     preinstalled) images_needed+=("preinstalled") ;;
+    local-marketplace) images_needed+=("local-marketplace") ;;
     *)
       echo -e "${RED}Unknown suite: $suite${RESET}"
-      echo "Available: ubuntu, wsl, preinstalled"
+      echo "Available: ubuntu, wsl, preinstalled, local-marketplace"
       exit 1
       ;;
   esac
@@ -156,6 +171,18 @@ for suite in "${SUITES[@]}"; do
     preinstalled)
       # Pre-installed tools — tests skip/idempotency behavior
       run_test "preinstalled" "preinstalled" "test-preinstalled.sh" || true
+      ;;
+    local-marketplace)
+      # Real Claude CLI + locally-built marketplace — validates the full
+      # `claude plugin install` flow against the about-to-ship plugin.
+      # Requires `make plugin` to have run on the host (consumes
+      # dist/test-marketplace from the bind-mounted repo).
+      if [[ ! -f "$REPO_DIR/dist/test-marketplace/.claude-plugin/marketplace.json" ]]; then
+        echo -e "${YELLOW}Skipping local-marketplace: dist/test-marketplace missing — run 'make plugin' first.${RESET}"
+        suite_results+=("${YELLOW}SKIP${RESET}  local-marketplace (run 'make plugin' first)")
+      else
+        run_test "local-marketplace" "local-marketplace" "test-local-marketplace.sh" || true
+      fi
       ;;
   esac
 done

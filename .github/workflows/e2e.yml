@@ -1,43 +1,96 @@
 name: E2E Tests
 
+# Fast suites that run on every push/PR touching anything plugin-related.
+# The slow dev-tools suite lives in e2e-devtools.yml — gated on extras/dev-tools/**
+# so it doesn't tax every PR.
+#
+# Each job pre-builds its Docker image via docker/build-push-action with GHA
+# layer cache. tests/e2e/run.sh sees the loaded image and skips rebuild.
+
 on:
   push:
     branches: [main]
     paths:
       - "install.sh"
-      - "kit/**"
-      - "tests/**"
+      - ".claude-plugin/**"
+      - "skills/**"
+      - "hooks/**"
+      - "settings.json"
+      - "user.settings.json"
+      - "scripts/build-plugin.sh"
+      - "tests/e2e/Dockerfile.preinstalled"
+      - "tests/e2e/Dockerfile.ubuntu"
+      - "tests/e2e/Dockerfile.wsl"
+      - "tests/e2e/Dockerfile.local-marketplace"
+      - "tests/e2e/run.sh"
+      - "tests/e2e/test-main-install.sh"
+      - "tests/e2e/test-preinstalled.sh"
+      - "tests/e2e/test-wsl*.sh"
+      - "tests/e2e/test-local-marketplace.sh"
       - ".github/workflows/e2e.yml"
   pull_request:
     paths:
       - "install.sh"
-      - "kit/**"
-      - "tests/**"
+      - ".claude-plugin/**"
+      - "skills/**"
+      - "hooks/**"
+      - "settings.json"
+      - "user.settings.json"
+      - "scripts/build-plugin.sh"
+      - "tests/e2e/Dockerfile.preinstalled"
+      - "tests/e2e/Dockerfile.ubuntu"
+      - "tests/e2e/Dockerfile.wsl"
+      - "tests/e2e/Dockerfile.local-marketplace"
+      - "tests/e2e/run.sh"
+      - "tests/e2e/test-main-install.sh"
+      - "tests/e2e/test-preinstalled.sh"
+      - "tests/e2e/test-wsl*.sh"
+      - "tests/e2e/test-local-marketplace.sh"
       - ".github/workflows/e2e.yml"
   workflow_dispatch:
 
 jobs:
   e2e-quick:
-    name: "Quick (main installer + skip behavior)"
+    name: "Quick (preinstalled — settings merge)"
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
-      - name: Run quick tests
+      - uses: docker/setup-buildx-action@v3
+      - name: Build preinstalled image (cached)
+        uses: docker/build-push-action@v5
+        with:
+          context: tests/e2e
+          file: tests/e2e/Dockerfile.preinstalled
+          tags: vibestack-e2e-preinstalled
+          load: true
+          cache-from: type=gha,scope=preinstalled
+          cache-to: type=gha,mode=max,scope=preinstalled
+      - name: Run preinstalled suite
         run: |
           chmod +x tests/e2e/run.sh
           ./tests/e2e/run.sh preinstalled
 
-  e2e-ubuntu:
-    name: "Ubuntu (full install)"
+  e2e-ubuntu-main:
+    name: "Ubuntu (main installer only — no dev-tools)"
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
-      - name: Run Ubuntu main installer test
+      - uses: docker/setup-buildx-action@v3
+      - name: Build ubuntu image (cached)
+        uses: docker/build-push-action@v5
+        with:
+          context: tests/e2e
+          file: tests/e2e/Dockerfile.ubuntu
+          tags: vibestack-e2e-ubuntu
+          load: true
+          cache-from: type=gha,scope=ubuntu
+          cache-to: type=gha,mode=max,scope=ubuntu
+      - name: Run ubuntu suite (skip dev-tools via --quick)
         run: |
           chmod +x tests/e2e/run.sh
-          ./tests/e2e/run.sh ubuntu
+          ./tests/e2e/run.sh --quick ubuntu
 
   e2e-wsl:
     name: "WSL simulation"
@@ -45,7 +98,40 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
-      - name: Run WSL test
+      - uses: docker/setup-buildx-action@v3
+      - name: Build wsl image (cached)
+        uses: docker/build-push-action@v5
+        with:
+          context: tests/e2e
+          file: tests/e2e/Dockerfile.wsl
+          tags: vibestack-e2e-wsl
+          load: true
+          cache-from: type=gha,scope=wsl
+          cache-to: type=gha,mode=max,scope=wsl
+      - name: Run wsl suite
         run: |
           chmod +x tests/e2e/run.sh
           ./tests/e2e/run.sh wsl
+
+  e2e-local-marketplace:
+    name: "Local marketplace (real Claude CLI + about-to-ship plugin)"
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - name: Build local-marketplace image (cached — heavy: Node + Claude CLI)
+        uses: docker/build-push-action@v5
+        with:
+          context: tests/e2e
+          file: tests/e2e/Dockerfile.local-marketplace
+          tags: vibestack-e2e-local-marketplace
+          load: true
+          cache-from: type=gha,scope=local-marketplace
+          cache-to: type=gha,mode=max,scope=local-marketplace
+      - name: Build plugin + test marketplace
+        run: make plugin
+      - name: Run local-marketplace suite
+        run: |
+          chmod +x tests/e2e/run.sh
+          ./tests/e2e/run.sh local-marketplace

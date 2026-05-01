@@ -61,7 +61,7 @@ echo -e "${CYAN}=== Test: Dev Tools Installer (Ubuntu) ===${RESET}"
 echo ""
 
 # Run the dev-tools installer
-bash /vibestack/kit/extras/dev-tools/install.sh || true
+bash /vibestack/extras/dev-tools/install.sh || true
 
 echo ""
 echo -e "${CYAN}--- Checking installed tools ---${RESET}"
@@ -154,7 +154,7 @@ echo ""
 echo -e "${CYAN}--- Re-run test (idempotency) ---${RESET}"
 
 # Run again — everything should report "already installed"
-output=$(bash /vibestack/kit/extras/dev-tools/install.sh 2>&1) || true
+output=$(bash /vibestack/extras/dev-tools/install.sh 2>&1) || true
 
 already_count=$(echo "$output" | sed 's/\x1b\[[0-9;]*m//g' | grep -ciE "already installed|already set|already configured|already exists" || true)
 if [[ $already_count -ge 5 ]]; then

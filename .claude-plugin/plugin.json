@@ -1,0 +1,16 @@
+{
+  "name": "vibestack",
+  "version": "1.0.1",
+  "description": "Opinionated user-level skills, hooks, and settings for AI-assisted development.",
+  "author": {
+    "name": "vibestackmd"
+  },
+  "repository": "https://github.com/vibestackmd/vibestack",
+  "dependencies": [
+    "typescript-lsp@claude-plugins-official",
+    "pyright-lsp@claude-plugins-official",
+    "rust-analyzer-lsp@claude-plugins-official",
+    "gopls-lsp@claude-plugins-official",
+    "frontend-design@claude-plugins-official"
+  ]
+}

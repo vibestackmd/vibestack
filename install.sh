@@ -8,7 +8,7 @@
 
 set -euo pipefail
 
-REPO="${VIBESTACK_REPO:-https://raw.githubusercontent.com/vibestackmd/vibestack/main/kit}"
+REPO="${VIBESTACK_REPO:-https://raw.githubusercontent.com/vibestackmd/vibestack/main}"
 USER_DIR="$HOME/.claude"
 
 CYAN="\033[0;36m"
@@ -21,11 +21,13 @@ echo -e "${CYAN}▓▒░ VibeStack Installer${RESET}"
 echo -e "${DIM}Installing to $USER_DIR${RESET}"
 echo ""
 
-# Skills, hooks, and skill templates are NOT shipped by this script — they
-# come from the VibeStack Claude plugin (installed via `claude plugin install`
-# below). curl|bash only handles the things plugins can't: profile-level
-# settings.json keys, Claude CLI auto-install, and triggering the plugin install.
-SETTINGS_PATH=".claude/settings.json"
+# Skills, hooks, and the plugin's own settings.json all come from the VibeStack
+# Claude plugin (installed via `claude plugin install` below). curl|bash only
+# handles the things plugins can't: user-level settings.json keys (defaultMode,
+# enabledPlugins, voiceEnabled, companyAnnouncements...), Claude CLI auto-install,
+# and triggering the plugin install. The user-level keys live in user.settings.json
+# at the repo root — separate from the plugin's hook/statusLine settings.json.
+SETTINGS_PATH="user.settings.json"
 
 installed=0
 merged=0
@@ -182,16 +184,37 @@ if $CLAUDE_AVAILABLE; then
   echo -e "${CYAN}── Installing Claude plugins ──${RESET}"
   echo ""
 
-  # Add the VibeStack marketplace. claude-plugins-official is pre-configured,
-  # so all transitive deps (LSPs + frontend-design) resolve without extra adds.
-  if claude plugin marketplace add "vibestackmd/vibestack" >/dev/null 2>&1; then
-    echo -e "  ${GREEN}ok${RESET}    marketplace: vibestackmd/vibestack"
+  # Marketplace ref. Defaults to the published GitHub repo; tests override this
+  # to a local-path marketplace built by `make plugin` (see dist/test-marketplace/).
+  MARKETPLACE_REF="${VIBESTACK_MARKETPLACE:-vibestackmd/vibestack}"
+
+  # Set VIBESTACK_DEBUG=1 to surface stderr from claude commands. Default is
+  # quiet so re-runs (where the marketplace is already added) don't look noisy.
+  if [[ "${VIBESTACK_DEBUG:-0}" == "1" ]]; then
+    redirect=""
   else
-    echo -e "  ${DIM}note${RESET}  marketplace: vibestackmd/vibestack (already added or failed — continuing)"
+    redirect=">/dev/null 2>&1"
+  fi
+
+  # Add claude-plugins-official first — it serves the LSP + frontend-design
+  # plugins that VibeStack declares as cross-marketplace dependencies. Fresh
+  # Claude installs have no marketplaces configured, so this must be explicit.
+  if eval "claude plugin marketplace add anthropics/claude-plugins-official $redirect"; then
+    echo -e "  ${GREEN}ok${RESET}    marketplace: anthropics/claude-plugins-official"
+  else
+    echo -e "  ${DIM}note${RESET}  marketplace: anthropics/claude-plugins-official (already added or failed — continuing)"
+  fi
+
+  # Then add the VibeStack marketplace. allowCrossMarketplaceDependenciesOn in
+  # our marketplace.json permits depending on claude-plugins-official.
+  if eval "claude plugin marketplace add \"$MARKETPLACE_REF\" $redirect"; then
+    echo -e "  ${GREEN}ok${RESET}    marketplace: $MARKETPLACE_REF"
+  else
+    echo -e "  ${DIM}note${RESET}  marketplace: $MARKETPLACE_REF (already added or failed — continuing)"
   fi
 
   # Install vibestack — its dependencies handle the rest.
-  if claude plugin install "vibestack@vibestackmd-vibestack" --scope user >/dev/null 2>&1; then
+  if eval "claude plugin install \"vibestack@vibestackmd-vibestack\" --scope user $redirect"; then
     echo -e "  ${GREEN}ok${RESET}    vibestack@vibestackmd-vibestack (+ chain-installed dependencies)"
   else
     echo -e "  ${YELLOW}skip${RESET}  vibestack plugin install failed — run \`claude plugin install vibestack@vibestackmd-vibestack\` manually"
@@ -200,7 +223,7 @@ fi
 
 # ── Optional: Dev Tools Installer ───────────────────────
 
-DEV_TOOLS_REPO="https://raw.githubusercontent.com/vibestackmd/vibestack/main/kit/extras/dev-tools"
+DEV_TOOLS_REPO="https://raw.githubusercontent.com/vibestackmd/vibestack/main/extras/dev-tools"
 
 is_windows_native=false
 is_wsl=false

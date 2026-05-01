@@ -65,7 +65,7 @@ echo ""
 
 mkdir -p /workspace
 cd /workspace
-output=$(SKIP_DEVTOOLS=1 VIBESTACK_REPO="${VIBESTACK_REPO:-file:///vibestack/kit}" bash /vibestack/install.sh 2>&1) || true
+output=$(SKIP_DEVTOOLS=1 VIBESTACK_REPO="${VIBESTACK_REPO:-file:///vibestack}" bash /vibestack/install.sh 2>&1) || true
 echo "$output"
 
 USER_DIR="$HOME/.claude"
@@ -114,7 +114,7 @@ assert_output_contains "$output" "Claude CLI"
 echo ""
 echo -e "${CYAN}--- Re-run installer (idempotency) ---${RESET}"
 
-output2=$(SKIP_DEVTOOLS=1 VIBESTACK_REPO="${VIBESTACK_REPO:-file:///vibestack/kit}" bash /vibestack/install.sh 2>&1) || true
+output2=$(SKIP_DEVTOOLS=1 VIBESTACK_REPO="${VIBESTACK_REPO:-file:///vibestack}" bash /vibestack/install.sh 2>&1) || true
 clean_output=$(echo "$output2" | sed 's/\x1b\[[0-9;]*m//g')
 
 if echo "$clean_output" | grep -qE "merge|Settings ready"; then

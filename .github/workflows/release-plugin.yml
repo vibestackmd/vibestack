@@ -54,46 +54,13 @@ jobs:
             ### Install
 
             ```
-            /plugin install vibestackmd/vibestack
+            /plugin marketplace add vibestackmd/vibestack
+            /plugin install vibestack@vibestackmd-vibestack
             ```
 
-            Or download the tarball and extract to `~/.claude/plugins/vibestack/`.
+            Or download the tarball below and extract to `~/.claude/plugins/vibestack/`.
 
             ### What's included
 
-            **Skills:** `/vibestack`, `/todo`, `/squad`, `/docs`, `cli-first` (ref), `lsp` (ref)
+            **Skills:** `/vibestack`, `/todo`, `/squad`, `/docs`, `/bosskey`, `/ideate`, `cli-first`, `developer-environment`, `lsp`
             **Hooks:** finish notification (audio chime), status line
-
-      - name: Update marketplace.json on main
-        run: |
-          VERSION="${{ steps.version.outputs.version }}"
-          TARBALL_URL="https://github.com/vibestackmd/vibestack/releases/download/v${VERSION}/vibestack-plugin-${VERSION}.tar.gz"
-
-          python3 -c "
-          import json
-          marketplace = {
-              'name': 'vibestack',
-              'version': '${VERSION}',
-              'description': 'Opinionated project structure, skills, and tooling for AI-assisted development.',
-              'author': 'vibestackmd',
-              'repository': 'https://github.com/vibestackmd/vibestack',
-              'download': '${TARBALL_URL}',
-              'skills': ['vibestack', 'todo', 'squad', 'docs', 'cli-first', 'lsp'],
-              'hooks': ['notify-done', 'statusline']
-          }
-          with open('marketplace.json', 'w') as f:
-              json.dump(marketplace, f, indent=2)
-              f.write('\n')
-          "
-
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git fetch origin main
-          git checkout main
-          git add marketplace.json
-          if git diff --cached --quiet; then
-            echo "marketplace.json unchanged"
-          else
-            git commit -m "chore: update marketplace.json for v${VERSION}"
-            git push origin main
-          fi

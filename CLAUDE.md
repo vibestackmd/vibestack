@@ -9,11 +9,11 @@ The plugin's manifest (`plugin.json`) declares **dependencies** on five official
 ## Tech Stack
 
 - **Site:** Next.js (in `site/`)
-- **Plugin/Kit:** Plain Markdown skills, bash hooks, JSON config (in `kit/`)
-- **Installer:** Bash (`install.sh`) — detects/installs Claude CLI, drops kit files, deep-merges `~/.claude/settings.json`, runs `claude plugin install vibestack@vibestackmd-vibestack` to chain-install dependencies
-- **Plugin manifest:** Built by `scripts/build-plugin.sh` — generates `plugin.json` with `dependencies` array, rewrites `$HOME` and `$CLAUDE_PROJECT_DIR` hook paths to `${CLAUDE_PLUGIN_ROOT}` for plugin-distribution mode
-- **Tests:** E2E bash tests, run in Docker for cross-platform coverage. Note: tests run without `claude` on $PATH, so the plugin install branch is silently skipped — real validation requires running curl|bash on a real machine
-- **CI/CD:** GitHub Actions — releases triggered by version tags
+- **Plugin:** The repo root **is** the plugin root. `.claude-plugin/{plugin,marketplace}.json`, `skills/`, `hooks/`, and the plugin's `settings.json` all live at root. `claude plugin marketplace add vibestackmd/vibestack` clones the repo and finds everything in place.
+- **Installer:** Bash (`install.sh`) — detects/installs Claude CLI, deep-merges `user.settings.json` into `~/.claude/settings.json` (user-level keys only — voiceEnabled, enabledPlugins, defaultMode, etc), then `claude plugin marketplace add anthropics/claude-plugins-official` + `vibestackmd/vibestack` and `claude plugin install vibestack@vibestackmd-vibestack`
+- **Build:** `scripts/build-plugin.sh` syncs VERSION → `.claude-plugin/{plugin,marketplace}.json`, validates the plugin tree, and emits two artifacts: `dist/vibestack-plugin-X.Y.Z.tar.gz` (release asset) and `dist/test-marketplace/` (used by `make test-local-marketplace`).
+- **Tests:** E2E bash tests, run in Docker. Three suites: `preinstalled` (settings merge), `ubuntu` (full installer + dev-tools), `local-marketplace` (real Claude CLI installs the about-to-ship plugin from a local marketplace).
+- **CI/CD:** GitHub Actions — releases triggered by version tags. The `release-plugin.yml` workflow only builds the tarball + publishes the GitHub Release; manifests are committed in-tree so there's no post-release rewrite step.
 
 ## Commands
 
@@ -24,32 +24,35 @@ make help            # Show all commands
 make dev             # Run site dev server
 make build           # Build site
 make deploy          # Build and deploy site to Vercel
-make plugin          # Build Claude Code plugin to dist/
-make release-patch   # Bump patch version, tag, and push
-make release-minor   # Bump minor version, tag, and push
-make release-major   # Bump major version, tag, and push
-make test            # Quick E2E tests
-make test-ubuntu     # Full Ubuntu install test (Docker)
-make test-wsl        # WSL simulation test (Docker)
-make clean           # Remove build artifacts
+make plugin                    # Sync manifests, validate, build tarball + test marketplace
+make release-patch             # Bump patch version, tag, and push
+make release-minor             # Bump minor version, tag, and push
+make release-major             # Bump major version, tag, and push
+make test                      # Quick E2E tests (preinstalled suite)
+make test-ubuntu               # Full Ubuntu install test (Docker)
+make test-wsl                  # WSL simulation test (Docker)
+make test-local-marketplace    # Real Claude CLI + locally-built plugin (E2E)
+make clean                     # Remove build artifacts
 ```
 
 ## Project Structure
 
 ```
-install.sh              # Main installer (curl | bash entry point) — installs to ~/.claude/
-kit/                    # Files shipped to ~/.claude/ at install time
-  .claude/skills/       # Skills (vibestack, todo, squad, docs, bosskey, ideate, cli-first, developer-environment, lsp)
-    vibestack/templates/  # Template files (CLAUDE.md, Makefile) emitted by /vibestack
-  .claude/hooks/        # Hooks (notify-done, statusline)
-  .claude/settings.json # Default user-level settings template (deep-merged on install)
-  docs/                 # Documentation templates
-  extras/               # Optional add-ons (dev-tools installer, ci-guards)
-site/                   # Website (Next.js, deployed to vibestack.md)
-tests/e2e/              # End-to-end install tests
-scripts/                # Build scripts
-VERSION                 # Single source of truth for plugin version
-Makefile                # All developer commands
+install.sh                # curl | bash entry point — drops user.settings.json + chain-installs the plugin
+.claude-plugin/
+  plugin.json             # Plugin manifest (name, version, deps). Committed; version synced by build script.
+  marketplace.json        # Marketplace manifest (owner, plugins[], cross-mkt allowlist). Committed.
+skills/                   # Plugin-shipped skills (vibestack, todo, squad, docs, bosskey, ideate, cli-first, developer-environment, lsp)
+  vibestack/templates/    # CLAUDE.md + Makefile emitted by the /vibestack skill
+hooks/                    # Plugin hooks (notify-done, statusline) — paths in settings.json reference ${CLAUDE_PLUGIN_ROOT}
+settings.json             # Plugin's settings.json (statusLine + Stop hook). Read by Claude after install.
+user.settings.json        # User-level settings template (voiceEnabled, enabledPlugins, defaultMode, etc) — fetched by install.sh and deep-merged into ~/.claude/settings.json
+extras/                   # Optional add-ons (dev-tools installer, ci-guards) — separate from the plugin
+site/                     # Website (Next.js, deployed to vibestack.md)
+tests/e2e/                # End-to-end install tests (Docker)
+scripts/build-plugin.sh   # Syncs VERSION into manifests, validates, builds tarball + test-marketplace
+VERSION                   # Single source of truth for plugin version
+Makefile                  # All developer commands
 ```
 
 ## Releasing
@@ -95,7 +98,9 @@ Common pitfalls:
 - Keep the installer idempotent and safe to re-run
 - Skills are plain Markdown (`SKILL.md`) — no build step
 - Installs are user-level (`~/.claude/`). Don't add per-project file drops back to `install.sh`; new project-scaffolding goes in the `/vibestack` skill instead.
-- Templates emitted by `/vibestack` live at `kit/.claude/skills/vibestack/templates/` — they are NOT this repo's own CLAUDE.md/Makefile.
-- **Settings.json merge is additive except for two clobber paths:** `skipDangerousModePermissionPrompt` and `permissions.defaultMode`. These are the framework's load-bearing opinions and overwrite existing user values. Don't add to the clobber list without strong justification.
-- **The plugin's `dependencies` field is the canonical place to declare which other plugins VibeStack assumes.** Don't add per-plugin install loops to `install.sh` — the dependencies array does it for free via chain-install.
+- Templates emitted by `/vibestack` live at `skills/vibestack/templates/` — they are NOT this repo's own CLAUDE.md/Makefile.
+- **`user.settings.json` carries user-level keys ONLY** (no statusLine, no hooks). Plugin-level statusLine/hooks live in the plugin's own `settings.json` at repo root, with paths referencing `${CLAUDE_PLUGIN_ROOT}`.
+- **Settings merge is additive except for two clobber paths:** `skipDangerousModePermissionPrompt` and `permissions.defaultMode`. These are the framework's load-bearing opinions and overwrite existing user values. Don't add to the clobber list without strong justification.
+- **The plugin's `dependencies` field is the canonical place to declare which other plugins VibeStack assumes.** Don't add per-plugin install loops to `install.sh` — the dependencies array does it for free via chain-install. `install.sh` does explicitly add `anthropics/claude-plugins-official` first because fresh Claude installs have no marketplaces configured.
+- **Manifests (`plugin.json`, `marketplace.json`) are committed in-tree.** `make plugin` syncs the version field from VERSION before each release. CI does not rewrite them post-release.
 - The README is the single source of truth for the website

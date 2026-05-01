@@ -132,7 +132,7 @@ Plus reference skills that auto-load as context (no command needed):
 Reusable GitHub Actions workflows: lint, test coverage, security scans, code smell checks on every PR. Supports Node/TypeScript, Python, Rust, and Go.
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/vibestackmd/vibestack/main/kit/extras/ci-guards/install.sh | bash -s -- <language>
+curl -fsSL https://raw.githubusercontent.com/vibestackmd/vibestack/main/extras/ci-guards/install.sh | bash -s -- <language>
 ```
 
 ### Dev Tools Installer
@@ -142,14 +142,14 @@ One-pass installer for platform CLIs (aws, vercel, etc.) — giving your AI agen
 **macOS / Linux / WSL:**
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/vibestackmd/vibestack/main/kit/extras/dev-tools/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/vibestackmd/vibestack/main/extras/dev-tools/install.sh | bash
 ```
 
 **Windows:** Run the bootstrap script first to set up WSL + Ubuntu:
 
 ```powershell
 # PowerShell (as Administrator)
-Invoke-RestMethod "https://raw.githubusercontent.com/vibestackmd/vibestack/main/kit/extras/dev-tools/bootstrap-windows.ps1" | Set-Content "$env:TEMP\bootstrap-windows.ps1"; powershell -ExecutionPolicy Bypass -File "$env:TEMP\bootstrap-windows.ps1"
+Invoke-RestMethod "https://raw.githubusercontent.com/vibestackmd/vibestack/main/extras/dev-tools/bootstrap-windows.ps1" | Set-Content "$env:TEMP\bootstrap-windows.ps1"; powershell -ExecutionPolicy Bypass -File "$env:TEMP\bootstrap-windows.ps1"
 ```
 
 ### The `claw` Alias

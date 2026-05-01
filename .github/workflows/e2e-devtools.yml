@@ -1,0 +1,55 @@
+name: E2E Dev-Tools
+
+# Slow suite (~5 min): runs the real dev-tools installer (Node, AWS, Vercel,
+# Stripe, GH CLI, Rust, ...) inside a fresh Ubuntu container. Path-filtered so
+# it only fires when dev-tools code or its workflow changes — most PRs skip it.
+# Also runs on a weekly cron so we catch upstream installer breakage even when
+# nobody touches our code (an external 404 / signature change in NVM, AWS,
+# rustup, etc would otherwise go unnoticed until someone tried to install).
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "extras/dev-tools/**"
+      - "tests/e2e/test-dev-tools.sh"
+      - "tests/e2e/test-wsl*.sh"
+      - "tests/e2e/Dockerfile.ubuntu"
+      - "tests/e2e/Dockerfile.wsl"
+      - "tests/e2e/run.sh"
+      - ".github/workflows/e2e-devtools.yml"
+  pull_request:
+    paths:
+      - "extras/dev-tools/**"
+      - "tests/e2e/test-dev-tools.sh"
+      - "tests/e2e/test-wsl*.sh"
+      - "tests/e2e/Dockerfile.ubuntu"
+      - "tests/e2e/Dockerfile.wsl"
+      - "tests/e2e/run.sh"
+      - ".github/workflows/e2e-devtools.yml"
+  schedule:
+    # Mondays at 06:00 UTC — catches upstream installer drift in dev-tools deps
+    - cron: "0 6 * * 1"
+  workflow_dispatch:
+
+jobs:
+  e2e-devtools:
+    name: "Dev-tools installer (Ubuntu, ~5 min)"
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - name: Build ubuntu image (cached)
+        uses: docker/build-push-action@v5
+        with:
+          context: tests/e2e
+          file: tests/e2e/Dockerfile.ubuntu
+          tags: vibestack-e2e-ubuntu
+          load: true
+          cache-from: type=gha,scope=ubuntu
+          cache-to: type=gha,mode=max,scope=ubuntu
+      - name: Run full Ubuntu suite (main installer + dev-tools)
+        run: |
+          chmod +x tests/e2e/run.sh
+          ./tests/e2e/run.sh ubuntu

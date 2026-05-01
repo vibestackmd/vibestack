@@ -48,7 +48,7 @@ echo -e "${CYAN}--- Running v2 installer ---${RESET}"
 
 mkdir -p /workspace
 cd /workspace
-output=$(SKIP_DEVTOOLS=1 VIBESTACK_REPO="${VIBESTACK_REPO:-file:///vibestack/kit}" bash /vibestack/install.sh 2>&1) || true
+output=$(SKIP_DEVTOOLS=1 VIBESTACK_REPO="${VIBESTACK_REPO:-file:///vibestack}" bash /vibestack/install.sh 2>&1) || true
 echo "$output"
 
 echo ""
@@ -62,22 +62,13 @@ assert_json_value "$USER_DIR/settings.json" "voiceEnabled" "False"
 echo ""
 echo -e "${CYAN}--- VibeStack values added where absent ---${RESET}"
 
-# These keys weren't in the user's pre-existing file, so they should now be present
+# These keys weren't in the user's pre-existing file, so they should now be present.
+# Note: statusLine + Stop hook are owned by the plugin's settings.json (under
+# ${CLAUDE_PLUGIN_ROOT}), not the user-level settings.json — so they're not
+# expected here. user.settings.json carries only user-level keys.
 assert_file_contains "$USER_DIR/settings.json" "skipDangerousModePermissionPrompt"
 assert_file_contains "$USER_DIR/settings.json" "enabledPlugins"
 assert_file_contains "$USER_DIR/settings.json" "rust-analyzer-lsp"
-assert_file_contains "$USER_DIR/settings.json" "statusLine"
-
-echo ""
-echo -e "${CYAN}--- Skills installed despite pre-existing settings ---${RESET}"
-
-if [[ -f "$USER_DIR/skills/vibestack/SKILL.md" ]]; then
-  echo -e "  ${GREEN}PASS${RESET}  Skills installed alongside merged settings"
-  ((++pass))
-else
-  echo -e "  ${RED}FAIL${RESET}  Skills not installed"
-  ((++fail))
-fi
 
 # ── Summary ─────────────────────────────────────────────
 

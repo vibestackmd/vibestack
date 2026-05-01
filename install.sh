@@ -1,13 +1,15 @@
 #!/usr/bin/env bash
-# VibeStack Installer
-# Adds VibeStack convention files to the current project.
+# VibeStack Installer (v2 — user-level)
+# Installs VibeStack skills, hooks, and settings into the user's ~/.claude/
+# directory so they apply across every project on this machine.
 #
 # Usage:
 #   curl -fsSL https://raw.githubusercontent.com/vibestackmd/vibestack/main/install.sh | bash
 
 set -euo pipefail
 
-REPO="https://raw.githubusercontent.com/vibestackmd/vibestack/main/kit"
+REPO="${VIBESTACK_REPO:-https://raw.githubusercontent.com/vibestackmd/vibestack/main/kit}"
+USER_DIR="$HOME/.claude"
 
 CYAN="\033[0;36m"
 GREEN="\033[0;32m"
@@ -16,37 +18,35 @@ DIM="\033[2m"
 RESET="\033[0m"
 
 echo -e "${CYAN}▓▒░ VibeStack Installer${RESET}"
+echo -e "${DIM}Installing to $USER_DIR${RESET}"
 echo ""
 
-# Project-specific files — never overwrite, these contain user content
-PROJECT_FILES=(
-  "CLAUDE.md"
-  "Makefile"
+# Skills shipped to ~/.claude/skills/<name>/SKILL.md
+SKILLS=(
+  "vibestack"
+  "todo"
+  "squad"
+  "docs"
+  "bosskey"
+  "ideate"
+  "cli-first"
+  "developer-environment"
 )
 
-# Files only installed on fresh setup (empty or missing docs folder)
-BOOTSTRAP_FILES=(
-  "docs/vibestack.md"
+# Extra files shipped alongside specific skills (path relative to ~/.claude/)
+SKILL_EXTRAS=(
+  "skills/vibestack/templates/CLAUDE.md"
+  "skills/vibestack/templates/Makefile"
 )
 
-# VibeStack-managed files — prompt to overwrite on re-runs so upstream
-# fixes (hook paths, skill updates) can be picked up
-MANAGED_FILES=(
-  ".claude/skills/vibestack/SKILL.md"
-  ".claude/skills/cli-first/SKILL.md"
-  ".claude/skills/lsp/SKILL.md"
-  ".claude/skills/docs/SKILL.md"
-  ".claude/skills/squad/SKILL.md"
-  ".claude/skills/todo/SKILL.md"
-  ".claude/skills/bosskey/SKILL.md"
-  ".claude/hooks/notify-done.sh"
-  ".claude/hooks/statusline.sh"
+# Hooks shipped to ~/.claude/hooks/<name>.sh
+HOOKS=(
+  "notify-done.sh"
+  "statusline.sh"
 )
 
-# Files to deep-merge instead of skip/overwrite
-MERGE_FILES=(
-  ".claude/settings.json"
-)
+# settings.json gets deep-merged into the user's existing file
+SETTINGS_PATH=".claude/settings.json"
 
 installed=0
 skipped=0
@@ -73,121 +73,85 @@ ask_yes() {
   [[ ! "$choice" =~ ^[Nn]$ ]]
 }
 
-# Install project-specific files (skip if they exist)
-for file in "${PROJECT_FILES[@]}"; do
-  dir=$(dirname "$file")
+# install_managed: fetch a file from the kit and place it at a target path,
+# prompting the user if the file already exists and differs from upstream.
+install_managed() {
+  local src="$1" dest="$2"
+  local dir
+  dir=$(dirname "$dest")
 
-  if [[ -f "$file" ]]; then
-    echo -e "  ${YELLOW}skip${RESET}  $file (already exists)"
-    ((++skipped))
-    continue
-  fi
-
-  mkdir -p "$dir"
-  if curl -fsSL "$REPO/$file" -o "$file"; then
-    echo -e "  ${GREEN}add${RESET}   $file"
-    ((++installed))
-  else
-    echo -e "  ${YELLOW}fail${RESET}  $file"
-  fi
-done
-
-# Install bootstrap files only if docs/ is empty or doesn't exist
-docs_empty=true
-if [[ -d "docs" ]] && [[ -n "$(ls -A docs/ 2>/dev/null)" ]]; then
-  docs_empty=false
-fi
-
-for file in "${BOOTSTRAP_FILES[@]}"; do
-  dir=$(dirname "$file")
-
-  if ! $docs_empty; then
-    echo -e "  ${YELLOW}skip${RESET}  $file (docs/ already has content)"
-    ((++skipped))
-    continue
-  fi
-
-  mkdir -p "$dir"
-  if curl -fsSL "$REPO/$file" -o "$file"; then
-    echo -e "  ${GREEN}add${RESET}   $file"
-    ((++installed))
-  else
-    echo -e "  ${YELLOW}fail${RESET}  $file"
-  fi
-done
-
-# Install managed files (prompt to update if they exist)
-for file in "${MANAGED_FILES[@]}"; do
-  dir=$(dirname "$file")
-
-  if [[ -f "$file" ]]; then
-    # Download to temp and check if it actually differs
+  if [[ -f "$dest" ]]; then
+    local tmp
     tmp=$(mktemp)
-    if curl -fsSL "$REPO/$file" -o "$tmp" 2>/dev/null; then
-      if diff -q "$file" "$tmp" >/dev/null 2>&1; then
-        echo -e "  ${GREEN}ok${RESET}    $file (up to date)"
+    if curl -fsSL "$REPO/$src" -o "$tmp" 2>/dev/null; then
+      if diff -q "$dest" "$tmp" >/dev/null 2>&1; then
+        echo -e "  ${GREEN}ok${RESET}    ${dest/#$HOME/~} (up to date)"
         rm -f "$tmp"
-        continue
+        return
       fi
-      echo -e "  ${YELLOW}update${RESET} $file has upstream changes"
+      echo -e "  ${YELLOW}update${RESET} ${dest/#$HOME/~} has upstream changes"
       if ask_yes "         Overwrite with latest version?"; then
-        mv "$tmp" "$file"
-        echo -e "  ${GREEN}update${RESET} $file"
+        mv "$tmp" "$dest"
+        echo -e "  ${GREEN}update${RESET} ${dest/#$HOME/~}"
         ((++updated))
       else
-        echo -e "  ${YELLOW}skip${RESET}  $file (kept existing)"
+        echo -e "  ${YELLOW}skip${RESET}  ${dest/#$HOME/~} (kept existing)"
         rm -f "$tmp"
         ((++skipped))
       fi
     else
-      echo -e "  ${YELLOW}fail${RESET}  $file"
+      echo -e "  ${YELLOW}fail${RESET}  ${dest/#$HOME/~}"
       rm -f "$tmp"
     fi
-    continue
+    return
   fi
 
   mkdir -p "$dir"
-  if curl -fsSL "$REPO/$file" -o "$file"; then
-    echo -e "  ${GREEN}add${RESET}   $file"
+  if curl -fsSL "$REPO/$src" -o "$dest"; then
+    echo -e "  ${GREEN}add${RESET}   ${dest/#$HOME/~}"
     ((++installed))
   else
-    echo -e "  ${YELLOW}fail${RESET}  $file"
+    echo -e "  ${YELLOW}fail${RESET}  ${dest/#$HOME/~}"
   fi
+}
+
+# Install skills
+for skill in "${SKILLS[@]}"; do
+  install_managed ".claude/skills/$skill/SKILL.md" "$USER_DIR/skills/$skill/SKILL.md"
 done
 
-# Deep-merge JSON files: new keys are added, existing keys are preserved
-for file in "${MERGE_FILES[@]}"; do
-  dir=$(dirname "$file")
-  mkdir -p "$dir"
+# Install skill extras (templates, etc.)
+for extra in "${SKILL_EXTRAS[@]}"; do
+  install_managed ".claude/$extra" "$USER_DIR/$extra"
+done
 
-  # Download the incoming template to a temp file
-  tmp=$(mktemp)
-  if ! curl -fsSL "$REPO/$file" -o "$tmp"; then
-    echo -e "  ${YELLOW}fail${RESET}  $file"
-    rm -f "$tmp"
-    continue
-  fi
+# Install hooks
+for hook in "${HOOKS[@]}"; do
+  install_managed ".claude/hooks/$hook" "$USER_DIR/hooks/$hook"
+done
+chmod +x "$USER_DIR/hooks/notify-done.sh" "$USER_DIR/hooks/statusline.sh" 2>/dev/null || true
 
-  if [[ ! -f "$file" ]]; then
-    # No existing file — just use the template
-    mv "$tmp" "$file"
-    echo -e "  ${GREEN}add${RESET}   $file"
-    ((++installed))
-  else
-    # Deep-merge: existing values win, new keys are added
-    merged_json=$(/usr/bin/python3 -c "
+# Deep-merge settings.json. Existing user values win; new keys are added.
+mkdir -p "$USER_DIR"
+tmp=$(mktemp)
+if ! curl -fsSL "$REPO/$SETTINGS_PATH" -o "$tmp"; then
+  echo -e "  ${YELLOW}fail${RESET}  ${USER_DIR/#$HOME/~}/settings.json"
+  rm -f "$tmp"
+elif [[ ! -f "$USER_DIR/settings.json" ]]; then
+  mv "$tmp" "$USER_DIR/settings.json"
+  echo -e "  ${GREEN}add${RESET}   ~/.claude/settings.json"
+  ((++installed))
+else
+  merged_json=$(/usr/bin/python3 -c "
 import json, sys
 
 def deep_merge(base, incoming):
-    \"\"\"Merge incoming into base. base values take priority.
-    For arrays, incoming items are appended if not already present.\"\"\"
     for key, val in incoming.items():
         if key not in base:
             base[key] = val
         elif isinstance(base[key], dict) and isinstance(val, dict):
             deep_merge(base[key], val)
         elif isinstance(base[key], list) and isinstance(val, list):
-            # Append incoming list items that aren't already present
             for item in val:
                 if item not in base[key]:
                     base[key].append(item)
@@ -199,24 +163,18 @@ with open(sys.argv[1]) as f:
 with open(sys.argv[2]) as f:
     incoming = json.load(f)
 
-result = deep_merge(existing, incoming)
-print(json.dumps(result, indent=2))
-" "$file" "$tmp" 2>/dev/null)
+print(json.dumps(deep_merge(existing, incoming), indent=2))
+" "$USER_DIR/settings.json" "$tmp" 2>/dev/null)
 
-    if [[ -n "$merged_json" ]]; then
-      echo "$merged_json" > "$file"
-      echo -e "  ${GREEN}merge${RESET} $file"
-      ((++merged))
-    else
-      echo -e "  ${YELLOW}fail${RESET}  $file (merge failed, kept existing)"
-    fi
-    rm -f "$tmp"
+  if [[ -n "$merged_json" ]]; then
+    echo "$merged_json" > "$USER_DIR/settings.json"
+    echo -e "  ${GREEN}merge${RESET} ~/.claude/settings.json"
+    ((++merged))
+  else
+    echo -e "  ${YELLOW}fail${RESET}  ~/.claude/settings.json (merge failed, kept existing)"
   fi
-done
-
-# Make scripts executable
-[[ -f ".claude/hooks/notify-done.sh" ]] && chmod +x .claude/hooks/notify-done.sh
-[[ -f ".claude/hooks/statusline.sh" ]] && chmod +x .claude/hooks/statusline.sh
+  rm -f "$tmp"
+fi
 
 echo ""
 echo -e "${GREEN}Done!${RESET} Added $installed, updated $updated, merged $merged, skipped $skipped."
@@ -225,7 +183,6 @@ echo -e "${GREEN}Done!${RESET} Added $installed, updated $updated, merged $merge
 
 DEV_TOOLS_REPO="https://raw.githubusercontent.com/vibestackmd/vibestack/main/kit/extras/dev-tools"
 
-# Detect platform
 is_windows_native=false
 is_wsl=false
 case "$(uname -s)" in
@@ -237,6 +194,7 @@ case "$(uname -s)" in
     ;;
 esac
 
+echo ""
 echo -e "${CYAN}── Optional: Dev Environment Setup ──${RESET}"
 echo ""
 echo "VibeStack ships an opinionated dev-tools installer that sets up your entire"
@@ -263,7 +221,6 @@ if [[ "${SKIP_DEVTOOLS:-0}" == "1" ]]; then
   echo -e "  ${DIM}Skipped (SKIP_DEVTOOLS=1).${RESET}"
   echo ""
 elif $is_windows_native; then
-  # Running in Git Bash / MSYS2 on Windows — can't run the bash installer directly
   echo -e "  ${YELLOW}Detected: Windows (native shell)${RESET}"
   echo ""
   echo "  The dev-tools installer runs inside WSL (Windows Subsystem for Linux)."
@@ -280,7 +237,6 @@ elif $is_windows_native; then
   echo "    3. Run the dev-tools installer inside Ubuntu"
   echo ""
 else
-  # macOS, Linux, or WSL — can run the bash installer directly
   if $is_wsl; then
     echo -e "  ${DIM}Detected: WSL — the installer handles WSL-specific setup automatically.${RESET}"
     echo ""
@@ -299,6 +255,6 @@ fi
 
 echo ""
 echo "Next steps:"
-echo "  1. Run /vibestack in Claude Code to auto-configure everything for your project"
-echo "  2. Review the generated CLAUDE.md and Makefile"
+echo "  • Open Claude Code in any project and run /vibestack to scaffold it"
+echo "  • All VibeStack skills are now available globally — no per-project install needed"
 echo ""

@@ -1,22 +1,29 @@
 ---
 name: todo
-description: Work through TODO.md tasks sequentially — read the file, pick up uncompleted items, and execute them according to the instructions in the file.
+description: Work through TODO.md tasks sequentially — or refresh the list with the next most important engineering tasks. Auto-detects intent from project state.
 user_invocable: true
 disable-model-invocation: true
-argument-hint: "[number-of-tasks] or populate"
+argument-hint: "[task-number] or refresh"
 ---
 
 # TODO Runner
 
-Read `TODO.md` and work through the task list — or repopulate it with the next most important tasks.
+Read `TODO.md` and work through the task list — or refresh it with the next most important tasks.
 
-If `$ARGUMENTS` is `populate`, jump to the **Populate** section. Otherwise, follow the **Run Tasks** steps below.
+## Routing
+
+- If `$ARGUMENTS` is `refresh`: run **Refresh** explicitly (rewrite the list even if it has tasks).
+- If `$ARGUMENTS` is a number (e.g. `3`): work ONLY task #3 from the list (the third uncompleted task by current ordering). Same execution flow as **Run Tasks**, but limited to that single item.
+- If `TODO.md` does NOT exist OR contains no uncompleted (`[ ]` or `[~]`) tasks: run **Refresh** to seed the list, then ask the user if they'd like to start working through it.
+- Otherwise: run **Run Tasks** through every uncompleted item.
+
+This keeps the common case zero-arg, makes "rewrite the list" an explicit destructive action, and lets users cherry-pick individual tasks they actually want done.
 
 ---
 
-## Populate
+## Refresh
 
-Analyze the codebase and repopulate TODO.md with the next set of highest-impact engineering tasks. If TODO.md doesn't exist, create it.
+Analyze the codebase and (re)populate TODO.md with the next set of highest-impact engineering tasks. If TODO.md doesn't exist, create it.
 
 ### 1. Understand what's been done
 
@@ -45,13 +52,14 @@ Think like a staff engineer driving a small startup toward a rock-solid producti
   ```
   # TODO
 
-  AGENTS: When prompted, complete tasks from the list below. Before starting work, mark the item as pending `[~]` so parallel agents don't collide. After completion, mark it `[x]`. Start at the top unless the user specifies otherwise.
+  AGENTS: When prompted, complete tasks from the list below. Before starting work, mark the item as pending `[~]` so parallel agents don't collide. After completion, mark it `[x]`. Start at the top unless the user specifies otherwise. Users may invoke `/todo <N>` to run only the Nth uncompleted item — count by current order in this file.
 
   ## Backlog
   ```
 - Clear out completed tasks from the list (they're done — no need to keep them around).
 - Preserve any uncompleted (`[ ]`) or in-progress (`[~]`) tasks that are still relevant — re-rank them alongside the new tasks.
 - Add 10-20 new tasks, rank-ordered by impact.
+- **Format every task as a numbered checkbox**: `1. [ ] task text`, `2. [ ] task text`, etc. The numbers let users target specific tasks via `/todo <N>`. Re-number from 1 every refresh so positions reflect current priority.
 - Each task should be specific and actionable — reference actual files, endpoints, or components. Not "improve security" but "add rate limiting to `/api/` routes in `src/middleware/`."
 - Every item should be completable by a single engineer (or AI agent) in a reasonable scope of work.
 - Don't list things that are already done well. Only gaps and improvements.
@@ -67,14 +75,14 @@ Tell the user what you found and what the new priorities are. Call out the top 3
 
 ### 1. Read TODO.md
 
-- Read the project's `TODO.md` file.
-- If it doesn't exist, create one by running the **Populate** section above first, then continue.
+- Read the project's `TODO.md` file. (If it didn't exist, the routing logic above already ran **Refresh** to seed it.)
 - Parse the task list. Understand the agent instructions at the top of the file — they define how you should handle tasks.
 
 ### 2. Identify work
 
 - Find all uncompleted tasks: items marked `[ ]` (not `[x]` done, not `[~]` pending).
-- If `$ARGUMENTS` is provided, treat it as the maximum number of tasks to work on in this session. Otherwise, work through all uncompleted tasks.
+- If `$ARGUMENTS` is a number, work ONLY the Nth uncompleted task (1-indexed, by current order in the file). If N is out of range, tell the user how many uncompleted tasks exist and stop.
+- Otherwise, work through every uncompleted task in order.
 - If there are no uncompleted tasks, tell the user the list is clear and stop.
 
 ### 3. Work through tasks

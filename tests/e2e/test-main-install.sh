@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Test the main VibeStack installer (project convention files)
+# Test the v2 VibeStack installer — user-level install at ~/.claude/
 set -euo pipefail
 
 CYAN="\033[0;36m"
@@ -16,6 +16,16 @@ assert_file_exists() {
     ((++pass))
   else
     echo -e "  ${RED}FAIL${RESET}  $1 missing"
+    ((++fail))
+  fi
+}
+
+assert_file_absent() {
+  if [[ ! -e "$1" ]]; then
+    echo -e "  ${GREEN}PASS${RESET}  $1 not present (correct for v2)"
+    ((++pass))
+  else
+    echo -e "  ${RED}FAIL${RESET}  $1 should not exist (v2 doesn't install project-level files)"
     ((++fail))
   fi
 }
@@ -40,76 +50,82 @@ assert_file_executable() {
   fi
 }
 
-echo -e "${CYAN}=== Test: Main VibeStack Installer ===${RESET}"
+echo -e "${CYAN}=== Test: VibeStack v2 Installer (user-level) ===${RESET}"
 echo ""
 
-# Run the installer (skip dev-tools to keep output clean and test focused)
+mkdir -p /workspace
 cd /workspace
-SKIP_DEVTOOLS=1 bash /vibestack/install.sh || true
+SKIP_DEVTOOLS=1 VIBESTACK_REPO="${VIBESTACK_REPO:-file:///vibestack/kit}" bash /vibestack/install.sh || true
+
+USER_DIR="$HOME/.claude"
 
 echo ""
-echo -e "${CYAN}--- Checking project files ---${RESET}"
+echo -e "${CYAN}--- Skills installed at user level ---${RESET}"
 
-# Project convention files
-assert_file_exists "CLAUDE.md"
-assert_file_exists "Makefile"
-assert_file_exists "docs/vibestack.md"
+for skill in vibestack todo squad docs bosskey ideate cli-first developer-environment; do
+  assert_file_exists "$USER_DIR/skills/$skill/SKILL.md"
+done
 
-# Makefile should contain help target
-assert_file_contains "Makefile" "help"
-
-echo ""
-echo -e "${CYAN}--- Checking managed files ---${RESET}"
-
-# Skills
-assert_file_exists ".claude/skills/vibestack/SKILL.md"
-assert_file_exists ".claude/skills/cli-first/SKILL.md"
-assert_file_exists ".claude/skills/docs/SKILL.md"
-assert_file_exists ".claude/skills/squad/SKILL.md"
-
-# Hook
-assert_file_exists ".claude/hooks/notify-done.sh"
-assert_file_executable ".claude/hooks/notify-done.sh"
+# lsp must NOT be installed in v2
+assert_file_absent "$USER_DIR/skills/lsp"
 
 echo ""
-echo -e "${CYAN}--- Checking settings merge ---${RESET}"
+echo -e "${CYAN}--- Skill template files ---${RESET}"
 
-# Settings should exist and contain key vibestack config
-assert_file_exists ".claude/settings.json"
-assert_file_contains ".claude/settings.json" "Bash"
-assert_file_contains ".claude/settings.json" "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS"
-
-echo ""
-echo -e "${CYAN}--- Checking skill content ---${RESET}"
-
-assert_file_contains ".claude/skills/squad/SKILL.md" "squad"
-assert_file_contains ".claude/skills/squad/SKILL.md" "user_invocable: true"
-assert_file_contains ".claude/skills/vibestack/SKILL.md" "vibestack"
-assert_file_contains ".claude/skills/cli-first/SKILL.md" "cli-first"
+assert_file_exists "$USER_DIR/skills/vibestack/templates/CLAUDE.md"
+assert_file_exists "$USER_DIR/skills/vibestack/templates/Makefile"
+assert_file_contains "$USER_DIR/skills/vibestack/templates/Makefile" "help"
 
 echo ""
-echo -e "${CYAN}--- Checking CLAUDE.md template ---${RESET}"
+echo -e "${CYAN}--- Hooks installed at user level ---${RESET}"
 
-assert_file_contains "CLAUDE.md" "Makefile"
-assert_file_contains "CLAUDE.md" "/squad"
+assert_file_exists "$USER_DIR/hooks/notify-done.sh"
+assert_file_executable "$USER_DIR/hooks/notify-done.sh"
+assert_file_exists "$USER_DIR/hooks/statusline.sh"
+assert_file_executable "$USER_DIR/hooks/statusline.sh"
+
+echo ""
+echo -e "${CYAN}--- settings.json ---${RESET}"
+
+assert_file_exists "$USER_DIR/settings.json"
+assert_file_contains "$USER_DIR/settings.json" "skipDangerousModePermissionPrompt"
+assert_file_contains "$USER_DIR/settings.json" "voiceEnabled"
+assert_file_contains "$USER_DIR/settings.json" "enabledPlugins"
+assert_file_contains "$USER_DIR/settings.json" "rust-analyzer-lsp"
+# Hooks should reference $HOME, not $CLAUDE_PROJECT_DIR
+assert_file_contains "$USER_DIR/settings.json" "\$HOME/.claude/hooks/statusline.sh"
+if grep -q "CLAUDE_PROJECT_DIR" "$USER_DIR/settings.json" 2>/dev/null; then
+  echo -e "  ${RED}FAIL${RESET}  settings.json still references \$CLAUDE_PROJECT_DIR (should be \$HOME at user level)"
+  ((++fail))
+else
+  echo -e "  ${GREEN}PASS${RESET}  settings.json does not reference \$CLAUDE_PROJECT_DIR"
+  ((++pass))
+fi
+
+echo ""
+echo -e "${CYAN}--- Project directory remains untouched ---${RESET}"
+
+# v2 must NOT drop any project-level files
+assert_file_absent "/workspace/CLAUDE.md"
+assert_file_absent "/workspace/Makefile"
+assert_file_absent "/workspace/docs"
+assert_file_absent "/workspace/.claude"
+
+echo ""
+echo -e "${CYAN}--- Skill content sanity ---${RESET}"
+
+assert_file_contains "$USER_DIR/skills/vibestack/SKILL.md" "CLAUDE_SKILL_DIR"
+assert_file_contains "$USER_DIR/skills/vibestack/SKILL.md" "user_invocable: true"
+assert_file_contains "$USER_DIR/skills/cli-first/SKILL.md" "cli-first"
+assert_file_contains "$USER_DIR/skills/developer-environment/SKILL.md" "developer-environment"
 
 # ── Re-run test (idempotency) ──────────────────────────
 
 echo ""
 echo -e "${CYAN}--- Re-run installer (idempotency) ---${RESET}"
 
-# Run again — should skip existing project files, report managed files as ok
-output=$(SKIP_DEVTOOLS=1 bash /vibestack/install.sh 2>&1) || true
-
+output=$(SKIP_DEVTOOLS=1 VIBESTACK_REPO="${VIBESTACK_REPO:-file:///vibestack/kit}" bash /vibestack/install.sh 2>&1) || true
 clean_output=$(echo "$output" | sed 's/\x1b\[[0-9;]*m//g')
-
-if echo "$clean_output" | grep -qE "skip.*CLAUDE.md"; then
-  echo -e "  ${GREEN}PASS${RESET}  Re-run skips existing CLAUDE.md"
-  ((++pass))
-else
-  echo -e "  ${RED}FAIL${RESET}  Re-run did not skip existing CLAUDE.md"
-  ((++fail))
-fi
 
 if echo "$clean_output" | grep -qE "ok|up to date"; then
   echo -e "  ${GREEN}PASS${RESET}  Re-run reports managed files up to date"

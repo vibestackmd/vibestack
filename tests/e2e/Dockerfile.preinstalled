@@ -1,4 +1,4 @@
-# Ubuntu with common tools pre-installed — tests the "skip existing" paths
+# Ubuntu with a pre-populated ~/.claude/ — tests the settings.json merge preserves user values
 FROM ubuntu:24.04
 
 ENV DEBIAN_FRONTEND=noninteractive
@@ -17,9 +17,16 @@ RUN apt-get update && apt-get install -y \
     postgresql-client \
     && rm -rf /var/lib/apt/lists/*
 
-# Pre-create some vibestack files to test the "already exists" skip behavior
-RUN mkdir -p /workspace/docs && \
-    echo "# Existing CLAUDE.md" > /workspace/CLAUDE.md && \
-    echo "# Existing doc" > /workspace/docs/architecture.md
+# Pre-create a user-level settings.json with a custom value the merge must preserve,
+# plus voiceEnabled=false to verify VibeStack doesn't overwrite an explicitly-set user value.
+RUN mkdir -p /root/.claude && \
+    printf '%s\n' \
+      '{' \
+      '  "user-custom-key": "should-survive-merge",' \
+      '  "voiceEnabled": false,' \
+      '  "permissions": {' \
+      '    "allow": ["WebFetch(domain:example.com)"]' \
+      '  }' \
+      '}' > /root/.claude/settings.json
 
 WORKDIR /workspace

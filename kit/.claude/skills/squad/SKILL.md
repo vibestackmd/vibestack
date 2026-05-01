@@ -1,16 +1,15 @@
 ---
 name: squad
-description: Analyze the project and generate domain-specific rules and specialist subagents — breaks a codebase into logical areas so Claude automatically loads the right context for each part.
+description: Analyze the project and generate domain-specific rules and specialist subagents — breaks a codebase into logical areas so Claude automatically loads the right context for each part. Always preserves existing manual edits; safe to re-run.
 user_invocable: true
 disable-model-invocation: true
-argument-hint: "[refresh]"
 ---
 
 # Squad — Build Your Specialist Team
 
 Analyze the project's codebase and generate path-specific rules and specialist subagents for each logical domain. When Claude later works on files in a domain, the right context loads automatically.
 
-If `$ARGUMENTS` is "refresh", re-analyze and update existing squad config instead of starting from scratch.
+**Always preservative.** If `.claude/squad.json` exists, this skill merges with the existing config: updates `paths:` frontmatter as files move, adds new domains, removes vanished ones — but never overwrites hand-written convention notes in the rule files. To start completely over, the user should manually `rm -rf .claude/rules .claude/agents .claude/squad.json` first; that's an explicit destructive action and should not be implicit.
 
 ## Steps
 
@@ -51,11 +50,11 @@ Group the codebase into **3-8 logical domains**. More than 8 usually means you'r
 ### 3. Check for existing squad config
 
 - Read `.claude/squad.json` if it exists (this is the manifest from a previous run).
-- If refreshing (`$ARGUMENTS` is "refresh"):
+- If it exists, treat this run as a merge:
   - Compare the new analysis against existing domains.
-  - Identify: new domains to add, existing domains whose patterns need updating, domains that should be removed (files no longer exist).
+  - Identify: new domains to add, existing domains whose patterns need updating, domains to remove (files no longer exist).
   - Preserve any manual edits the user made to existing rule files — only update the `paths:` frontmatter and add notes about new files. Do NOT overwrite hand-written convention notes.
-- If starting fresh: proceed to generation.
+- If it doesn't exist, proceed to generation from scratch.
 
 ### 4. Generate path-specific rules
 
@@ -151,7 +150,7 @@ Tell the user:
 - How many subagents were generated (if any)
 - Which files are unmapped (if any) and suggestions for where they might belong
 - Remind them to review the generated files and tweak conventions — the auto-generated rules are a starting point, not gospel
-- Remind them to run `/squad refresh` when the project structure changes significantly
+- Remind them to re-run `/squad` when the project structure changes significantly (it always preserves manual edits)
 
 ## Guidelines
 

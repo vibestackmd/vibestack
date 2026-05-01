@@ -31,8 +31,6 @@ docs/           # Living documentation
 Makefile        # Project operations — single entry point for all commands
 scripts/        # Complex build/deploy scripts called from Makefile
 TODO.md         # Task tracking (see TODO Workflow below)
-.claude/
-  skills/       # Claude skills — conventions and slash commands
 ```
 
 ## Architecture
@@ -58,17 +56,19 @@ The `docs/` folder is the single source of truth for institutional knowledge.
 
 ### Skills
 
-`.claude/skills/` teaches Claude project-specific conventions and provides reusable workflows as slash commands. See `docs/vibestack.md` for how to create new ones.
+VibeStack ships skills at the user level (`~/.claude/skills/`), so they're available in every project on this machine without per-project install.
 
 **Reference skills** (auto-loaded as context):
 - `cli-first` — Use CLI tools and `.env*` files for third-party services
-- `lsp` — Use language servers for type checking, references, and code navigation
+- `developer-environment` — Map of what's installed on the machine (languages, runtimes, DBs, cloud CLIs); populates itself on first use
 
 **Task skills** (invoked via `/command`):
 - `/vibestack` — Set up VibeStack conventions for an existing project (CLAUDE.md, Makefile, docs, TODO.md)
 - `/docs` — Capture conversation learnings into docs and clean up stale content
-- `/todo` — Work through TODO.md tasks sequentially (`/todo populate` to re-analyze the codebase and seed the next batch of tasks)
-- `/squad` — Analyze the project and generate domain-specific rules and specialist subagents (`/squad refresh` to update)
+- `/todo` — Work through TODO.md tasks sequentially (`/todo refresh` to re-analyze the codebase and rewrite the task list)
+- `/squad` — Analyze the project and generate domain-specific rules and specialist subagents (always preserves manual edits; safe to re-run)
+- `/bosskey` — Summarize recent git activity into a chill standup script
+- `/ideate` — Strategy session with a co-founder persona (read-only; for thinking through ideas before building)
 
 ## External Services
 

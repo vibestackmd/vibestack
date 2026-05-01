@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# Test installer behavior when project files and tools already exist.
-# Validates skip logic and idempotency.
+# Test installer behavior when the user already has a populated ~/.claude/.
+# Validates the settings.json deep-merge preserves the user's existing values.
 set -euo pipefail
 
 CYAN="\033[0;36m"
@@ -21,53 +21,61 @@ assert_file_contains() {
   fi
 }
 
-assert_output_contains() {
-  # Write to temp file to avoid argument length limits, strip ANSI codes
-  local tmpf
-  tmpf=$(mktemp)
-  echo "$1" > "$tmpf"
-  if sed 's/\x1b\[[0-9;]*m//g' "$tmpf" | grep -qE "$2"; then
-    echo -e "  ${GREEN}PASS${RESET}  Output contains '$2'"
+assert_json_value() {
+  local file="$1" key="$2" expected="$3"
+  local actual
+  actual=$(/usr/bin/python3 -c "import json,sys; print(json.load(open('$file')).get('$key', ''))" 2>/dev/null)
+  if [[ "$actual" == "$expected" ]]; then
+    echo -e "  ${GREEN}PASS${RESET}  $file['$key'] = '$expected'"
     ((++pass))
   else
-    echo -e "  ${RED}FAIL${RESET}  Output missing '$2'"
+    echo -e "  ${RED}FAIL${RESET}  $file['$key'] = '$actual' (expected '$expected')"
     ((++fail))
   fi
-  rm -f "$tmpf"
 }
 
-echo -e "${CYAN}=== Test: Pre-installed Environment ===${RESET}"
+USER_DIR="$HOME/.claude"
+
+echo -e "${CYAN}=== Test: Pre-existing User Config (settings merge) ===${RESET}"
 echo ""
 
-# Pre-existing files were created in the Dockerfile
-echo -e "${CYAN}--- Verifying pre-existing files ---${RESET}"
-assert_file_contains "/workspace/CLAUDE.md" "Existing CLAUDE.md"
+echo -e "${CYAN}--- Verifying pre-existing user settings ---${RESET}"
+assert_file_contains "$USER_DIR/settings.json" "user-custom-key"
+assert_json_value "$USER_DIR/settings.json" "voiceEnabled" "False"
 
 echo ""
-echo -e "${CYAN}--- Running main installer ---${RESET}"
+echo -e "${CYAN}--- Running v2 installer ---${RESET}"
 
+mkdir -p /workspace
 cd /workspace
-output=$(SKIP_DEVTOOLS=1 bash /vibestack/install.sh 2>&1) || true
+output=$(SKIP_DEVTOOLS=1 VIBESTACK_REPO="${VIBESTACK_REPO:-file:///vibestack/kit}" bash /vibestack/install.sh 2>&1) || true
 echo "$output"
 
 echo ""
-echo -e "${CYAN}--- Checking skip behavior ---${RESET}"
+echo -e "${CYAN}--- User's existing values preserved ---${RESET}"
 
-# Pre-existing project files should be skipped
-assert_output_contains "$output" "skip.*CLAUDE.md"
+# Custom user key must survive the merge
+assert_file_contains "$USER_DIR/settings.json" "user-custom-key"
+# User explicitly set voiceEnabled=false; merge must not flip it to true
+assert_json_value "$USER_DIR/settings.json" "voiceEnabled" "False"
 
-# Pre-existing file content should be preserved (not overwritten)
-assert_file_contains "/workspace/CLAUDE.md" "Existing CLAUDE.md"
+echo ""
+echo -e "${CYAN}--- VibeStack values added where absent ---${RESET}"
 
-# docs/vibestack.md should be skipped because docs/ has content
-assert_output_contains "$output" "skip.*vibestack.md"
+# These keys weren't in the user's pre-existing file, so they should now be present
+assert_file_contains "$USER_DIR/settings.json" "skipDangerousModePermissionPrompt"
+assert_file_contains "$USER_DIR/settings.json" "enabledPlugins"
+assert_file_contains "$USER_DIR/settings.json" "rust-analyzer-lsp"
+assert_file_contains "$USER_DIR/settings.json" "statusLine"
 
-# Managed files should still be installed (they didn't exist before)
-if [[ -f ".claude/skills/vibestack/SKILL.md" ]]; then
-  echo -e "  ${GREEN}PASS${RESET}  Managed files installed despite existing project files"
+echo ""
+echo -e "${CYAN}--- Skills installed despite pre-existing settings ---${RESET}"
+
+if [[ -f "$USER_DIR/skills/vibestack/SKILL.md" ]]; then
+  echo -e "  ${GREEN}PASS${RESET}  Skills installed alongside merged settings"
   ((++pass))
 else
-  echo -e "  ${RED}FAIL${RESET}  Managed files not installed"
+  echo -e "  ${RED}FAIL${RESET}  Skills not installed"
   ((++fail))
 fi
 

@@ -1,7 +1,7 @@
 {
   "name": "vibestack",
   "version": "0.1.10",
-  "description": "Opinionated project structure, skills, and tooling for AI-assisted development.",
+  "description": "Opinionated user-level skills, hooks, and settings for AI-assisted development.",
   "author": "vibestackmd",
   "repository": "https://github.com/vibestackmd/vibestack",
   "download": "https://github.com/vibestackmd/vibestack/releases/download/v0.1.10/vibestack-plugin-0.1.10.tar.gz",
@@ -10,8 +10,10 @@
     "todo",
     "squad",
     "docs",
+    "bosskey",
+    "ideate",
     "cli-first",
-    "lsp"
+    "developer-environment"
   ],
   "hooks": [
     "notify-done",

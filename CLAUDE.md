@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-VibeStack is a Claude Code plugin that gives AI agents project structure, skills, and conventions. It installs into user projects via `curl | bash` and is also distributed as a Claude Code plugin.
+VibeStack is a Claude Code plugin that gives AI agents project structure, skills, and conventions. It installs at the **user level** (`~/.claude/`) via `curl | bash` or `/plugin install vibestack`, so its skills and hooks apply across every project on the machine. Per-project scaffolding (CLAUDE.md, Makefile, docs/, TODO.md) is created on demand by the `/vibestack` slash command, not auto-installed.
 
 ## Tech Stack
 
@@ -34,13 +34,14 @@ make clean           # Remove build artifacts
 ## Project Structure
 
 ```
-install.sh              # Main installer (curl | bash entry point)
-kit/                    # Files installed into user projects
-  .claude/skills/       # Skills (vibestack, todo, squad, docs, cli-first, lsp)
+install.sh              # Main installer (curl | bash entry point) — installs to ~/.claude/
+kit/                    # Files shipped to ~/.claude/ at install time
+  .claude/skills/       # Skills (vibestack, todo, squad, docs, bosskey, cli-first, developer-environment)
+    vibestack/templates/  # Template files (CLAUDE.md, Makefile) emitted by /vibestack
   .claude/hooks/        # Hooks (notify-done, statusline)
-  .claude/settings.json # Default settings
+  .claude/settings.json # Default user-level settings template (deep-merged on install)
   docs/                 # Documentation templates
-  extras/               # Optional add-ons
+  extras/               # Optional add-ons (dev-tools installer, ci-guards)
 site/                   # Website (Next.js, deployed to vibestack.md)
 tests/e2e/              # End-to-end install tests
 scripts/                # Build scripts
@@ -60,9 +61,36 @@ make release-major   # 0.2.0 → 1.0.0
 
 The release target runs preflight checks (clean tree, on main, in sync with origin, tag doesn't exist), runs E2E tests, bumps VERSION, commits, tags, and pushes. CI rejects tags that don't match the VERSION file.
 
+## How to Do a Release
+
+When the user asks for a release, follow this sequence exactly:
+
+1. **Commit first.** `make release-*` requires a clean working tree. If there are uncommitted changes, commit them before attempting the release. Stage specific files — don't use `git add -A`.
+
+2. **Sync with origin.** The preflight checks require `HEAD == origin/main`. Before running the release:
+   ```bash
+   git pull --rebase origin main
+   git push origin main
+   ```
+   Use `--rebase` to avoid merge commits. Push after rebasing so the local and remote SHAs match.
+
+3. **Run the release.** Pipe `y` to auto-confirm:
+   ```bash
+   echo "y" | make release-patch   # or release-minor / release-major
+   ```
+   This runs E2E tests, bumps VERSION, commits, tags, and pushes. Use a longer timeout (~5 min) since Docker tests run during this step.
+
+4. **Confirm success.** Look for the "Pushed vX.Y.Z" message at the end. GitHub Actions handles the rest.
+
+Common pitfalls:
+- **Divergent branches:** Always use `git pull --rebase`, never a plain `git pull` (no pull strategy is configured globally).
+- **Out of sync after rebase:** Rebasing changes the commit hash, so you must `git push` before `make release-*` will pass the sync check.
+- **Don't create tags manually.** The Makefile handles tagging. Manual tags will desync from VERSION.
+
 ## Conventions
 
 - Keep the installer idempotent and safe to re-run
 - Skills are plain Markdown (`SKILL.md`) — no build step
-- `kit/CLAUDE.md` is a template for user projects, not this repo's CLAUDE.md
+- Installs are user-level (`~/.claude/`). Don't add per-project file drops back to `install.sh`; new project-scaffolding goes in the `/vibestack` skill instead.
+- Templates emitted by `/vibestack` live at `kit/.claude/skills/vibestack/templates/` — they are NOT this repo's own CLAUDE.md/Makefile.
 - The README is the single source of truth for the website

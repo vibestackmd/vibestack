@@ -12,6 +12,7 @@ on:
     branches: [main]
     paths:
       - "install.sh"
+      - "VERSION"
       - ".claude-plugin/**"
       - "skills/**"
       - "hooks/**"
@@ -31,6 +32,7 @@ on:
   pull_request:
     paths:
       - "install.sh"
+      - "VERSION"
       - ".claude-plugin/**"
       - "skills/**"
       - "hooks/**"

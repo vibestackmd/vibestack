@@ -44,9 +44,9 @@ install.sh                # curl | bash entry point — drops user.settings.json
   marketplace.json        # Marketplace manifest (owner, plugins[], cross-mkt allowlist). Committed.
 skills/                   # Plugin-shipped skills (vibestack, todo, squad, docs, bosskey, ideate, cli-first, developer-environment, lsp)
   vibestack/templates/    # CLAUDE.md + Makefile emitted by the /vibestack skill
-hooks/                    # Plugin hooks (notify-done, statusline) + hooks.json registering them; paths use ${CLAUDE_PLUGIN_ROOT}
+hooks/                    # Hook scripts. notify-done.sh is plugin-scoped (registered via hooks/hooks.json); statusline.sh is fetched by install.sh to ~/.claude/hooks/ for the user-level statusLine.
 hooks/hooks.json          # Plugin hook registrations (Stop → notify-done). Loaded by Claude when the plugin is enabled.
-settings.json             # Plugin's settings.json — statusLine only. (Hooks go in hooks/hooks.json, NOT here.)
+settings.json             # Plugin-scoped settings (reserved for subagentStatusLine — main statusLine cannot be contributed by a plugin and lives in user.settings.json).
 user.settings.json        # User-level settings template (voiceEnabled, enabledPlugins, defaultMode, etc) — fetched by install.sh and deep-merged into ~/.claude/settings.json
 extras/                   # Optional add-ons (dev-tools installer, ci-guards) — separate from the plugin
 site/                     # Website (Next.js, deployed to vibestack.md)
@@ -100,7 +100,7 @@ Common pitfalls:
 - Skills are plain Markdown (`SKILL.md`) — no build step
 - Installs are user-level (`~/.claude/`). Don't add per-project file drops back to `install.sh`; new project-scaffolding goes in the `/vibestack` skill instead.
 - Templates emitted by `/vibestack` live at `skills/vibestack/templates/` — they are NOT this repo's own CLAUDE.md/Makefile.
-- **`user.settings.json` carries user-level keys ONLY** (no statusLine, no hooks). Plugin-level `statusLine` lives in the plugin's own `settings.json` at repo root; plugin hooks live in `hooks/hooks.json` (NOT in `settings.json` — Claude's plugin loader reads hooks from `hooks/hooks.json` only, matching every official Anthropic plugin). Both reference `${CLAUDE_PLUGIN_ROOT}` for script paths.
+- **`user.settings.json` carries user-level keys** (voiceEnabled, enabledPlugins, defaultMode, companyAnnouncements, and the main `statusLine`). The main statusLine lives here — NOT in plugin settings.json — because Claude only honors `subagentStatusLine` at plugin scope. Its `command` points to `~/.claude/hooks/statusline.sh`, which install.sh fetches from the repo and drops at user level (the only architectural exception to "no install.sh file drops" — necessary because plugin-scoped `${CLAUDE_PLUGIN_ROOT}` isn't available in user-level settings). Plugin hooks (the Stop notification, etc.) live in `hooks/hooks.json` and reference `${CLAUDE_PLUGIN_ROOT}` — Claude's plugin loader reads hooks from `hooks/hooks.json` only, matching every official Anthropic plugin.
 - **Settings merge is additive except for two clobber paths:** `skipDangerousModePermissionPrompt` and `permissions.defaultMode`. These are the framework's load-bearing opinions and overwrite existing user values. Don't add to the clobber list without strong justification.
 - **The plugin's `dependencies` field is the canonical place to declare which other plugins VibeStack assumes.** Don't add per-plugin install loops to `install.sh` — the dependencies array does it for free via chain-install. `install.sh` does explicitly add `anthropics/claude-plugins-official` first because fresh Claude installs have no marketplaces configured.
 - **Manifests (`plugin.json`, `marketplace.json`) are committed in-tree.** `make plugin` syncs the version field from VERSION before each release. CI does not rewrite them post-release.

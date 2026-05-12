@@ -173,6 +173,19 @@ fi
 echo ""
 echo -e "${GREEN}Settings ready.${RESET} Added $installed, merged $merged."
 
+# ── User-level hook scripts ──────────────────────────────
+# The main statusLine is registered in user-level settings.json (plugins can
+# only ship subagentStatusLine, not the main statusLine). The script it runs
+# has to exist at a stable user-level path, so we drop it into ~/.claude/hooks/
+# alongside settings.json. The Stop hook stays plugin-scoped via hooks/hooks.json.
+mkdir -p "$USER_DIR/hooks"
+if curl -fsSL "$REPO/hooks/statusline.sh" -o "$USER_DIR/hooks/statusline.sh"; then
+  chmod +x "$USER_DIR/hooks/statusline.sh"
+  echo -e "  ${GREEN}ok${RESET}    ~/.claude/hooks/statusline.sh"
+else
+  echo -e "  ${YELLOW}fail${RESET}  ~/.claude/hooks/statusline.sh (statusLine will not render)"
+fi
+
 # ── Plugin install ──────────────────────────────────────
 # Install the VibeStack plugin via Claude. Its `dependencies` field chain-
 # installs the LSP plugins and frontend-design automatically. Cross-marketplace

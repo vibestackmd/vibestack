@@ -8,7 +8,7 @@
     {
       "name": "vibestack",
       "source": "./",
-      "version": "1.0.3",
+      "version": "1.0.4",
       "description": "Opinionated user-level skills, hooks, and settings for AI-assisted development."
     }
   ],

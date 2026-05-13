@@ -1,12 +1,12 @@
 ---
 name: developer-environment
-description: Reference map of the user's local development environment — installed languages, runtimes, version managers, databases, cloud CLIs, and tools on this machine. READ this file BEFORE telling the user a tool is unavailable, BEFORE asking which deploy target / cloud / DB to use, and BEFORE proposing to install something. If a CLI is listed as installed, assume it works. If listed as not installed, don't suggest commands that depend on it without flagging the install step. If the file shows "(not yet populated)" below, run the discovery steps to fill it in on first use.
+description: Reference map of the user's local development environment, installed languages, runtimes, version managers, databases, cloud CLIs, and tools on this machine. READ this file BEFORE telling the user a tool is unavailable, BEFORE asking which deploy target / cloud / DB to use, and BEFORE proposing to install something. If a CLI is listed as installed, assume it works. If listed as not installed, don't suggest commands that depend on it without flagging the install step. If the file shows "(not yet populated)" below, run the discovery steps to fill it in on first use.
 user-invocable: false
 ---
 
 # Local developer environment (last verified: not yet populated)
 
-This file is a reference map of the developer's machine — what's installed, what versions, what's running. It auto-loads as context so Claude can answer "do you have X?" without trial-and-error.
+This file is a reference map of the developer's machine, what's installed, what versions, what's running. It auto-loads as context so Claude can answer "do you have X?" without trial-and-error.
 
 **Scope note.** This skill describes the *machine*, not the project. It's equally useful at user level (`~/.claude/skills/developer-environment/`) and project level (`.claude/skills/developer-environment/`). For cross-project use, copy it to user level after populating.
 
@@ -46,13 +46,13 @@ This file is a reference map of the developer's machine — what's installed, wh
 
 ## First-time discovery (populate this file)
 
-If the sections above show "(not yet populated)", run these probes and fill in the tables. Keep entries terse — a name and version per line is enough. Mark missing-but-commonly-asked-for tools as `❌ Not installed`.
+If the sections above show "(not yet populated)", run these probes and fill in the tables. Keep entries terse, a name and version per line is enough. Mark missing-but-commonly-asked-for tools as `❌ Not installed`.
 
 ```bash
 # Host
 sw_vers | head -3; uname -m; echo "Shell: $SHELL"; brew --version 2>/dev/null | head -1
 
-# Languages — only list what's actually installed
+# Languages, only list what's actually installed
 for cmd in node deno bun python3 ruby go rustc java swift php elixir erlang lua zig; do
   command -v $cmd >/dev/null && echo "$cmd: $($cmd --version 2>&1 | head -1)"
 done
@@ -95,16 +95,16 @@ done
 
 After populating, replace "not yet populated" in the header with today's date in `YYYY-MM-DD` format.
 
-**Important — don't include in this file:**
+**Important, don't include in this file:**
 - Authentication identities (account IDs, emails, GitHub handles, AWS account numbers). They're sensitive and they drift.
 - Project-specific tools (cargo bins for one Rust project, language toolchains for one stack). This file is the *machine map*, not a project inventory.
-- Anything that lives in a `.env`, project `package.json`, or repo config — that's project-scoped.
+- Anything that lives in a `.env`, project `package.json`, or repo config, that's project-scoped.
 
 ---
 
 ## Keeping this file fresh
 
-Once populated, this file should stay accurate. Update it opportunistically when you observe a relevant change in the current session — you don't need to ask permission for narrow edits.
+Once populated, this file should stay accurate. Update it opportunistically when you observe a relevant change in the current session, you don't need to ask permission for narrow edits.
 
 **Update when you see:**
 - A successful machine-wide install or uninstall: `brew install/uninstall`, `npm i -g`, `pnpm add -g`, `cargo install`, `pipx install`, `gem install`, `go install`, downloaded CLI binaries placed on `$PATH`.

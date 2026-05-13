@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# VibeStack Installer (v2 — user-level)
+# VibeStack Installer (v2, user-level)
 # Installs VibeStack skills, hooks, and settings into the user's ~/.claude/
 # directory so they apply across every project on this machine.
 #
@@ -62,7 +62,7 @@ if command -v claude >/dev/null 2>&1; then
   echo -e "${DIM}Claude CLI detected: $(claude --version 2>/dev/null | head -1)${RESET}"
 else
   echo -e "${YELLOW}Claude CLI not found on \$PATH.${RESET}"
-  echo "  VibeStack ships skills, hooks, and settings — but the LSP and frontend-design"
+  echo "  VibeStack ships skills, hooks, and settings, but the LSP and frontend-design"
   echo "  plugins need the Claude CLI to install. Without it, those plugins won't be set up."
   echo ""
   if ask_yes "  Install Claude CLI now (via official installer)?"; then
@@ -107,7 +107,7 @@ else
   merged_json=$(/usr/bin/python3 -c "
 import json, sys
 
-# Paths VibeStack overrides unconditionally — these define the core opinion
+# Paths VibeStack overrides unconditionally, these define the core opinion
 # of the framework and clobber any prior user setting after the merge.
 CLOBBER_PATHS = [
     ('skipDangerousModePermissionPrompt',),
@@ -209,13 +209,13 @@ if $CLAUDE_AVAILABLE; then
     redirect=">/dev/null 2>&1"
   fi
 
-  # Add claude-plugins-official first — it serves the LSP + frontend-design
+  # Add claude-plugins-official first, it serves the LSP + frontend-design
   # plugins that VibeStack declares as cross-marketplace dependencies. Fresh
   # Claude installs have no marketplaces configured, so this must be explicit.
   if eval "claude plugin marketplace add anthropics/claude-plugins-official $redirect"; then
     echo -e "  ${GREEN}ok${RESET}    marketplace: anthropics/claude-plugins-official"
   else
-    echo -e "  ${DIM}note${RESET}  marketplace: anthropics/claude-plugins-official (already added or failed — continuing)"
+    echo -e "  ${DIM}note${RESET}  marketplace: anthropics/claude-plugins-official (already added or failed, continuing)"
   fi
 
   # Then add the VibeStack marketplace. allowCrossMarketplaceDependenciesOn in
@@ -223,14 +223,14 @@ if $CLAUDE_AVAILABLE; then
   if eval "claude plugin marketplace add \"$MARKETPLACE_REF\" $redirect"; then
     echo -e "  ${GREEN}ok${RESET}    marketplace: $MARKETPLACE_REF"
   else
-    echo -e "  ${DIM}note${RESET}  marketplace: $MARKETPLACE_REF (already added or failed — continuing)"
+    echo -e "  ${DIM}note${RESET}  marketplace: $MARKETPLACE_REF (already added or failed, continuing)"
   fi
 
-  # Install vibestack — its dependencies handle the rest.
+  # Install vibestack, its dependencies handle the rest.
   if eval "claude plugin install \"vibestack@vibestackmd-vibestack\" --scope user $redirect"; then
     echo -e "  ${GREEN}ok${RESET}    vibestack@vibestackmd-vibestack (+ chain-installed dependencies)"
   else
-    echo -e "  ${YELLOW}skip${RESET}  vibestack plugin install failed — run \`claude plugin install vibestack@vibestackmd-vibestack\` manually"
+    echo -e "  ${YELLOW}skip${RESET}  vibestack plugin install failed, run \`claude plugin install vibestack@vibestackmd-vibestack\` manually"
   fi
 fi
 
@@ -254,10 +254,10 @@ echo -e "${CYAN}── Optional: Dev Environment Setup ──${RESET}"
 echo ""
 echo "VibeStack ships an opinionated dev-tools installer that sets up your entire"
 echo "development environment in one pass. It's designed so every developer on"
-echo "a team has the same tools available — and so Claude has CLI access to the"
+echo "a team has the same tools available, and so Claude has CLI access to the"
 echo "most popular platforms."
 echo ""
-echo "  What it installs (each tool is optional — you pick during setup):"
+echo "  What it installs (each tool is optional, you pick during setup):"
 echo ""
 echo "    Languages & Runtimes   Node.js (via NVM), PNPM, Deno, Rust"
 echo "    Cloud & Deploy         AWS CLI, Vercel CLI, Supabase CLI"
@@ -269,7 +269,7 @@ echo "    Utilities              Zsh (Linux)"
 echo ""
 echo -e "  ${YELLOW}This is opinionated.${RESET} It installs real tools globally and offers to log"
 echo "  you into services. Great for onboarding new devs or standardizing a team."
-echo "  Every tool prompts individually — nothing is installed without asking."
+echo "  Every tool prompts individually, nothing is installed without asking."
 echo ""
 
 if [[ "${SKIP_DEVTOOLS:-0}" == "1" ]]; then
@@ -293,7 +293,7 @@ elif $is_windows_native; then
   echo ""
 else
   if $is_wsl; then
-    echo -e "  ${DIM}Detected: WSL — the installer handles WSL-specific setup automatically.${RESET}"
+    echo -e "  ${DIM}Detected: WSL, the installer handles WSL-specific setup automatically.${RESET}"
     echo ""
   fi
   if ! ask "  Run the dev-tools installer now?"; then
@@ -311,7 +311,7 @@ fi
 echo ""
 echo "Next steps:"
 echo "  • Open Claude Code in any project and run /vibestack to scaffold it"
-echo "  • All VibeStack skills are now available globally — no per-project install needed"
+echo "  • All VibeStack skills are now available globally, no per-project install needed"
 if ! $CLAUDE_AVAILABLE; then
   echo ""
   echo "  ${YELLOW}Plugin install was skipped${RESET} (Claude CLI not available)."

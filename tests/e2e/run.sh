@@ -3,7 +3,7 @@
 # VibeStack E2E Test Runner
 #
 # Builds Docker images, runs tests in containers, destroys everything after.
-# All containers are ephemeral — nothing persists after the run.
+# All containers are ephemeral, nothing persists after the run.
 #
 # Usage:
 #   ./tests/e2e/run.sh              # Run all tests
@@ -13,11 +13,11 @@
 # Suites: ubuntu, wsl, preinstalled, local-marketplace
 #
 # The "ubuntu" suite runs both the main installer and dev-tools installer
-# (installs real tools — takes ~5 min). Other suites are faster.
+# (installs real tools, takes ~5 min). Other suites are faster.
 #
 # The "local-marketplace" suite installs the real Claude CLI in the image and
 # runs install.sh against a locally-built marketplace at dist/test-marketplace
-# — this is the only suite that exercises the full plugin-install flow against
+#, this is the only suite that exercises the full plugin-install flow against
 # the about-to-ship plugin. Requires `make plugin` first.
 #
 # Requires: Docker
@@ -87,11 +87,11 @@ trap cleanup EXIT
 build_image() {
   local name="$1"
   local dockerfile="$2"
-  # Skip rebuild if the image is already loaded — lets CI pre-build via
+  # Skip rebuild if the image is already loaded, lets CI pre-build via
   # docker/build-push-action with GHA cache and have run.sh reuse the result.
   # Local devs still get a fresh build on first run.
   if docker image inspect "${IMAGE_PREFIX}-${name}" >/dev/null 2>&1; then
-    echo -e "${CYAN}Image ${name} already loaded — skipping build${RESET}"
+    echo -e "${CYAN}Image ${name} already loaded, skipping build${RESET}"
     return
   fi
   echo -e "${CYAN}Building ${name}...${RESET}"
@@ -165,20 +165,20 @@ for suite in "${SUITES[@]}"; do
       fi
       ;;
     wsl)
-      # WSL simulation — runs privileged so we can bind-mount over /proc/version
+      # WSL simulation, runs privileged so we can bind-mount over /proc/version
       run_test "wsl" "wsl" "test-wsl-wrapper.sh" --privileged || true
       ;;
     preinstalled)
-      # Pre-installed tools — tests skip/idempotency behavior
+      # Pre-installed tools, tests skip/idempotency behavior
       run_test "preinstalled" "preinstalled" "test-preinstalled.sh" || true
       ;;
     local-marketplace)
-      # Real Claude CLI + locally-built marketplace — validates the full
+      # Real Claude CLI + locally-built marketplace, validates the full
       # `claude plugin install` flow against the about-to-ship plugin.
       # Requires `make plugin` to have run on the host (consumes
       # dist/test-marketplace from the bind-mounted repo).
       if [[ ! -f "$REPO_DIR/dist/test-marketplace/.claude-plugin/marketplace.json" ]]; then
-        echo -e "${YELLOW}Skipping local-marketplace: dist/test-marketplace missing — run 'make plugin' first.${RESET}"
+        echo -e "${YELLOW}Skipping local-marketplace: dist/test-marketplace missing, run 'make plugin' first.${RESET}"
         suite_results+=("${YELLOW}SKIP${RESET}  local-marketplace (run 'make plugin' first)")
       else
         run_test "local-marketplace" "local-marketplace" "test-local-marketplace.sh" || true

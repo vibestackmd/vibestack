@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Test the v2 VibeStack installer — user-level settings + plugin install bootstrap.
+# Test the v2 VibeStack installer, user-level settings + plugin install bootstrap.
 #
 # In v2, install.sh ONLY:
 #   1. Detects/offers to install the Claude CLI
@@ -32,7 +32,7 @@ assert_file_exists() {
 
 assert_file_absent() {
   if [[ ! -e "$1" ]]; then
-    echo -e "  ${GREEN}PASS${RESET}  $1 not present (correct for v2 — plugin owns this)"
+    echo -e "  ${GREEN}PASS${RESET}  $1 not present (correct for v2, plugin owns this)"
     ((++pass))
   else
     echo -e "  ${RED}FAIL${RESET}  $1 should not exist (file drops moved to plugin install path)"
@@ -106,7 +106,7 @@ echo -e "${CYAN}--- Output messaging (Claude CLI absent in Docker) ---${RESET}"
 # In Docker, claude isn't installed and ask_yes returns true under NONINTERACTIVE=1.
 # Either: (a) the install attempt failed (curl can't reach claude.ai), and we get
 # the fallback message, OR (b) the install succeeded and plugin install ran.
-# We accept either — the script should not crash.
+# We accept either, the script should not crash.
 assert_output_contains "$output" "Claude CLI"
 
 echo ""

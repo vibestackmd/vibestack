@@ -1,6 +1,6 @@
 ---
 name: cicd
-description: Set up a self-contained GitHub Actions CI workflow for the current project. Detects language(s) from the codebase (TS/JS, Python, Go, Rust) and writes `.github/workflows/ci.yml` with lint, test, and build gates. Idempotent — skips if the workflow already exists unless the user asks to reconcile.
+description: Set up a self-contained GitHub Actions CI workflow for the current project. Detects language(s) from the codebase (TS/JS, Python, Go, Rust) and writes `.github/workflows/ci.yml` with lint, test, and build gates. Idempotent, skips if the workflow already exists unless the user asks to reconcile.
 user_invocable: true
 ---
 
@@ -16,7 +16,7 @@ Generate a self-contained `.github/workflows/ci.yml` tailored to the project's l
 
 ### 1. Detect the language stack
 
-Read the repo root and identify which of the supported languages are in play. Look for these markers (a project can be polyglot — generate jobs for every language found):
+Read the repo root and identify which of the supported languages are in play. Look for these markers (a project can be polyglot, generate jobs for every language found):
 
 | Language | Marker files |
 |---|---|
@@ -74,7 +74,7 @@ jobs:
       - run: npm run build --if-present
 ```
 
-**Python job.** Default to pip + pyproject.toml. If `poetry.lock` is present use poetry; if `uv.lock` is present use uv. Run ruff if `ruff` appears in pyproject deps or `ruff.toml`/`.ruff.toml` exists. Run pytest unconditionally — the project will fail-fast if no tests exist, which is fine.
+**Python job.** Default to pip + pyproject.toml. If `poetry.lock` is present use poetry; if `uv.lock` is present use uv. Run ruff if `ruff` appears in pyproject deps or `ruff.toml`/`.ruff.toml` exists. Run pytest unconditionally, the project will fail-fast if no tests exist, which is fine.
 
 ```yaml
   python:
@@ -91,7 +91,7 @@ jobs:
       - run: pytest
 ```
 
-(If the ruff conditional is too clever, just emit a plain `ruff check . || true` — getting a real ruff signal matters more than perfect conditional gating.)
+(If the ruff conditional is too clever, just emit a plain `ruff check . || true`, getting a real ruff signal matters more than perfect conditional gating.)
 
 **Go job.** Read `go.mod` for the module's Go version directive and use it.
 
@@ -133,12 +133,12 @@ Create `.github/workflows/` if it doesn't exist, then write the assembled YAML t
 
 Report:
 - Languages detected and the corresponding jobs added.
-- Package manager detected for Node (npm/pnpm/yarn/bun) — important so they know what `npm ci` resolved to.
+- Package manager detected for Node (npm/pnpm/yarn/bun), important so they know what `npm ci` resolved to.
 - File path written.
 - Whether anything was skipped (e.g., workflow already existed and covered everything).
 - Next step: commit, push, and open a PR to see the workflow run.
 
-If the project uses an unusual setup (custom test commands, non-standard layout, monorepo with multiple packages), flag it — the generated workflow assumes the project root holds the package config. Suggest manual edits if that doesn't hold.
+If the project uses an unusual setup (custom test commands, non-standard layout, monorepo with multiple packages), flag it, the generated workflow assumes the project root holds the package config. Suggest manual edits if that doesn't hold.
 
 ## What this skill does NOT do
 

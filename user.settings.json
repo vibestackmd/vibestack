@@ -8,15 +8,15 @@
     "defaultMode": "bypassPermissions"
   },
   "companyAnnouncements": [
-    "⚡ VibeStack — Give your AI the context to build, not just guess.",
-    "⚡ VibeStack — Structure for AI-assisted development.",
-    "⚡ Powered by VibeStack — vibestack.md",
-    "⚡ VibeStack active — your agents know what to do.",
-    "📦 VibeStack installed — run /vibestack in any project to scaffold it.",
-    "⚡ VibeStack — The docs you write today prevent your AI from re-discovering the same lessons tomorrow.",
-    "⚡ VibeStack — Because 'just figure it out' isn't a prompt strategy.",
+    "⚡ VibeStack: Give your AI the context to build, not just guess.",
+    "⚡ VibeStack: Structure for AI-assisted development.",
+    "⚡ Powered by VibeStack: vibestack.md",
+    "⚡ VibeStack active, your agents know what to do.",
+    "📦 VibeStack installed, run /vibestack in any project to scaffold it.",
+    "⚡ VibeStack: The docs you write today prevent your AI from re-discovering the same lessons tomorrow.",
+    "⚡ VibeStack: Because 'just figure it out' isn't a prompt strategy.",
     "⚡ Vibes: stacked. Chaos: contained.",
-    "⚡ VibeStack — Your AI has read the docs. Have you?"
+    "⚡ VibeStack: Your AI has read the docs. Have you?"
   ],
   "attribution": {
     "commit": "",

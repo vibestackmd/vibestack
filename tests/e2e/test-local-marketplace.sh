@@ -42,7 +42,7 @@ echo ""
 
 # ── Preflight ───────────────────────────────────────────
 if ! command -v claude >/dev/null 2>&1; then
-  echo -e "${RED}Claude CLI not on PATH — this test requires the local-marketplace Docker image.${RESET}"
+  echo -e "${RED}Claude CLI not on PATH, this test requires the local-marketplace Docker image.${RESET}"
   exit 1
 fi
 echo -e "${YELLOW}Claude CLI:${RESET} $(claude --version)"
@@ -51,7 +51,7 @@ VERSION=$(tr -d '[:space:]' < /vibestack/VERSION)
 TEST_MARKET="/vibestack/dist/test-marketplace"
 
 if [[ ! -f "$TEST_MARKET/.claude-plugin/marketplace.json" ]]; then
-  echo -e "${RED}Test marketplace not found at $TEST_MARKET — run 'make plugin' on the host first.${RESET}"
+  echo -e "${RED}Test marketplace not found at $TEST_MARKET, run 'make plugin' on the host first.${RESET}"
   exit 1
 fi
 
@@ -92,7 +92,7 @@ echo "$plugin_list"
 assert_output_contains "$plugin_list" "vibestack"
 assert_output_contains "$plugin_list" "$VERSION"
 
-# Plugin must actually load — catches missing dependencies / bad manifests.
+# Plugin must actually load, catches missing dependencies / bad manifests.
 # Without this check, an install that succeeds but fails to load would pass.
 clean_plugin_list=$(echo "$plugin_list" | sed 's/\x1b\[[0-9;]*m//g')
 if echo "$clean_plugin_list" | grep -qE "failed to load|Error:"; then
@@ -112,7 +112,7 @@ PLUGIN_DIR="$HOME/.claude/plugins/cache/vibestackmd-vibestack/vibestack/$VERSION
 # Fall back to a glob if the exact path isn't there yet (Claude versions may
 # differ in their on-disk layout). Find the actual path for diagnostics.
 if [[ ! -d "$PLUGIN_DIR" ]]; then
-  echo -e "  ${YELLOW}note${RESET}  Expected $PLUGIN_DIR — searching for actual install location..."
+  echo -e "  ${YELLOW}note${RESET}  Expected $PLUGIN_DIR, searching for actual install location..."
   found=$(find "$HOME/.claude/plugins" -name "plugin.json" -path "*vibestack*" 2>/dev/null | head -5 || true)
   if [[ -n "$found" ]]; then
     echo "  Found plugin.json at:"

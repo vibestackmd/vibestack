@@ -62,7 +62,7 @@ echo -e "${CYAN}--- VibeStack values added where absent ---${RESET}"
 # These keys weren't in the user's pre-existing file, so they should now be present.
 # Note: the Stop hook lives in hooks/hooks.json under the plugin root and statusLine
 # lives in user-level settings.json with a path pointing to ~/.claude/hooks/statusline.sh
-# (which install.sh drops). enabledPlugins is NOT in user.settings.json — chain-install
+# (which install.sh drops). enabledPlugins is NOT in user.settings.json, chain-install
 # via plugin.json `dependencies` is the single source of truth.
 assert_file_contains "$USER_DIR/settings.json" "skipDangerousModePermissionPrompt"
 assert_file_contains "$USER_DIR/settings.json" "statusLine"

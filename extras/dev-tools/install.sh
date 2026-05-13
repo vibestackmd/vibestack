@@ -2,7 +2,7 @@
 #
 # VibeStack Dev Tools Installer (cross-platform: macOS + Linux/WSL Ubuntu)
 #
-# Sets up common developer CLIs. Safe to re-run — skips installed tools/logins.
+# Sets up common developer CLIs. Safe to re-run, skips installed tools/logins.
 #
 # Usage:
 #   curl -fsSL https://raw.githubusercontent.com/vibestackmd/vibestack/main/kit/extras/dev-tools/install.sh | bash
@@ -24,8 +24,8 @@ DIVIDER="───────────────────────�
 
 echo ""
 echo -e "${CYAN}${BOLD}VibeStack Dev Tools Installer${RESET}"
-echo "macOS or Linux/WSL — common dev CLIs"
-echo "Each tool is optional — answer the prompts to pick what you need."
+echo "macOS or Linux/WSL, common dev CLIs"
+echo "Each tool is optional, answer the prompts to pick what you need."
 echo "Safe to re-run: already-installed tools and active logins are skipped."
 echo ""
 
@@ -76,7 +76,7 @@ reload_config() {
   # Re-add common paths so newly-installed tools are found immediately.
   # Avoids sourcing .zshrc/.bashrc which can have side effects or exit codes.
   export PATH="$HOME/.local/bin:/opt/homebrew/bin:/usr/local/bin:$HOME/.cargo/bin:$HOME/.deno/bin:$PATH"
-  # nvm.sh has unbound variables — temporarily disable -u while sourcing it.
+  # nvm.sh has unbound variables, temporarily disable -u while sourcing it.
   if [[ -s "$HOME/.nvm/nvm.sh" ]]; then
     set +u
     \. "$HOME/.nvm/nvm.sh" --no-use 2>/dev/null || true
@@ -155,7 +155,7 @@ if [[ "$OS" == "linux" ]]; then
         sudo apt-get install -y wslu
         track "wslu" "installed"
       else
-        echo -e "  ${YELLOW}Skipped — some login commands may not open a browser automatically.${RESET}"
+        echo -e "  ${YELLOW}Skipped, some login commands may not open a browser automatically.${RESET}"
         track "wslu" "skipped"
       fi
     else
@@ -229,9 +229,9 @@ fi
 
 section "Oh My Zsh"
 if ! command -v zsh >/dev/null 2>&1; then
-  echo -e "  ${DIM}Zsh not installed — skipping.${RESET}"
+  echo -e "  ${DIM}Zsh not installed, skipping.${RESET}"
 elif ! command -v git >/dev/null 2>&1; then
-  echo -e "  ${DIM}Git not installed — skipping (Oh My Zsh requires git).${RESET}"
+  echo -e "  ${DIM}Git not installed, skipping (Oh My Zsh requires git).${RESET}"
 else
   if [[ -d "$HOME/.oh-my-zsh" ]]; then
     ok "Already installed."
@@ -291,7 +291,7 @@ export NVM_DIR="$HOME/.nvm"
 export DENO_INSTALL="$HOME/.deno"
 [ -d "$DENO_INSTALL" ] && export PATH="$DENO_INSTALL/bin:$PATH"
 
-# SSH agent (WSL) — auto-start so keys persist across sessions
+# SSH agent (WSL), auto-start so keys persist across sessions
 if grep -qi microsoft /proc/version 2>/dev/null; then
   if [ -z "$SSH_AUTH_SOCK" ]; then
     eval "$(ssh-agent -s)" >/dev/null 2>&1
@@ -390,7 +390,7 @@ fi
 # created earlier already includes this, so the grep guard skips duplicates.
 if $WSL && [[ -f "$SSH_KEY_PATH.pub" ]]; then
   SSH_AGENT_SNIPPET='
-# SSH agent (WSL) — auto-start so keys persist across sessions
+# SSH agent (WSL), auto-start so keys persist across sessions
 if [ -z "$SSH_AUTH_SOCK" ]; then
   eval "$(ssh-agent -s)" >/dev/null 2>&1
   find ~/.ssh -name "id_*" ! -name "*.pub" -exec ssh-add {} \; 2>/dev/null
@@ -418,7 +418,7 @@ if [[ "$OS" == "macos" ]]; then
       /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
       track "Homebrew" "installed"
     else
-      echo -e "  ${YELLOW}Skipped — some tools below require Homebrew.${RESET}"
+      echo -e "  ${YELLOW}Skipped, some tools below require Homebrew.${RESET}"
       track "Homebrew" "skipped"
     fi
   fi
@@ -479,7 +479,7 @@ else
       track "PNPM" "skipped"
     fi
   else
-    echo -e "  ${DIM}Corepack not available — install Node.js first to enable PNPM.${RESET}"
+    echo -e "  ${DIM}Corepack not available, install Node.js first to enable PNPM.${RESET}"
     track "PNPM" "skipped"
   fi
 fi
@@ -521,10 +521,10 @@ section "Language Servers (LSP)"
 
 lsp_any_installed=false
 
-# TypeScript / JavaScript — typescript-language-server (npm)
+# TypeScript / JavaScript, typescript-language-server (npm)
 if command -v node >/dev/null 2>&1; then
   if command -v typescript-language-server >/dev/null 2>&1; then
-    ok "typescript-language-server — already installed."
+    ok "typescript-language-server, already installed."
   elif ask "  Install typescript-language-server (TypeScript/JS LSP)?"; then
     npm install -g typescript typescript-language-server
     lsp_any_installed=true
@@ -534,14 +534,14 @@ if command -v node >/dev/null 2>&1; then
   fi
   echo ""
 else
-  echo -e "  ${DIM}Node.js not installed — skipping typescript-language-server.${RESET}"
+  echo -e "  ${DIM}Node.js not installed, skipping typescript-language-server.${RESET}"
   echo ""
 fi
 
-# Python — pyright (npm, by Microsoft — industry standard)
+# Python, pyright (npm, by Microsoft, industry standard)
 if command -v node >/dev/null 2>&1; then
   if command -v pyright >/dev/null 2>&1; then
-    ok "pyright — already installed."
+    ok "pyright, already installed."
   elif ask "  Install pyright (Python LSP)?"; then
     npm install -g pyright
     lsp_any_installed=true
@@ -551,14 +551,14 @@ if command -v node >/dev/null 2>&1; then
   fi
   echo ""
 else
-  echo -e "  ${DIM}Node.js not installed — skipping pyright.${RESET}"
+  echo -e "  ${DIM}Node.js not installed, skipping pyright.${RESET}"
   echo ""
 fi
 
-# Rust — rust-analyzer (rustup component)
+# Rust, rust-analyzer (rustup component)
 if command -v rustup >/dev/null 2>&1; then
   if rustup component list --installed 2>/dev/null | grep -q rust-analyzer; then
-    ok "rust-analyzer — already installed."
+    ok "rust-analyzer, already installed."
   elif ask "  Install rust-analyzer (Rust LSP)?"; then
     rustup component add rust-analyzer
     lsp_any_installed=true
@@ -568,14 +568,14 @@ if command -v rustup >/dev/null 2>&1; then
   fi
   echo ""
 else
-  echo -e "  ${DIM}Rust not installed — skipping rust-analyzer.${RESET}"
+  echo -e "  ${DIM}Rust not installed, skipping rust-analyzer.${RESET}"
   echo ""
 fi
 
-# Go — gopls (official Go LSP)
+# Go, gopls (official Go LSP)
 if command -v go >/dev/null 2>&1; then
   if command -v gopls >/dev/null 2>&1; then
-    ok "gopls — already installed."
+    ok "gopls, already installed."
   elif ask "  Install gopls (Go LSP)?"; then
     go install golang.org/x/tools/gopls@latest
     lsp_any_installed=true
@@ -585,7 +585,7 @@ if command -v go >/dev/null 2>&1; then
   fi
   echo ""
 else
-  echo -e "  ${DIM}Go not installed — skipping gopls.${RESET}"
+  echo -e "  ${DIM}Go not installed, skipping gopls.${RESET}"
   echo ""
 fi
 
@@ -604,7 +604,7 @@ install_tool() {
   # If no --, same command for both.
 
   if command -v "$cmd" >/dev/null 2>&1; then
-    ok "$label — already installed."
+    ok "$label, already installed."
     return
   fi
 
@@ -621,7 +621,7 @@ install_tool() {
   track "$label" "installed"
 }
 
-# Vercel CLI (npm — same on both)
+# Vercel CLI (npm, same on both)
 install_tool "vercel" "Vercel CLI" \
   "npm install -g vercel" \
   "npm install -g vercel"
@@ -629,7 +629,7 @@ echo ""
 
 # Supabase CLI
 if command -v supabase >/dev/null 2>&1; then
-  ok "Supabase CLI — already installed."
+  ok "Supabase CLI, already installed."
 elif ask "  Install Supabase CLI?"; then
   if [[ "$OS" == "macos" ]]; then
     brew install supabase/tap/supabase
@@ -647,7 +647,7 @@ echo ""
 
 # GitHub CLI
 if command -v gh >/dev/null 2>&1; then
-  ok "GitHub CLI — already installed."
+  ok "GitHub CLI, already installed."
 elif ask "  Install GitHub CLI?"; then
   if [[ "$OS" == "macos" ]]; then
     brew install gh
@@ -666,7 +666,7 @@ echo ""
 
 # Stripe CLI
 if command -v stripe >/dev/null 2>&1; then
-  ok "Stripe CLI — already installed."
+  ok "Stripe CLI, already installed."
 elif ask "  Install Stripe CLI?"; then
   if [[ "$OS" == "macos" ]]; then
     brew install stripe/stripe-cli/stripe
@@ -687,9 +687,9 @@ install_tool "psql" "PostgreSQL CLI (psql)" \
   "sudo apt-get update && sudo apt-get install -y postgresql-client"
 echo ""
 
-# AWS CLI (special — different install method per OS)
+# AWS CLI (special, different install method per OS)
 if command -v aws >/dev/null 2>&1; then
-  ok "AWS CLI — already installed."
+  ok "AWS CLI, already installed."
 elif ask "  Install AWS CLI v2?"; then
   if [[ "$OS" == "macos" ]]; then
     curl -s "https://awscli.amazonaws.com/AWSCLIV2.pkg" -o "/tmp/AWSCLIV2.pkg"
@@ -715,7 +715,7 @@ echo ""
 
 # jq (JSON processor)
 if command -v jq >/dev/null 2>&1; then
-  ok "jq — already installed."
+  ok "jq, already installed."
 elif ask "  Install jq (JSON processor)?"; then
   if [[ "$OS" == "macos" ]]; then
     brew install jq
@@ -739,52 +739,52 @@ if [[ "${NONINTERACTIVE:-0}" == "1" ]]; then
 else
   echo "Already-authenticated services are automatically skipped."
   if $WSL; then
-    echo -e "${DIM}  WSL: Login commands will print a URL — open it in your Windows browser.${RESET}"
+    echo -e "${DIM}  WSL: Login commands will print a URL, open it in your Windows browser.${RESET}"
     echo -e "${DIM}  If a login hangs, press Ctrl+C to skip it. You can always log in later.${RESET}"
   fi
   echo ""
 
   if command -v vercel >/dev/null 2>&1; then
     if vercel whoami >/dev/null 2>&1; then
-      ok "Vercel — already logged in ($(vercel whoami 2>/dev/null))."
+      ok "Vercel, already logged in ($(vercel whoami 2>/dev/null))."
     elif ask "  Log in to Vercel?"; then
-      vercel login < /dev/tty || echo -e "  ${YELLOW}Vercel login incomplete — run 'vercel login' later to finish.${RESET}"
+      vercel login < /dev/tty || echo -e "  ${YELLOW}Vercel login incomplete, run 'vercel login' later to finish.${RESET}"
     fi
     echo ""
   fi
 
   if command -v supabase >/dev/null 2>&1; then
     if supabase projects list >/dev/null 2>&1; then
-      ok "Supabase — already logged in."
+      ok "Supabase, already logged in."
     elif ask "  Log in to Supabase?"; then
-      supabase login < /dev/tty || echo -e "  ${YELLOW}Supabase login incomplete — run 'supabase login' later to finish.${RESET}"
+      supabase login < /dev/tty || echo -e "  ${YELLOW}Supabase login incomplete, run 'supabase login' later to finish.${RESET}"
     fi
     echo ""
   fi
 
   if command -v gh >/dev/null 2>&1; then
     if gh auth status >/dev/null 2>&1; then
-      ok "GitHub — already logged in."
+      ok "GitHub, already logged in."
     elif ask "  Log in to GitHub?"; then
-      gh auth login < /dev/tty || echo -e "  ${YELLOW}GitHub login incomplete — run 'gh auth login' later to finish.${RESET}"
+      gh auth login < /dev/tty || echo -e "  ${YELLOW}GitHub login incomplete, run 'gh auth login' later to finish.${RESET}"
     fi
     echo ""
   fi
 
   if command -v aws >/dev/null 2>&1; then
     if aws sts get-caller-identity >/dev/null 2>&1; then
-      ok "AWS — already configured."
+      ok "AWS, already configured."
     elif ask "  Configure AWS credentials?"; then
-      aws configure < /dev/tty || echo -e "  ${YELLOW}AWS config incomplete — run 'aws configure' later to finish.${RESET}"
+      aws configure < /dev/tty || echo -e "  ${YELLOW}AWS config incomplete, run 'aws configure' later to finish.${RESET}"
     fi
     echo ""
   fi
 
   if command -v stripe >/dev/null 2>&1; then
     if stripe config --list >/dev/null 2>&1; then
-      ok "Stripe — already logged in."
+      ok "Stripe, already logged in."
     elif ask "  Log in to Stripe?"; then
-      stripe login < /dev/tty || echo -e "  ${YELLOW}Stripe login incomplete — run 'stripe login' later to finish.${RESET}"
+      stripe login < /dev/tty || echo -e "  ${YELLOW}Stripe login incomplete, run 'stripe login' later to finish.${RESET}"
     fi
     echo ""
   fi
@@ -845,21 +845,21 @@ for rc in "$HOME/.zshrc" "$HOME/.bashrc" "$HOME/.bash_profile" "$HOME/.profile";
 done
 
 if $claw_found; then
-  ok "claw alias — already configured."
+  ok "claw alias, already configured."
 else
   echo -e "  The ${BOLD}claw${RESET} alias runs Claude in bypass-permissions mode:"
   echo ""
   echo -e "    ${DIM}${CLAW_ALIAS}${RESET}"
   echo ""
   echo "  VibeStack's philosophy is that AI agents should run uninterrupted."
-  echo "  Safety belongs in CI — linters, tests, and pre-commit hooks — not"
+  echo "  Safety belongs in CI, linters, tests, and pre-commit hooks, not"
   echo "  in interactive permission prompts that slow the agent down."
   echo ""
   if ask "  Add the claw alias to $SHELL_RC?"; then
     echo "" >> "$SHELL_RC"
     echo "# VibeStack: run Claude without permission prompts (safety enforced via CI)" >> "$SHELL_RC"
     echo "$CLAW_ALIAS" >> "$SHELL_RC"
-    ok "Added to $SHELL_RC — available after restarting your terminal."
+    ok "Added to $SHELL_RC, available after restarting your terminal."
     track "claw alias" "installed"
   else
     track "claw alias" "skipped"
@@ -881,7 +881,7 @@ else
         brew install --cask visual-studio-code
         track "VS Code" "installed"
       else
-        echo -e "  ${YELLOW}Homebrew not available — install Homebrew first or download VS Code manually.${RESET}"
+        echo -e "  ${YELLOW}Homebrew not available, install Homebrew first or download VS Code manually.${RESET}"
         track "VS Code" "skipped"
       fi
     else
@@ -907,7 +907,7 @@ fi
 if command -v code >/dev/null 2>&1; then
   echo ""
   if code --list-extensions 2>/dev/null | grep -q "anthropic.claude-code"; then
-    ok "Claude Code extension — already installed."
+    ok "Claude Code extension, already installed."
   elif ask "  Install Claude Code extension for VS Code?"; then
     code --install-extension anthropic.claude-code
     track "Claude Code Extension" "installed"
@@ -928,14 +928,14 @@ for vf in "$HOME/.vimrc" "$HOME/.vim/vimrc" "$HOME/.config/nvim/init.vim" "$HOME
 done
 
 if $vim_configured; then
-  ok "Vim config already exists — skipping."
+  ok "Vim config already exists, skipping."
 else
   echo "  Adds syntax highlighting, line numbers, and sensible defaults to Vim."
   echo ""
   if ask "  Configure Vim syntax highlighting?"; then
     if [[ ! -f "$HOME/.vimrc" ]]; then
       cat > "$HOME/.vimrc" << 'VIMRC'
-" ~/.vimrc — sensible defaults (added by vibestack installer)
+" ~/.vimrc, sensible defaults (added by vibestack installer)
 syntax on
 filetype plugin indent on
 set number
@@ -965,7 +965,7 @@ VIMRC
   fi
 fi
 
-# ── 13. Xcode Command Line Tools (macOS only — last, large download)
+# ── 13. Xcode Command Line Tools (macOS only, last, large download)
 
 if [[ "$OS" == "macos" ]]; then
   section "Xcode Command Line Tools"

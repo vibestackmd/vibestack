@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Build VibeStack plugin artifacts from the in-tree plugin sources.
 #
-# Under the v3 layout, the repo root IS the plugin root — `.claude-plugin/`,
+# Under the v3 layout, the repo root IS the plugin root, `.claude-plugin/`,
 # `skills/`, and `hooks/` live at root. Production installs
 # pull directly from the repo via `claude plugin marketplace add vibestackmd/vibestack`,
 # so this script's only jobs are:
@@ -69,7 +69,7 @@ REQUIRED_FILES=(
   "hooks/statusline.sh"
 )
 
-SKILLS=(vibestack todo squad docs bosskey ideate cli-first developer-environment lsp cicd)
+SKILLS=(vibestack todo squad docs bosskey ideate cli-first developer-environment lsp cicd prose)
 for skill in "${SKILLS[@]}"; do
   REQUIRED_FILES+=("skills/$skill/SKILL.md")
 done

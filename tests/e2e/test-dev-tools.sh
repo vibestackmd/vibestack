@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Test the dev-tools installer (tool installation on fresh Ubuntu)
 #
-# This test installs real tools — it's slow (~3-5 min) but validates the
+# This test installs real tools, it's slow (~3-5 min) but validates the
 # actual install paths. Runs with NONINTERACTIVE=1 to auto-accept everything
 # and skip service logins.
 set -euo pipefail
@@ -16,7 +16,7 @@ pass=0
 fail=0
 
 assert_command_exists() {
-  # Reload PATH before checking — tools may have been installed to new locations
+  # Reload PATH before checking, tools may have been installed to new locations
   export PATH="$HOME/.local/bin:/opt/homebrew/bin:/usr/local/bin:$HOME/.cargo/bin:$HOME/.deno/bin:$HOME/.nvm/versions/node/$(ls "$HOME/.nvm/versions/node/" 2>/dev/null | tail -1)/bin:$PATH"
   if command -v "$1" >/dev/null 2>&1; then
     echo -e "  ${GREEN}PASS${RESET}  $1 is installed"
@@ -111,7 +111,7 @@ assert_command_exists "psql"
 echo ""
 echo -e "${CYAN}--- Checking CLI tools ---${RESET}"
 
-# These install via npm or direct download — should all be present
+# These install via npm or direct download, should all be present
 # Vercel (npm global)
 assert_command_exists "vercel"
 
@@ -153,7 +153,7 @@ fi
 echo ""
 echo -e "${CYAN}--- Re-run test (idempotency) ---${RESET}"
 
-# Run again — everything should report "already installed"
+# Run again, everything should report "already installed"
 output=$(bash /vibestack/extras/dev-tools/install.sh 2>&1) || true
 
 already_count=$(echo "$output" | sed 's/\x1b\[[0-9;]*m//g' | grep -ciE "already installed|already set|already configured|already exists" || true)
@@ -162,7 +162,7 @@ if [[ $already_count -ge 5 ]]; then
   ((++pass))
 else
   echo -e "  ${YELLOW}WARN${RESET}  Re-run only detected $already_count already-installed items (expected 5+)"
-  ((++pass))  # Not a hard failure — some tools detect differently
+  ((++pass))  # Not a hard failure, some tools detect differently
 fi
 
 # ── Summary ─────────────────────────────────────────────

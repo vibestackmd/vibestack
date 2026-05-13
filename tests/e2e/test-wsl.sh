@@ -30,7 +30,7 @@ if grep -qi microsoft /proc/version 2>/dev/null; then
   echo -e "  ${GREEN}PASS${RESET}  /proc/version contains 'microsoft'"
   ((++pass))
 else
-  echo -e "  ${RED}FAIL${RESET}  /proc/version does not contain 'microsoft' — WSL simulation broken"
+  echo -e "  ${RED}FAIL${RESET}  /proc/version does not contain 'microsoft', WSL simulation broken"
   ((++fail))
 fi
 

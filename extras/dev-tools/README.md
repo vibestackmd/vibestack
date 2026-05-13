@@ -1,6 +1,6 @@
 # Dev Tools Installer
 
-Interactive installer that sets up a developer environment for AI-assisted development. Works on **macOS** and **Linux/WSL Ubuntu**. Each tool is optional — the script prompts before installing anything.
+Interactive installer that sets up a developer environment for AI-assisted development. Works on **macOS** and **Linux/WSL Ubuntu**. Each tool is optional, the script prompts before installing anything.
 
 Part of [VibeStack](../../README.md) extras.
 
@@ -27,17 +27,17 @@ Or if you haven't cloned the repo:
 Invoke-RestMethod "https://raw.githubusercontent.com/vibestackmd/vibestack/main/kit/extras/dev-tools/bootstrap-windows.ps1" | Set-Content "$env:TEMP\bootstrap-windows.ps1"; powershell -ExecutionPolicy Bypass -File "$env:TEMP\bootstrap-windows.ps1"
 ```
 
-Safe to re-run — already-installed tools and active logins are automatically skipped.
+Safe to re-run, already-installed tools and active logins are automatically skipped.
 
 ## What It Installs
 
 | Tool | macOS | Linux/WSL | Why |
 |------|-------|-----------|-----|
-| **Linux Prerequisites** | — | apt (curl, unzip, gpg, build-essential) | Essential build tools |
-| **Zsh** | — (default shell) | apt | Modern shell with better defaults |
+| **Linux Prerequisites** |, | apt (curl, unzip, gpg, build-essential) | Essential build tools |
+| **Zsh** |, (default shell) | apt | Modern shell with better defaults |
 | **Git** | Homebrew / Xcode CLT | apt | Version control |
 | **SSH Key** | ssh-keygen | ssh-keygen | Auth for GitHub, servers, etc. |
-| **Homebrew** | Official installer | — | macOS package manager |
+| **Homebrew** | Official installer |, | macOS package manager |
 | **NVM + Node.js LTS** | nvm | nvm | JavaScript runtime + version manager |
 | **PNPM** | Corepack | Corepack | Fast, disk-efficient package manager |
 | **Deno** | Official installer | Official installer | TypeScript runtime |
@@ -51,9 +51,9 @@ Safe to re-run — already-installed tools and active logins are automatically s
 | **AWS CLI v2** | Official pkg | Official zip (x86_64/arm64) | Manage AWS services |
 | **Claude Code CLI** | Official installer | Official installer | AI-assisted development |
 | **VS Code** | Homebrew cask | apt repo / WSL guidance | Code editor + Claude Code extension |
-| **Xcode CLT** | xcode-select | — | macOS build tools (git, make, clang) |
+| **Xcode CLT** | xcode-select |, | macOS build tools (git, make, clang) |
 
-The script also handles **service logins** (Vercel, Supabase, GitHub, AWS, Stripe) — already-authenticated services are automatically skipped.
+The script also handles **service logins** (Vercel, Supabase, GitHub, AWS, Stripe), already-authenticated services are automatically skipped.
 
 ### WSL-Specific
 
@@ -72,7 +72,7 @@ Windows users need WSL (Windows Subsystem for Linux) to use the dev tools instal
 2. Installs Ubuntu
 3. Runs the dev-tools installer inside WSL
 
-After bootstrapping, do all development work inside WSL — open Windows Terminal → Ubuntu, or type `wsl` in PowerShell.
+After bootstrapping, do all development work inside WSL, open Windows Terminal → Ubuntu, or type `wsl` in PowerShell.
 
 ## Re-run Behavior
 

@@ -10,7 +10,7 @@ When interacting with third-party services, **always prefer CLI tools over web d
 
 ## Why CLI First
 
-- CLI tools give you full control over a platform from the terminal — no clicking through dashboard menus
+- CLI tools give you full control over a platform from the terminal, no clicking through dashboard menus
 - AI agents can orchestrate complex multi-step workflows (deploy, configure, monitor) through CLIs directly
 - CLIs are often more powerful and up-to-date than web UIs or third-party connectors
 - Everything stays scriptable, reproducible, and version-controllable
@@ -21,9 +21,9 @@ Before making API calls or using SDKs directly, **check `.env*` files for existi
 
 ```bash
 # Check for environment files in this order:
-# 1. .env.local     — local overrides (gitignored, highest priority)
-# 2. .env           — shared project defaults
-# 3. .env.development / .env.production — environment-specific
+# 1. .env.local    , local overrides (gitignored, highest priority)
+# 2. .env          , shared project defaults
+# 3. .env.development / .env.production, environment-specific
 ```
 
 Look for:
@@ -51,9 +51,9 @@ When these CLIs are available, use them instead of raw API calls:
 
 ## Workflow
 
-1. **Check if the CLI is installed** — run `command -v <tool>` or `which <tool>`
+1. **Check if the CLI is installed**, run `command -v <tool>` or `which <tool>`
 2. **Check `.env*` files** for project credentials and configuration
-3. **Check auth status** — most CLIs have a `whoami` or `status` command
+3. **Check auth status**, most CLIs have a `whoami` or `status` command
 4. **Use the CLI** to perform the operation instead of visiting the web dashboard
 5. **If the CLI isn't installed**, suggest the user install it (see `extras/` for the dev tools installer) rather than working around it with raw HTTP calls
 

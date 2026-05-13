@@ -53,7 +53,7 @@ kit/                    # Source for the plugin's contents
   .claude/hooks/        # Hooks (notify-done, statusline)
   .claude/settings.json # User-level settings template (deep-merged on install)
   docs/                 # Documentation templates
-  extras/               # Optional add-ons (ci-guards, dev-tools)
+  extras/               # Optional add-ons (dev-tools installer)
 scripts/build-plugin.sh # Builds the Claude plugin tarball from kit/, writes
                         # plugin.json with dependencies, rewrites $HOME hook
                         # paths to ${CLAUDE_PLUGIN_ROOT}

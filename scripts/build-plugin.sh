@@ -69,7 +69,7 @@ REQUIRED_FILES=(
   "hooks/statusline.sh"
 )
 
-SKILLS=(vibestack todo squad docs bosskey ideate cli-first developer-environment lsp)
+SKILLS=(vibestack todo squad docs bosskey ideate cli-first developer-environment lsp cicd)
 for skill in "${SKILLS[@]}"; do
   REQUIRED_FILES+=("skills/$skill/SKILL.md")
 done

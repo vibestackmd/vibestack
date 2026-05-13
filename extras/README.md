@@ -2,23 +2,11 @@
 
 Optional add-ons that complement the core VibeStack conventions.
 
-## CI Guards
-
-Reusable GitHub Actions workflows that enforce code quality, test coverage, security, and style standards on every PR. Supports Node/TypeScript, Python, Rust, and Go. One command drops a caller workflow into your repo:
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/vibestackmd/vibestack/main/kit/extras/ci-guards/install.sh | bash -s -- <language>
-```
-
-See [ci-guards/README.md](ci-guards/README.md) for setup details and configuration options.
-
 ## What's Here
 
 | File                   | Description                                    |
 | ---------------------- | ---------------------------------------------- |
 | `dev-tools/install.sh` | Interactive installer for dev CLIs             |
-| `ci-guards/install.sh` | CI workflow installer (Node, Python, Rust, Go) |
-| `ci-guards/examples/`  | Caller workflow templates for each language    |
 
 ## Dev Tools Installer
 
@@ -31,3 +19,7 @@ This script gets them all set up in one pass:
 ```
 
 Every tool is optional — the script prompts before installing anything.
+
+## CI/CD
+
+Project CI setup has moved out of `extras/` and into the `/cicd` skill (see `skills/cicd/`). Run `/cicd` in any project to generate a `.github/workflows/ci.yml` tailored to the project's language stack. Idempotent — re-running reconciles missing language jobs without overwriting existing ones.

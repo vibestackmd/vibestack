@@ -121,4 +121,15 @@ Tell the user what you did:
 - Which already existed and were left untouched
 - What you filled in with confidence
 - What you left as TODOs because you couldn't determine the right values
-- Recommended next steps (e.g., "review CLAUDE.md", "run /todo to start working through the list")
+
+### 8. Point to sibling initial-setup skills
+
+VibeStack ships a family of project-setup skills. After `/vibestack` runs, always remind the user about the others so they're discoverable as a chain. Each one is idempotent — re-running is safe.
+
+- **`/cicd`** — generates `.github/workflows/ci.yml` for the project's language stack
+- **`/docs`** — captures conversation learnings into `docs/` and cleans up stale entries
+- **`/todo`** — work through `TODO.md` items one at a time
+
+Pick the next step that fits the project's state (e.g., new repo with no CI → `/cicd`; backlog created in step 6 → `/todo`).
+
+**When adding new initial-setup skills to VibeStack, list them here.** This is the single discovery point for the family.

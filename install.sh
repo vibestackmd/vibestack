@@ -21,12 +21,12 @@ echo -e "${CYAN}▓▒░ VibeStack Installer${RESET}"
 echo -e "${DIM}Installing to $USER_DIR${RESET}"
 echo ""
 
-# Skills, hooks, and the plugin's own settings.json all come from the VibeStack
-# Claude plugin (installed via `claude plugin install` below). curl|bash only
-# handles the things plugins can't: user-level settings.json keys (defaultMode,
-# enabledPlugins, voiceEnabled, companyAnnouncements...), Claude CLI auto-install,
-# and triggering the plugin install. The user-level keys live in user.settings.json
-# at the repo root — separate from the plugin's hook/statusLine settings.json.
+# Skills and plugin hooks come from the VibeStack Claude plugin (installed via
+# `claude plugin install` below). curl|bash only handles the things plugins can't:
+# user-level settings.json keys (defaultMode, statusLine, companyAnnouncements,
+# skipDangerousModePermissionPrompt), the user-level statusline.sh drop, Claude
+# CLI auto-install, and triggering the plugin install. The user-level keys live
+# in user.settings.json at the repo root.
 SETTINGS_PATH="user.settings.json"
 
 installed=0

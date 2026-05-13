@@ -75,7 +75,6 @@ echo -e "${CYAN}--- settings.json was written ---${RESET}"
 
 assert_file_exists "$USER_DIR/settings.json"
 assert_file_contains "$USER_DIR/settings.json" "skipDangerousModePermissionPrompt"
-assert_file_contains "$USER_DIR/settings.json" "voiceEnabled"
 assert_file_contains "$USER_DIR/settings.json" "statusLine"
 assert_file_contains "$USER_DIR/settings.json" "bypassPermissions"
 if grep -q "CLAUDE_PROJECT_DIR" "$USER_DIR/settings.json" 2>/dev/null; then

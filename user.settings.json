@@ -1,5 +1,4 @@
 {
-  "voiceEnabled": true,
   "skipDangerousModePermissionPrompt": true,
   "statusLine": {
     "type": "command",

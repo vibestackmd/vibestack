@@ -41,7 +41,6 @@ echo ""
 
 echo -e "${CYAN}--- Verifying pre-existing user settings ---${RESET}"
 assert_file_contains "$USER_DIR/settings.json" "user-custom-key"
-assert_json_value "$USER_DIR/settings.json" "voiceEnabled" "False"
 
 echo ""
 echo -e "${CYAN}--- Running v2 installer ---${RESET}"
@@ -56,8 +55,6 @@ echo -e "${CYAN}--- User's existing values preserved ---${RESET}"
 
 # Custom user key must survive the merge
 assert_file_contains "$USER_DIR/settings.json" "user-custom-key"
-# User explicitly set voiceEnabled=false; merge must not flip it to true
-assert_json_value "$USER_DIR/settings.json" "voiceEnabled" "False"
 
 echo ""
 echo -e "${CYAN}--- VibeStack values added where absent ---${RESET}"

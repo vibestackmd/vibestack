@@ -129,22 +129,22 @@ assert_dir_exists "$PLUGIN_DIR/skills"
 assert_dir_exists "$PLUGIN_DIR/hooks"
 assert_file_exists "$PLUGIN_DIR/skills/vibestack/SKILL.md"
 assert_file_exists "$PLUGIN_DIR/hooks/notify-done.sh"
-assert_file_exists "$PLUGIN_DIR/settings.json"
+assert_file_exists "$PLUGIN_DIR/hooks/hooks.json"
 
 # ── Hook paths must reference ${CLAUDE_PLUGIN_ROOT}, not host paths ──
 echo ""
-echo -e "${CYAN}--- Plugin settings.json uses CLAUDE_PLUGIN_ROOT ---${RESET}"
+echo -e "${CYAN}--- Plugin hooks/hooks.json uses CLAUDE_PLUGIN_ROOT ---${RESET}"
 
-if grep -q 'CLAUDE_PLUGIN_ROOT' "$PLUGIN_DIR/settings.json" 2>/dev/null; then
-  ok "settings.json references \${CLAUDE_PLUGIN_ROOT}"
+if grep -q 'CLAUDE_PLUGIN_ROOT' "$PLUGIN_DIR/hooks/hooks.json" 2>/dev/null; then
+  ok "hooks/hooks.json references \${CLAUDE_PLUGIN_ROOT}"
 else
-  no "settings.json missing \${CLAUDE_PLUGIN_ROOT} reference"
+  no "hooks/hooks.json missing \${CLAUDE_PLUGIN_ROOT} reference"
 fi
 
-if grep -qE '\$CLAUDE_PROJECT_DIR|\$HOME/\.claude/hooks/' "$PLUGIN_DIR/settings.json" 2>/dev/null; then
-  no "settings.json contains unrewritten host paths"
+if grep -qE '\$CLAUDE_PROJECT_DIR|\$HOME/\.claude/hooks/' "$PLUGIN_DIR/hooks/hooks.json" 2>/dev/null; then
+  no "hooks/hooks.json contains unrewritten host paths"
 else
-  ok "settings.json has no host-path leakage"
+  ok "hooks/hooks.json has no host-path leakage"
 fi
 
 # ── Summary ─────────────────────────────────────────────

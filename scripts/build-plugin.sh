@@ -2,7 +2,7 @@
 # Build VibeStack plugin artifacts from the in-tree plugin sources.
 #
 # Under the v3 layout, the repo root IS the plugin root — `.claude-plugin/`,
-# `skills/`, `hooks/`, and `settings.json` live at root. Production installs
+# `skills/`, and `hooks/` live at root. Production installs
 # pull directly from the repo via `claude plugin marketplace add vibestackmd/vibestack`,
 # so this script's only jobs are:
 #   1. Sync VERSION → .claude-plugin/{plugin,marketplace}.json (in-tree, committed)
@@ -64,7 +64,7 @@ ERRORS=0
 REQUIRED_FILES=(
   ".claude-plugin/plugin.json"
   ".claude-plugin/marketplace.json"
-  "settings.json"
+  "hooks/hooks.json"
   "hooks/notify-done.sh"
   "hooks/statusline.sh"
 )
@@ -87,10 +87,10 @@ for f in "${REQUIRED_FILES[@]}"; do
   fi
 done
 
-# Plugin's settings.json must reference ${CLAUDE_PLUGIN_ROOT}, never host paths.
-if grep -E '\$CLAUDE_PROJECT_DIR|\$HOME/\.claude/hooks/' "$REPO_ROOT/settings.json" >/dev/null 2>&1; then
-  echo -e "  ${RED}ERROR: settings.json references host paths (should be \${CLAUDE_PLUGIN_ROOT})${RESET}"
-  grep -nE '\$CLAUDE_PROJECT_DIR|\$HOME/\.claude/hooks/' "$REPO_ROOT/settings.json"
+# Plugin hooks must reference ${CLAUDE_PLUGIN_ROOT}, never host paths.
+if grep -E '\$CLAUDE_PROJECT_DIR|\$HOME/\.claude/hooks/' "$REPO_ROOT/hooks/hooks.json" >/dev/null 2>&1; then
+  echo -e "  ${RED}ERROR: hooks/hooks.json references host paths (should be \${CLAUDE_PLUGIN_ROOT})${RESET}"
+  grep -nE '\$CLAUDE_PROJECT_DIR|\$HOME/\.claude/hooks/' "$REPO_ROOT/hooks/hooks.json"
   ERRORS=$((ERRORS + 1))
 fi
 
@@ -121,7 +121,6 @@ mkdir -p "$BUILD_DIR"
 cp -R "$REPO_ROOT/.claude-plugin" "$BUILD_DIR/"
 cp -R "$REPO_ROOT/skills" "$BUILD_DIR/"
 cp -R "$REPO_ROOT/hooks" "$BUILD_DIR/"
-cp "$REPO_ROOT/settings.json" "$BUILD_DIR/"
 
 # Tarball doesn't need marketplace.json (it's a plugin tarball, not a marketplace).
 rm -f "$BUILD_DIR/.claude-plugin/marketplace.json"
@@ -145,7 +144,6 @@ cp -R "$BUILD_DIR/.claude-plugin/plugin.json" "$TEST_MARKET/plugins/vibestack/.c
 }
 cp -R "$BUILD_DIR/skills" "$TEST_MARKET/plugins/vibestack/"
 cp -R "$BUILD_DIR/hooks" "$TEST_MARKET/plugins/vibestack/"
-cp "$BUILD_DIR/settings.json" "$TEST_MARKET/plugins/vibestack/"
 
 /usr/bin/python3 << PYEOF - "$TEST_MARKET/.claude-plugin/marketplace.json" "$VERSION"
 import json, sys

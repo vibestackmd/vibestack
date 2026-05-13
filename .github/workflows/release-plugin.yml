@@ -39,8 +39,8 @@ jobs:
           echo "::group::plugin.json"
           cat dist/plugin/.claude-plugin/plugin.json
           echo "::endgroup::"
-          echo "::group::settings.json"
-          cat dist/plugin/settings.json
+          echo "::group::hooks/hooks.json"
+          cat dist/plugin/hooks/hooks.json
           echo "::endgroup::"
 
       - name: Create GitHub Release

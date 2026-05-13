@@ -1,4 +1,4 @@
-# Makefile — project operations
+# Makefile, project operations
 #
 # Single entry point for all project operations: build, run, test, deploy.
 # Both humans and AI agents use this as the "how do I do anything" reference.

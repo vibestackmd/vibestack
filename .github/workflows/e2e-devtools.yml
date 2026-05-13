@@ -2,7 +2,7 @@ name: E2E Dev-Tools
 
 # Slow suite (~5 min): runs the real dev-tools installer (Node, AWS, Vercel,
 # Stripe, GH CLI, Rust, ...) inside a fresh Ubuntu container. Path-filtered so
-# it only fires when dev-tools code or its workflow changes — most PRs skip it.
+# it only fires when dev-tools code or its workflow changes, most PRs skip it.
 # Also runs on a weekly cron so we catch upstream installer breakage even when
 # nobody touches our code (an external 404 / signature change in NVM, AWS,
 # rustup, etc would otherwise go unnoticed until someone tried to install).
@@ -28,7 +28,7 @@ on:
       - "tests/e2e/run.sh"
       - ".github/workflows/e2e-devtools.yml"
   schedule:
-    # Mondays at 06:00 UTC — catches upstream installer drift in dev-tools deps
+    # Mondays at 06:00 UTC, catches upstream installer drift in dev-tools deps
     - cron: "0 6 * * 1"
   workflow_dispatch:
 

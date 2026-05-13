@@ -1,4 +1,4 @@
-# Ubuntu with a pre-populated ~/.claude/ — tests the settings.json merge preserves user values
+# Ubuntu with a pre-populated ~/.claude/, tests the settings.json merge preserves user values
 FROM ubuntu:24.04
 
 ENV DEBIAN_FRONTEND=noninteractive

@@ -41,11 +41,11 @@ define do-release
 		echo "  \033[31mError: must be on main (currently on $$branch)\033[0m"; exit 1; \
 	fi
 	@if ! git diff --quiet || ! git diff --cached --quiet; then \
-		echo "  \033[31mError: working tree is dirty — commit or stash first\033[0m"; exit 1; \
+		echo "  \033[31mError: working tree is dirty, commit or stash first\033[0m"; exit 1; \
 	fi
 	@git fetch origin main --quiet; \
 	if [ "$$(git rev-parse HEAD)" != "$$(git rev-parse origin/main)" ]; then \
-		echo "  \033[31mError: local main is out of sync with origin — pull first\033[0m"; exit 1; \
+		echo "  \033[31mError: local main is out of sync with origin, pull first\033[0m"; exit 1; \
 	fi
 	@if git tag -l "v$(1)" | grep -q .; then \
 		echo "  \033[31mError: tag v$(1) already exists\033[0m"; exit 1; \
@@ -64,7 +64,7 @@ define do-release
 	@git tag v$(1)
 	@git push origin main v$(1)
 	@echo ""
-	@echo "  \033[32mPushed v$(1) — GitHub Actions will create the release.\033[0m"
+	@echo "  \033[32mPushed v$(1), GitHub Actions will create the release.\033[0m"
 endef
 
 # ── Tests ────────────────────────────────────────────────

@@ -3,7 +3,7 @@
 # VibeStack Windows Bootstrap: Installs WSL + Ubuntu + Hyper terminal so you
 # can run the cross-platform dev-tools installer (install.sh) inside Linux.
 #
-# Safe to re-run — skips steps that are already done.
+# Safe to re-run, skips steps that are already done.
 #
 # Usage:
 #   Right-click → Run with PowerShell (as Administrator)
@@ -36,7 +36,7 @@ for ($i = 0; $i -lt $args.Count; $i++) {
 Write-Host ""
 Write-Host "VibeStack Windows Bootstrap" -ForegroundColor Cyan
 Write-Host "Sets up WSL + Ubuntu + Hyper terminal, then runs the dev-tools installer inside Linux." -ForegroundColor Cyan
-Write-Host "Safe to re-run — already-completed steps are skipped." -ForegroundColor Cyan
+Write-Host "Safe to re-run, already-completed steps are skipped." -ForegroundColor Cyan
 Write-Host ""
 
 $NeedsReboot = $false
@@ -55,7 +55,7 @@ function Test-WslFunctional {
 Write-Host "[1/5] WSL" -ForegroundColor Cyan
 
 if (Test-WslFunctional) {
-    Write-Host "  OK — WSL is installed and functional." -ForegroundColor Green
+    Write-Host "  OK, WSL is installed and functional." -ForegroundColor Green
 } else {
     Write-Host "  Installing WSL..." -ForegroundColor Yellow
     wsl --install --no-distribution
@@ -75,7 +75,7 @@ Write-Host ""
 Write-Host "[2/5] WSL version" -ForegroundColor Cyan
 
 wsl --set-default-version 2 2>$null | Out-Null
-Write-Host "  OK — WSL 2 set as default." -ForegroundColor Green
+Write-Host "  OK, WSL 2 set as default." -ForegroundColor Green
 
 # ── 3. Install Ubuntu if not present ─────────────────────
 
@@ -83,7 +83,7 @@ Write-Host ""
 Write-Host "[3/5] Ubuntu" -ForegroundColor Cyan
 
 function Get-WslDistros {
-    # wsl --list --quiet outputs UTF-16LE with null bytes — clean it up
+    # wsl --list --quiet outputs UTF-16LE with null bytes, clean it up
     $raw = wsl --list --quiet 2>&1
     if ($LASTEXITCODE -ne 0) { return @() }
     $lines = ($raw | Out-String) -split "`r?`n" | ForEach-Object { $_.Trim("`0", " ", "`r", "`n") } | Where-Object { $_ -ne "" }
@@ -94,7 +94,7 @@ $distros = Get-WslDistros
 $hasUbuntu = $distros | Where-Object { $_ -match "^Ubuntu" }
 
 if ($NeedsReboot) {
-    Write-Host "  WSL was just installed — a restart is needed before Ubuntu can be added." -ForegroundColor Yellow
+    Write-Host "  WSL was just installed, a restart is needed before Ubuntu can be added." -ForegroundColor Yellow
     Write-Host ""
     Write-Host "  After restarting:" -ForegroundColor Yellow
     Write-Host "    1. Open PowerShell as Administrator" -ForegroundColor Yellow
@@ -106,7 +106,7 @@ if ($NeedsReboot) {
 }
 
 if ($hasUbuntu) {
-    Write-Host "  OK — Ubuntu is already installed." -ForegroundColor Green
+    Write-Host "  OK, Ubuntu is already installed." -ForegroundColor Green
 } else {
     Write-Host "  Installing Ubuntu (this may take a few minutes)..." -ForegroundColor Yellow
     Write-Host ""
@@ -122,7 +122,7 @@ if ($hasUbuntu) {
         Write-Host "  A restart is needed before Ubuntu is available." -ForegroundColor Yellow
         Write-Host ""
         Write-Host "  After restarting:" -ForegroundColor Yellow
-        Write-Host "    1. Ubuntu may open automatically to create a username/password — complete that first" -ForegroundColor Yellow
+        Write-Host "    1. Ubuntu may open automatically to create a username/password, complete that first" -ForegroundColor Yellow
         Write-Host "    2. Open PowerShell as Administrator" -ForegroundColor Yellow
         Write-Host "    3. Re-run this script to finish setup" -ForegroundColor Yellow
         Write-Host ""
@@ -166,14 +166,14 @@ Write-Host "[4/5] Hyper terminal" -ForegroundColor Cyan
 
 $hyperPath = "$env:LOCALAPPDATA\Programs\Hyper\Hyper.exe"
 if (Test-Path $hyperPath) {
-    Write-Host "  OK — Hyper is already installed." -ForegroundColor Green
+    Write-Host "  OK, Hyper is already installed." -ForegroundColor Green
 } else {
     Write-Host "  Installing Hyper terminal..." -ForegroundColor Yellow
     winget install --id Vercel.Hyper --accept-source-agreements --accept-package-agreements --silent
     if ($LASTEXITCODE -ne 0) {
         Write-Host "  Hyper install failed. You can install it manually from https://hyper.is" -ForegroundColor Red
     } else {
-        Write-Host "  OK — Hyper installed." -ForegroundColor Green
+        Write-Host "  OK, Hyper installed." -ForegroundColor Green
     }
 }
 
@@ -200,13 +200,13 @@ if (Test-Path $hyperConfig) {
 
     if ($modified) {
         Set-Content $hyperConfig -Value $content -NoNewline
-        Write-Host "  OK — Hyper configured to use WSL." -ForegroundColor Green
+        Write-Host "  OK, Hyper configured to use WSL." -ForegroundColor Green
     } else {
-        Write-Host "  Could not auto-configure .hyper.js — set shell manually to C:\Windows\System32\wsl.exe" -ForegroundColor Yellow
+        Write-Host "  Could not auto-configure .hyper.js, set shell manually to C:\Windows\System32\wsl.exe" -ForegroundColor Yellow
     }
 } else {
-    # Hyper creates .hyper.js on first launch — launch it, wait, then patch
-    Write-Host "  .hyper.js not found — launching Hyper to generate defaults..." -ForegroundColor Yellow
+    # Hyper creates .hyper.js on first launch, launch it, wait, then patch
+    Write-Host "  .hyper.js not found, launching Hyper to generate defaults..." -ForegroundColor Yellow
     Start-Process $hyperPath
     Start-Sleep -Seconds 5
     Stop-Process -Name "Hyper" -ErrorAction SilentlyContinue -Force
@@ -226,12 +226,12 @@ if (Test-Path $hyperConfig) {
         }
         if ($patched) {
             Set-Content $hyperConfig -Value $content -NoNewline
-            Write-Host "  OK — Hyper configured to use WSL." -ForegroundColor Green
+            Write-Host "  OK, Hyper configured to use WSL." -ForegroundColor Green
         } else {
-            Write-Host "  Could not auto-configure .hyper.js — set shell manually to wsl.exe" -ForegroundColor Yellow
+            Write-Host "  Could not auto-configure .hyper.js, set shell manually to wsl.exe" -ForegroundColor Yellow
         }
     } else {
-        Write-Host "  Could not generate .hyper.js — open Hyper manually, then re-run this script." -ForegroundColor Yellow
+        Write-Host "  Could not generate .hyper.js, open Hyper manually, then re-run this script." -ForegroundColor Yellow
     }
 }
 
@@ -260,7 +260,7 @@ if (Test-Path $installScript) {
     Write-Host ""
     wsl -d Ubuntu -- bash -c "cd '$wslPath' && chmod +x install.sh && ./install.sh"
 } else {
-    Write-Host "  install.sh not found next to this script — running from GitHub..." -ForegroundColor Yellow
+    Write-Host "  install.sh not found next to this script, running from GitHub..." -ForegroundColor Yellow
     Write-Host ""
     wsl -d Ubuntu -- bash -c "curl -fsSL https://raw.githubusercontent.com/vibestackmd/vibestack/main/kit/extras/dev-tools/install.sh | bash"
 }
@@ -271,7 +271,7 @@ Write-Host ""
 Write-Host "Done!" -ForegroundColor Green
 Write-Host ""
 Write-Host "Next steps:" -ForegroundColor Cyan
-Write-Host "  1. Open Hyper — it's pre-configured to launch into WSL." -ForegroundColor White
+Write-Host "  1. Open Hyper, it's pre-configured to launch into WSL." -ForegroundColor White
 Write-Host "       Or type 'wsl' in PowerShell, or open Windows Terminal > Ubuntu" -ForegroundColor DarkGray
 Write-Host ""
 Write-Host "  2. Your Windows drives are at /mnt/c/, /mnt/d/, etc." -ForegroundColor White

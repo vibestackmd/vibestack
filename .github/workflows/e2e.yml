@@ -1,7 +1,7 @@
 name: E2E Tests
 
 # Fast suites that run on every push/PR touching anything plugin-related.
-# The slow dev-tools suite lives in e2e-devtools.yml — gated on extras/dev-tools/**
+# The slow dev-tools suite lives in e2e-devtools.yml, gated on extras/dev-tools/**
 # so it doesn't tax every PR.
 #
 # Each job pre-builds its Docker image via docker/build-push-action with GHA
@@ -51,7 +51,7 @@ on:
 
 jobs:
   e2e-quick:
-    name: "Quick (preinstalled — settings merge)"
+    name: "Quick (preinstalled, settings merge)"
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -72,7 +72,7 @@ jobs:
           ./tests/e2e/run.sh preinstalled
 
   e2e-ubuntu-main:
-    name: "Ubuntu (main installer only — no dev-tools)"
+    name: "Ubuntu (main installer only, no dev-tools)"
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -120,7 +120,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: docker/setup-buildx-action@v3
-      - name: Build local-marketplace image (cached — heavy: Node + Claude CLI)
+      - name: Build local-marketplace image (cached, heavy: Node + Claude CLI)
         uses: docker/build-push-action@v5
         with:
           context: tests/e2e

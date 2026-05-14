@@ -36,26 +36,28 @@ Type "clear"
 Enter
 Show
 
-# --- the pitch ---
-Type "# One command. Your conventions, every project, taught to Claude."
+# --- the pitch (matches the README tagline) ---
+Type "# Senior Developer's Conventions in a Plugin You Can Install"
 Sleep 500ms
 Enter
-Sleep 900ms
+Sleep 1s
 
-# --- install (fast: cache warmed by the Hide block above) ---
+# --- install: paste the command (nobody types out a curl URL), pause, run ---
+Set TypingSpeed 1ms
 Type "curl -fsSL https://raw.githubusercontent.com/vibestackmd/vibestack/main/install.sh | bash"
-Sleep 400ms
+Set TypingSpeed 35ms
+Sleep 1200ms
 Enter
-Sleep 7s
+Sleep 10s
 
-# --- the payoff: 11 skills and the Stop hook, all wired up ---
+# --- the payoff: 11 skills and the Stop hook, all wired up (long output, hold) ---
 Type "claude plugin details vibestack@vibestackmd-vibestack"
 Sleep 400ms
 Enter
-Sleep 4500ms
+Sleep 8s
 
 # --- close ---
 Type "# Then run /vibestack in any project to scaffold it."
-Sleep 400ms
+Sleep 500ms
 Enter
-Sleep 2s
+Sleep 3s

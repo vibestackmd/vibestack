@@ -1,7 +1,7 @@
 <p align="center">
   <h1 align="center"><img src="site/public/favicon.svg" width="36" height="36" alt="VibeStack logo" style="vertical-align: middle;"> VibeStack</h1>
   <p align="center">
-    <strong>I'm a senior dev. These are my conventions, in a plugin you can install.</strong>
+    <strong>Senior Developer's Conventions in a Plugin You Can Install.</strong>
   </p>
   <p align="center">
     <a href="https://github.com/vibestackmd/vibestack">GitHub</a> &nbsp;·&nbsp; <a href="https://vibestack.md">Website</a> &nbsp;·&nbsp; <a href="LICENSE">MIT</a>
@@ -11,8 +11,6 @@
 <p align="center">
   <img src="https://raw.githubusercontent.com/vibestackmd/vibestack/main/site/public/demo.gif" alt="VibeStack install demo" width="820">
 </p>
-
-Install once. Every project on your machine inherits them. Hand it to a teammate and they're working your way on day one.
 
 **Opinionated on purpose:** bypass permissions · CLI-first · CI/CD gates · religious docs for humans and agents · `make` as the entry point
 

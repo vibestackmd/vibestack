@@ -1,7 +1,7 @@
 <p align="center">
   <h1 align="center"><img src="site/public/favicon.svg" width="36" height="36" alt="VibeStack logo" style="vertical-align: middle;"> VibeStack</h1>
   <p align="center">
-    <strong>The best practices I'd give a new teammate, taught to Claude.</strong>
+    <strong>I'm a senior dev. These are my conventions, in a plugin you can install.</strong>
   </p>
   <p align="center">
     <a href="https://github.com/vibestackmd/vibestack">GitHub</a> &nbsp;·&nbsp; <a href="https://vibestack.md">Website</a> &nbsp;·&nbsp; <a href="LICENSE">MIT</a>
@@ -12,21 +12,11 @@
   <img src="https://raw.githubusercontent.com/vibestackmd/vibestack/main/site/public/demo.gif" alt="VibeStack install demo" width="820">
 </p>
 
+Install once. Every project on your machine inherits them. Hand it to a teammate and they're working your way on day one.
+
+**Opinionated on purpose:** bypass permissions · CLI-first · CI/CD gates · religious docs for humans and agents · `make` as the entry point
+
 ---
-
-Every developer has a set of conventions.
-
-How you structure a project. Where logic lives. What "done" actually means.
-
-Mine took years to settle. They lived in my head, re-explained to every Claude session and every new teammate.
-
-**VibeStack is where they live now.** An opinionated Claude Code setup that teaches Claude to work the way I do.
-
-Install once. Every project on your machine inherits it.
-
-Hand it to someone you work with and they're building with the same conventions on day one.
-
-> Opinionated on purpose. The value is that the calls are already made.
 
 ## Install
 
@@ -67,27 +57,6 @@ Same skills, hooks, and chain-installed plugins.
 You miss the user-level settings (bypass mode, the statusline). Those need write access to `~/.claude/settings.json` that only `curl | bash` has. Plugin-only is less opinionated, by design.
 
 </details>
-
----
-
-## The Opinions
-
-The skills below are just the delivery mechanism. These are the actual decisions.
-
-🌍 &nbsp; **User-level, not per-project**<br>
-Conventions don't change between repos. Install once at `~/.claude/`, applies everywhere.
-
-⚡ &nbsp; **Bypass permissions, always**<br>
-No "can I run this?" prompts. A prompt you click through on autopilot was never a safety check.
-
-🚦 &nbsp; **CI over approval gates**<br>
-Agents write bad code sometimes. The fix is a pipeline that catches it, not a human clicking approve. Run `/cicd`.
-
-🔨 &nbsp; **Makefile over shell scripts**<br>
-Every project's operations behind `make`. Universal, tab-completable, self-documenting.
-
-✍️ &nbsp; **Write like a person**<br>
-The `prose` skill bans em dashes and the other tells that make text obviously AI-generated.
 
 ---
 

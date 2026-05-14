@@ -4,11 +4,13 @@
 # In v2, install.sh ONLY:
 #   1. Detects/offers to install the Claude CLI
 #   2. Deep-merges ~/.claude/settings.json (with two clobber paths)
-#   3. Runs `claude plugin install` if Claude is available
+#   3. Drops ~/.claude/hooks/statusline.sh (the main statusLine can't be
+#      plugin-scoped, so it lives at user level)
+#   4. Runs `claude plugin install` if Claude is available
 #
-# Skills, hooks, and templates come from the VibeStack plugin (not curl|bash).
-# In Docker, `claude` is NOT installed, so the plugin install branch is silently
-# skipped and the fallback message is printed instead.
+# Skills, the Stop hook, and templates come from the VibeStack plugin (not
+# curl|bash). In Docker, `claude` is NOT installed, so the plugin install branch
+# is silently skipped and the fallback message is printed instead.
 
 set -euo pipefail
 
@@ -86,11 +88,14 @@ else
 fi
 
 echo ""
-echo -e "${CYAN}--- File drops removed (plugin owns these) ---${RESET}"
+echo -e "${CYAN}--- User-level file drops ---${RESET}"
 
-# These used to come from curl|bash directly. They now come from the plugin.
+# Skills come from the plugin, not curl|bash, so the installer must NOT drop them.
 assert_file_absent "$USER_DIR/skills"
-assert_file_absent "$USER_DIR/hooks"
+
+# statusline.sh IS a user-level drop: the main statusLine can't be plugin-scoped,
+# so install.sh fetches it into ~/.claude/hooks/ regardless of Claude CLI presence.
+assert_file_exists "$USER_DIR/hooks/statusline.sh"
 
 echo ""
 echo -e "${CYAN}--- Project directory remains untouched ---${RESET}"

@@ -1,7 +1,7 @@
 <p align="center">
   <h1 align="center"><img src="site/public/favicon.svg" width="36" height="36" alt="VibeStack logo" style="vertical-align: middle;"> VibeStack</h1>
   <p align="center">
-    <strong>Senior Developer's Conventions in a Plugin You Can Install.</strong>
+    <strong>Senior Developer's Conventions as a Plugin You Can Install.</strong>
   </p>
   <p align="center">
     <a href="https://github.com/vibestackmd/vibestack">GitHub</a> &nbsp;·&nbsp; <a href="https://vibestack.md">Website</a> &nbsp;·&nbsp; <a href="LICENSE">MIT</a>
@@ -12,49 +12,26 @@
   <img src="https://raw.githubusercontent.com/vibestackmd/vibestack/main/site/public/demo.gif" alt="VibeStack install demo" width="820">
 </p>
 
-**Opinionated on purpose:** bypass permissions · CLI-first · CI/CD gates · religious docs for humans and agents · `make` as the entry point
+**Opinionated on purpose:** bypass permissions · CLI-first · CI/CD gates · religious markdown documentation · `make` as the entry point
 
 ---
 
 ## Install
 
+**Full install.** The plugin plus user-level settings, hooks, and an optional dev-tools pass. The complete setup.
+
 ```bash
 curl -fsSL https://raw.githubusercontent.com/vibestackmd/vibestack/main/install.sh | bash
 ```
 
-Run it from anywhere. Then run `/vibestack` in any project to scaffold it.
-
-<details>
-<summary><strong>What the installer does</strong></summary>
-
-<br />
-
-**Detects the Claude CLI.**<br>
-Offers to install it if missing, so you can hand the command to someone who's never used Claude.
-
-**Deep-merges `~/.claude/settings.json`.**<br>
-Your values are preserved. Two keys get overwritten (`permissions.defaultMode`, `skipDangerousModePermissionPrompt`), because the no-prompts experience is the point.
-
-**Installs the plugin.**<br>
-Chain-installs its dependencies: the four official LSP plugins and Anthropic's `frontend-design`.
-
-</details>
-
-<details>
-<summary><strong>Install via Claude plugin only (no curl)</strong></summary>
-
-<br />
+**Plugin only.** Just the skills, hooks, and chain-installed dependencies. No user-level settings.
 
 ```
 /plugin marketplace add vibestackmd/vibestack
 /plugin install vibestack@vibestackmd-vibestack
 ```
 
-Same skills, hooks, and chain-installed plugins.
-
-You miss the user-level settings (bypass mode, the statusline). Those need write access to `~/.claude/settings.json` that only `curl | bash` has. Plugin-only is less opinionated, by design.
-
-</details>
+> ⚡ &nbsp; **Then run `/vibestack` in any project to scaffold it.**
 
 ---
 
@@ -77,7 +54,7 @@ You miss the user-level settings (bypass mode, the statusline). Those need write
 - `cli-first`: use platform CLIs and `.env` files, not raw API calls
 - `developer-environment`: a self-updating map of what's installed on your machine
 - `lsp`: language servers for type-checking and find-references
-- `prose`: the writing rules from The Opinions
+- `prose`: write like a person, no em dashes, no AI tells
 
 **Hooks and defaults**, at the user level:
 

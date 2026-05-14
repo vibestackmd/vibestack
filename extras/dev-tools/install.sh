@@ -5,7 +5,7 @@
 # Sets up common developer CLIs. Safe to re-run, skips installed tools/logins.
 #
 # Usage:
-#   curl -fsSL https://raw.githubusercontent.com/vibestackmd/vibestack/main/kit/extras/dev-tools/install.sh | bash
+#   curl -fsSL https://raw.githubusercontent.com/vibestackmd/vibestack/main/extras/dev-tools/install.sh | bash
 #   or ./install.sh (if cloned)
 
 set -uo pipefail

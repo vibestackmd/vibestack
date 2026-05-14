@@ -48,9 +48,11 @@ hooks/                    # Hook scripts. notify-done.sh is plugin-scoped (regis
 hooks/hooks.json          # Plugin hook registrations (Stop → notify-done). Loaded by Claude when the plugin is enabled.
 user.settings.json        # User-level settings template (statusLine, defaultMode, companyAnnouncements, skipDangerousModePermissionPrompt), fetched by install.sh and deep-merged into ~/.claude/settings.json. Plugin enablement is NOT listed here, chain-install via plugin.json `dependencies` is the single source of truth.
 extras/                   # Optional add-ons (dev-tools installer), separate from the plugin
-site/                     # Website (Next.js, deployed to vibestack.md)
+site/                     # Website (Next.js, deployed to vibestack.md). Renders README.md directly; the README is the single source of truth.
 tests/e2e/                # End-to-end install tests (Docker)
-scripts/build-plugin.sh   # Syncs VERSION into manifests, validates, builds tarball + test-marketplace
+tests/validate-skills.sh  # Local skill lint (frontmatter + /cicd YAML snippets). Runs inside `make plugin`, no Docker.
+scripts/build-plugin.sh   # Syncs VERSION into manifests, validates, runs skill lint, builds tarball + test-marketplace
+CHANGELOG.md              # Hand-written release history. Update it when cutting a release.
 VERSION                   # Single source of truth for plugin version
 Makefile                  # All developer commands
 ```
@@ -71,22 +73,24 @@ The release target runs preflight checks (clean tree, on main, in sync with orig
 
 When the user asks for a release, follow this sequence exactly:
 
-1. **Commit first.** `make release-*` requires a clean working tree. If there are uncommitted changes, commit them before attempting the release. Stage specific files, don't use `git add -A`.
+1. **Update `CHANGELOG.md`.** Add an entry for the version about to ship, describing the *why* of the change, not just the *what*. This is part of the same commit as the change itself.
 
-2. **Sync with origin.** The preflight checks require `HEAD == origin/main`. Before running the release:
+2. **Commit first.** `make release-*` requires a clean working tree. If there are uncommitted changes, commit them before attempting the release. Stage specific files, don't use `git add -A`.
+
+3. **Sync with origin.** The preflight checks require `HEAD == origin/main`. Before running the release:
    ```bash
    git pull --rebase origin main
    git push origin main
    ```
    Use `--rebase` to avoid merge commits. Push after rebasing so the local and remote SHAs match.
 
-3. **Run the release.** Pipe `y` to auto-confirm:
+4. **Run the release.** Pipe `y` to auto-confirm:
    ```bash
    echo "y" | make release-patch   # or release-minor / release-major
    ```
    This runs E2E tests, bumps VERSION, commits, tags, and pushes. Use a longer timeout (~5 min) since Docker tests run during this step.
 
-4. **Confirm success.** Look for the "Pushed vX.Y.Z" message at the end. GitHub Actions handles the rest.
+5. **Confirm success.** Look for the "Pushed vX.Y.Z" message at the end. GitHub Actions handles the rest.
 
 Common pitfalls:
 - **Divergent branches:** Always use `git pull --rebase`. Never a plain `git pull` (no pull strategy is configured globally).

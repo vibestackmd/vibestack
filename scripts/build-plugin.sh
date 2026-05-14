@@ -109,6 +109,13 @@ fi
 
 echo -e "  ${GREEN}All checks passed.${RESET}"
 
+# ── Validate skills (frontmatter + /cicd YAML snippets) ──
+echo ""
+if ! bash "$REPO_ROOT/tests/validate-skills.sh"; then
+  echo -e "${RED}Skill validation failed.${RESET}"
+  exit 1
+fi
+
 # ── Build tarball release asset ──────────────────────────
 # Mirrors the plugin layout (root → tarball top-level dir). Users who want an
 # offline install can extract this anywhere claude can read it.

@@ -1,14 +1,34 @@
 <p align="center">
   <h1 align="center"><img src="site/public/favicon.svg" width="36" height="36" alt="VibeStack logo" style="vertical-align: middle;"> VibeStack</h1>
   <p align="center">
-    <strong>Give your AI agents the context to build, not guess.</strong>
-    <br />
-    Opinionated skills, hooks, and conventions for AI-assisted development.
+    <strong>The best practices I'd give a new teammate, taught to Claude.</strong>
   </p>
   <p align="center">
-    <a href="https://github.com/vibestackmd/vibestack">GitHub</a> · <a href="https://vibestack.md">Website</a>
+    <a href="https://github.com/vibestackmd/vibestack">GitHub</a> · <a href="https://vibestack.md">Website</a> · <a href="LICENSE">MIT</a>
   </p>
 </p>
+
+---
+
+Every developer builds up a set of conventions over time. How you structure a project, where logic lives, what "done" actually means, which corners are safe to cut and which will burn you later. Mine took years to settle. They lived in my head, and I re-explained them to every new Claude session and every new person on my team.
+
+VibeStack is where I keep them now. It's an opinionated Claude Code setup, skills and hooks and sane defaults, that teaches Claude to work the way I do. Install it once and every project on your machine inherits it. Hand it to someone you work with and they're building with the same conventions on day one, without you having to look over their shoulder.
+
+It's opinionated on purpose. The value is that the calls are already made.
+
+## The Opinions
+
+This is the part that matters. The skills and commands further down are just the delivery mechanism. These are the actual decisions.
+
+**User-level, not per-project.** Your conventions don't change between repos, so they shouldn't be copied into every `.claude/` folder you own. VibeStack installs once at `~/.claude/` and applies everywhere. There's no "I forgot to update it in this project."
+
+**Bypass permissions, always.** Every session starts in bypass mode with the startup warning suppressed. Permission prompts break flow and don't add real safety. A prompt you click through on autopilot was never a safety check. Code quality belongs in CI and pre-commit hooks, not an approval dialog.
+
+**CI over approval gates.** Agents write bad code sometimes. The fix isn't slowing the agent down, it's a pipeline that catches problems automatically. Run `/cicd` and you have one. Bypass mode plus real CI is fast and accountable at the same time.
+
+**Makefile over shell scripts.** Every project's operations go behind `make`: `make build`, `make test`, `make deploy`. It's universal, tab-completable, and self-documenting. Anything that needs real bash logic goes in `scripts/` and gets called from a target.
+
+**Write like a person.** The `prose` skill bans em dashes and the other tells that make text obviously AI-generated. Small thing, but it's the kind of detail that separates output you'd ship from output you'd be embarrassed by.
 
 ## Install
 
@@ -16,16 +36,21 @@
 curl -fsSL https://raw.githubusercontent.com/vibestackmd/vibestack/main/install.sh | bash
 ```
 
-Run from anywhere. VibeStack installs at the **user level** (`~/.claude/`), so its skills and hooks apply across every project on your machine. The installer:
-
-1. **Detects the Claude CLI** and offers to install it via the official installer if missing, so you can hand this command to a friend who's never used Claude and they end up with a fully configured CLI.
-2. **Deep-merges `~/.claude/settings.json`**, your existing values are preserved. Two opinionated keys are clobbered (`permissions.defaultMode: "bypassPermissions"` and `skipDangerousModePermissionPrompt: true`) because the no-prompts experience is the whole point.
-3. **Chain-installs plugins** via `claude plugin install vibestack@vibestackmd-vibestack`. The plugin's manifest declares dependencies on the four official LSP plugins (TypeScript, Python, Rust, Go) and Anthropic's `frontend-design`, they all install automatically.
-
-Then run `/vibestack` inside any project to scaffold it.
+Run it from anywhere. Then run `/vibestack` inside any project to scaffold it.
 
 <details>
-<summary>Or install via Claude plugin only (skips the curl|bash step)</summary>
+<summary>What the installer actually does</summary>
+
+<br />
+
+1. **Detects the Claude CLI** and offers to install it if it's missing, so you can hand the command to someone who's never used Claude and they still end up set up.
+2. **Deep-merges `~/.claude/settings.json`.** Your existing values are preserved. Only two keys are overwritten (`permissions.defaultMode` and `skipDangerousModePermissionPrompt`), because the no-prompts experience is the whole point.
+3. **Installs the plugin**, which chain-installs its dependencies: the four official LSP plugins (TypeScript, Python, Rust, Go) and Anthropic's `frontend-design`.
+
+</details>
+
+<details>
+<summary>Install via Claude plugin only (no curl)</summary>
 
 <br />
 
@@ -34,127 +59,50 @@ Then run `/vibestack` inside any project to scaffold it.
 /plugin install vibestack@vibestackmd-vibestack
 ```
 
-Same skills, hooks, and chain-installed plugins. You miss out on the opinionated profile-level settings (those need `~/.claude/settings.json` access, which only `curl | bash` can do).
+You get the same skills, hooks, and chain-installed plugins. You miss the user-level settings (bypass mode, the statusline), because those need write access to `~/.claude/settings.json` that only the `curl | bash` path has. That's the tradeoff: plugin-only is less opinionated, by design.
 
 </details>
 
----
+## What's Inside
 
-## What You Get
+**Slash commands**, run when you want them:
 
-**Installed once at the user level:**
+| Command | What it does |
+|---|---|
+| `/vibestack` | Scaffolds a project. Reads the codebase, then writes a CLAUDE.md, Makefile, `docs/`, and TODO.md with real content. Skips anything that already exists, so it's safe to re-run. |
+| `/cicd` | Detects your language stack and writes a self-contained `.github/workflows/ci.yml` with lint, test, and build gates. Node, Python, Go, Rust. |
+| `/squad` | Breaks a large codebase into domains, each with its own path-specific rules and an optional specialist subagent, so Claude loads the right context per file. |
+| `/todo` | Works through TODO.md one task at a time. `/todo 3` runs task #3; `/todo refresh` re-ranks the list by impact. |
+| `/docs` | Captures what you learned this session into `docs/` and clears out anything stale. |
+| `/ideate` | A strategy session with a co-founder persona: critical, invested, read-only. For thinking an idea through before you build it. |
+| `/bosskey` | Turns your recent git history into a standup script that sounds good without inviting follow-up questions. |
 
-<table>
-  <tr>
-    <td><code>~/.claude/skills/</code></td>
-    <td style="padding: 8px 16px;">Reference skills that auto-load as context, plus slash commands for project workflows</td>
-  </tr>
-  <tr>
-    <td><code>~/.claude/hooks/</code></td>
-    <td style="padding: 8px 16px;">Status line and finish-chime that work in every directory, including non-repos</td>
-  </tr>
-  <tr>
-    <td><code>~/.claude/settings.json</code></td>
-    <td style="padding: 8px 16px;">Opinionated defaults: <code>permissions.defaultMode: "bypassPermissions"</code>, no startup warning, official LSP plugins enabled</td>
-  </tr>
-  <tr>
-    <td>Chain-installed plugins</td>
-    <td style="padding: 8px 16px;">Official LSPs (<code>typescript-lsp</code>, <code>pyright-lsp</code>, <code>rust-analyzer-lsp</code>, <code>gopls-lsp</code>) and Anthropic's <code>frontend-design</code>. Declared as plugin dependencies, installed automatically by Claude on plugin install.</td>
-  </tr>
-</table>
+**Reference skills** that auto-load as context, no command needed:
 
-**Created on demand by `/vibestack`** (per project, only when you ask):
+- `cli-first`, use platform CLIs and `.env` files instead of raw API calls
+- `developer-environment`, a self-updating map of what's installed on your machine so Claude stops guessing
+- `lsp`, use language servers for type-checking and find-references; pairs with the official `*-lsp` plugins
+- `prose`, the writing rules from above
 
-<table>
-  <tr>
-    <td><code>CLAUDE.md</code></td>
-    <td style="padding: 8px 16px;">Quick-start reference card, tells any contributor (human or AI) what this project is, how it's built, how to work in it</td>
-  </tr>
-  <tr>
-    <td><code>TODO.md</code></td>
-    <td style="padding: 8px 16px;">Lightweight task tracker with a protocol for parallel work so agents don't collide</td>
-  </tr>
-  <tr>
-    <td><code>Makefile</code></td>
-    <td style="padding: 8px 16px;">Project operations via <code>make</code>, <code>make build</code>, <code>make test</code>, <code>make deploy TARGET=prod</code>. Complex scripts go in <code>scripts/</code></td>
-  </tr>
-  <tr>
-    <td><code>docs/</code></td>
-    <td style="padding: 8px 16px;">Living knowledge base, the docs you write today prevent your AI from re-discovering the same lessons tomorrow</td>
-  </tr>
-</table>
+**Hooks and defaults**, installed at the user level:
 
-`/vibestack` skips any artifact that already exists. Safe to re-run.
-
-## Slash Commands
-
-<table>
-  <tr>
-    <td><code>/vibestack</code></td>
-    <td style="padding: 8px 16px;">Analyzes your project and creates CLAUDE.md, Makefile, docs, and TODO.md with project-specific content</td>
-  </tr>
-  <tr>
-    <td><code>/squad</code></td>
-    <td style="padding: 8px 16px;">Generates domain-specific rules and specialist subagents so Claude auto-loads the right context per file. Always preserves manual edits, safe to re-run</td>
-  </tr>
-  <tr>
-    <td><code>/todo</code></td>
-    <td style="padding: 8px 16px;">Works through TODO.md tasks. <code>/todo 3</code> runs only task #3. <code>/todo refresh</code> rewrites the list ranked by impact</td>
-  </tr>
-  <tr>
-    <td><code>/docs</code></td>
-    <td style="padding: 8px 16px;">Captures conversation learnings into your docs folder and cleans up stale content</td>
-  </tr>
-  <tr>
-    <td><code>/ideate</code></td>
-    <td style="padding: 8px 16px;">Strategy session with a co-founder persona, critical, constructive, invested. Read-only; for thinking through ideas before building</td>
-  </tr>
-  <tr>
-    <td><code>/bosskey</code></td>
-    <td style="padding: 8px 16px;">Scans your recent git history and generates a polished standup script you can recite to your boss, vague enough to avoid follow-ups, impressive enough to sound productive</td>
-  </tr>
-</table>
-
-<br />
-
-Plus reference skills that auto-load as context (no command needed):
-
-- `cli-first`, teaches your AI to use platform CLIs and check `.env*` files instead of making raw API calls
-- `developer-environment`, a self-populating map of what's installed on your machine (languages, runtimes, DBs, cloud CLIs) so Claude stops guessing whether tools are available
-- `lsp`, teaches your AI to use language servers (TypeScript, Python, Rust, Go) for type checking, find-references, and post-change validation. Pairs with the official `*-lsp` plugins, which auto-install via VibeStack's plugin dependencies, no extra setup
-
----
+- A statusline showing your current directory, model, and context usage, in every directory including non-repos
+- A finish chime, so you can start a long task, walk away, and get called back when it's done
+- The opinionated `settings.json` defaults: bypass mode, no startup warning, LSP plugins enabled
 
 ## Extras
 
-### CI Guards
+Optional, and not part of the core plugin.
 
-Reusable GitHub Actions workflows: lint, test coverage, security scans, code smell checks on every PR. Supports Node/TypeScript, Python, Rust, and Go.
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/vibestackmd/vibestack/main/extras/ci-guards/install.sh | bash -s -- <language>
-```
-
-### Dev Tools Installer
-
-One-pass installer for platform CLIs (aws, vercel, etc.), giving your AI agent direct infrastructure access from the terminal.
-
-**macOS / Linux / WSL:**
+**Dev-tools installer.** One pass to install the platform CLIs (AWS, Vercel, Supabase, Stripe, GitHub, and the rest) so Claude can manage infrastructure from the terminal instead of guessing.
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/vibestackmd/vibestack/main/extras/dev-tools/install.sh | bash
 ```
 
-**Windows:** Run the bootstrap script first to set up WSL + Ubuntu:
+On Windows, run `extras/dev-tools/bootstrap-windows.ps1` from an Administrator PowerShell first. It sets up WSL and Ubuntu, then runs the installer inside it.
 
-```powershell
-# PowerShell (as Administrator)
-Invoke-RestMethod "https://raw.githubusercontent.com/vibestackmd/vibestack/main/extras/dev-tools/bootstrap-windows.ps1" | Set-Content "$env:TEMP\bootstrap-windows.ps1"; powershell -ExecutionPolicy Bypass -File "$env:TEMP\bootstrap-windows.ps1"
-```
-
-### The `claw` Alias
-
-The dev-tools installer offers to add `claw` to your shell, an alias for `claude --permission-mode bypassPermissions --`. Use it anywhere to run Claude uninterrupted.
+**The `claw` alias.** The dev-tools installer offers to add `claw`, shorthand for `claude --permission-mode bypassPermissions --`. Run Claude uninterrupted from anywhere:
 
 ```bash
 claw "refactor the auth module to use JWT"
@@ -162,38 +110,6 @@ claw "refactor the auth module to use JWT"
 
 ---
 
-## Opinions
-
-This is what makes VibeStack different. The conventions above give your work structure, the opinions below are why.
-
-### User-level, Not Per-project
-
-Your dev environment is the same regardless of which repo you're in. Skills, hooks, and Claude defaults belong at user level, not duplicated into every `.claude/` folder you own. VibeStack installs once and applies everywhere, no more "I forgot to update VibeStack in this project."
-
-### Makefile Over Shell Scripts
-
-Your project operations belong in a `Makefile`, not a bespoke shell script. `make` is universal, tab-completable, dependency-aware, and self-documenting. Keep targets thin. If something needs real bash logic, put it in `scripts/` and call it from the target. One command to rule them all: `make help`.
-
-### Bypass Permissions
-
-VibeStack ships with `permissions.defaultMode: "bypassPermissions"` and `skipDangerousModePermissionPrompt: true`. Every session starts in bypass mode with the entry warning suppressed. No "can I run this command?" prompts ever. Permission prompts kill flow and add no real safety. Code quality enforcement belongs in your CI pipeline and pre-commit hooks, not in an interactive approval flow. **These two keys are the only settings VibeStack overwrites unconditionally.** Every other key in your existing `~/.claude/settings.json` is deep-merged.
-
-### Squad Mode
-
-Large codebases overwhelm AI context windows. `/squad` analyzes your project and breaks it into logical domains, each getting its own path-specific rules (`.claude/rules/`) and optionally a specialist subagent (`.claude/agents/`). When Claude touches a file in the auth domain, it automatically loads auth-specific conventions. Re-run `/squad` whenever your project grows; manual edits are always preserved.
-
-### CI Over Approval Gates
-
-AI agents write bad code sometimes. The answer isn't slowing your agent down, it's a CI pipeline that catches problems automatically. Bypass mode + CI Guards = maximum speed with maximum accountability.
-
-### Finish Notification
-
-When Claude finishes a task, your machine plays a chime. Kick off a task, walk away, get an audio alert when it's done.
-
----
-
 <p align="center">
-  <strong>Stop vibing into chaos. Start vibing with structure.</strong> ✨
-  <br /><br />
   MIT License
 </p>

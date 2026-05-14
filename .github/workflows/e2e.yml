@@ -120,7 +120,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: docker/setup-buildx-action@v3
-      - name: Build local-marketplace image (cached, heavy: Node + Claude CLI)
+      - name: "Build local-marketplace image (cached, heavy: Node + Claude CLI)"
         uses: docker/build-push-action@v5
         with:
           context: tests/e2e

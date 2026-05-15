@@ -1,0 +1,49 @@
+# VibeStack
+
+> Senior Developer Conventions as a Claude plugin. Skills, hooks, and opinionated user-level settings for Claude Code. Installs at the user level (`~/.claude/`) via `curl | bash` or `/plugin install vibestack@vibestackmd-vibestack`.
+
+VibeStack ships 11 skills, a Stop-notification hook, a directory + context-usage statusline, and a user-level `settings.json` that turns on bypass-permissions mode by default. Installing it chain-installs four official LSP plugins (TypeScript, Python, Rust, Go) and `frontend-design` from `anthropics/claude-plugins-official`, so type-checking and design land alongside the conventions.
+
+Opinionated on purpose: bypass permissions, CLI-first, CI/CD gates, religious markdown documentation, `make` as the entry point.
+
+## Install
+
+- [install.sh](https://raw.githubusercontent.com/vibestackmd/vibestack/main/install.sh): full `curl | bash` installer. Auto-installs the Claude CLI if missing, deep-merges user-level settings into `~/.claude/settings.json`, drops the statusline script, and triggers `claude plugin install`.
+- [README.md](https://raw.githubusercontent.com/vibestackmd/vibestack/main/README.md): single source of truth for install + usage. The website renders this directly.
+
+Plugin-only install (skips user-level settings):
+
+```
+/plugin marketplace add vibestackmd/vibestack
+/plugin install vibestack@vibestackmd-vibestack
+```
+
+## Skills (slash commands)
+
+- [/vibestack](https://raw.githubusercontent.com/vibestackmd/vibestack/main/skills/vibestack/SKILL.md): scaffolds a project with `CLAUDE.md`, `Makefile`, `docs/`, `TODO.md`. Safe to re-run.
+- [/cicd](https://raw.githubusercontent.com/vibestackmd/vibestack/main/skills/cicd/SKILL.md): writes a self-contained `.github/workflows/ci.yml` for the project's stack (Node, Python, Go, Rust).
+- [/squad](https://raw.githubusercontent.com/vibestackmd/vibestack/main/skills/squad/SKILL.md): breaks a large codebase into domains, each with its own rules and optional specialist subagent.
+- [/todo](https://raw.githubusercontent.com/vibestackmd/vibestack/main/skills/todo/SKILL.md): works through `TODO.md` one task at a time. `/todo refresh` re-ranks by impact.
+- [/docs](https://raw.githubusercontent.com/vibestackmd/vibestack/main/skills/docs/SKILL.md): captures what was learned in a session into `docs/`, clears stale entries.
+- [/ideate](https://raw.githubusercontent.com/vibestackmd/vibestack/main/skills/ideate/SKILL.md): strategy session with a critical, invested, read-only co-founder persona.
+- [/bosskey](https://raw.githubusercontent.com/vibestackmd/vibestack/main/skills/bosskey/SKILL.md): turns git history into a standup script that sounds good without inviting questions.
+
+## Skills (auto-loaded reference)
+
+These four don't have slash commands. They're always in Claude's context and shape behavior continuously.
+
+- [cli-first](https://raw.githubusercontent.com/vibestackmd/vibestack/main/skills/cli-first/SKILL.md): prefer platform CLIs and `.env` files over raw API calls when working with AWS, Vercel, Supabase, Stripe, GitHub.
+- [developer-environment](https://raw.githubusercontent.com/vibestackmd/vibestack/main/skills/developer-environment/SKILL.md): self-updating map of installed languages, runtimes, version managers, databases, and cloud CLIs on the machine.
+- [lsp](https://raw.githubusercontent.com/vibestackmd/vibestack/main/skills/lsp/SKILL.md): language servers for type-checking, find-references, and cross-file navigation.
+- [prose](https://raw.githubusercontent.com/vibestackmd/vibestack/main/skills/prose/SKILL.md): writing-style rule. No em dashes, no en dashes as punctuation, no inflated AI verbs.
+
+## Manifest and project context
+
+- [.claude-plugin/plugin.json](https://raw.githubusercontent.com/vibestackmd/vibestack/main/.claude-plugin/plugin.json): plugin manifest. Declares version and the five chain-installed dependencies.
+- [.claude-plugin/marketplace.json](https://raw.githubusercontent.com/vibestackmd/vibestack/main/.claude-plugin/marketplace.json): marketplace manifest with cross-marketplace dependency allowlist.
+- [CLAUDE.md](https://raw.githubusercontent.com/vibestackmd/vibestack/main/CLAUDE.md): project conventions, build commands, release process.
+- [CHANGELOG.md](https://raw.githubusercontent.com/vibestackmd/vibestack/main/CHANGELOG.md): release history.
+
+## Optional
+
+- [extras/dev-tools/install.sh](https://raw.githubusercontent.com/vibestackmd/vibestack/main/extras/dev-tools/install.sh): one-pass installer for platform CLIs (AWS, Vercel, Supabase, Stripe, GitHub) so Claude manages infrastructure from the terminal. Not part of the core plugin.

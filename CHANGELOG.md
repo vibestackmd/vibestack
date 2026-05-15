@@ -2,6 +2,10 @@
 
 All notable changes to VibeStack. Versions follow the `VERSION` file, which is the single source of truth; releases are cut with `make release-*`.
 
+## v1.0.14
+
+Tagline tightening: "Senior Developer Conventions as a Plugin You Can Install." became "Senior Developer Conventions as a Claude plugin." in the README hero, `install.sh` logo, and `demo.tape`. Added `site/public/llms.txt` following the https://llmstxt.org convention, served at `vibestack.md/llms.txt`, so agents discovering the site get a structured summary with links to install, slash-command skills, and auto-loaded reference skills. Regenerated `site/public/demo.gif` to capture the new tagline.
+
 ## v1.0.13
 
 Refreshed `install.sh` CLI output to match the README's voice. Added a 256-color ASCII logo echoing the favicon's stacked-bar gradient (purple → cyan → yellow → coral) with sparkles, standardized section dividers across the install (Claude CLI, Settings, Hooks, Plugin, Dev tools, Next), dropped the duplicate "Settings ready" summary, and trimmed the dev-tools and next-steps prose. Tightened the tagline from "Senior Developer's Conventions" to "Senior Developer Conventions" in the README hero and `demo.tape`, and regenerated `site/public/demo.gif` so the README hero shows the new install output.

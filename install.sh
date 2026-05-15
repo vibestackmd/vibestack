@@ -33,7 +33,7 @@ echo -e "       ${LOGO_YELLOW}▄▄▄▄▄▄▄▄▄▄▄▄${RESET}"
 echo -e "      ${LOGO_CORAL}▄▄▄▄▄▄▄▄▄▄▄▄▄▄${RESET}"
 echo ""
 echo -e "      ${CYAN}V I B E S T A C K${RESET}"
-echo -e "      ${DIM}Senior Developer Conventions as a Plugin You Can Install.${RESET}"
+echo -e "      ${DIM}Senior Developer Conventions as a Claude plugin.${RESET}"
 echo ""
 
 # Skills and plugin hooks come from the VibeStack Claude plugin (installed via

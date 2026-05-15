@@ -271,6 +271,10 @@ esac
 
 echo -e "${CYAN}── Dev tools (optional) ──${RESET}"
 echo ""
+if $is_wsl; then
+  echo -e "  ${DIM}WSL detected, the installer handles WSL-specific setup automatically.${RESET}"
+  echo ""
+fi
 echo "  One pass to install the platform CLIs (AWS, Vercel, Supabase, Stripe,"
 echo "  GitHub) so Claude manages infrastructure from the terminal. Each tool"
 echo "  prompts individually, nothing is installed without asking."
@@ -286,10 +290,6 @@ elif $is_windows_native; then
   echo -e "    ${CYAN}Invoke-RestMethod \"${DEV_TOOLS_REPO}/bootstrap-windows.ps1\" | Set-Content \"\$env:TEMP\\bootstrap-windows.ps1\"; powershell -ExecutionPolicy Bypass -File \"\$env:TEMP\\bootstrap-windows.ps1\"${RESET}"
   echo ""
 else
-  if $is_wsl; then
-    echo -e "  ${DIM}WSL detected, the installer handles WSL-specific setup automatically.${RESET}"
-    echo ""
-  fi
   if ! ask "  Run the dev-tools installer now?"; then
     echo ""
     echo "  Run it anytime:"

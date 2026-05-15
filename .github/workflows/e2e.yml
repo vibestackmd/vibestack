@@ -55,10 +55,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
-      - uses: docker/setup-buildx-action@v3
+      - uses: actions/checkout@v6
+      - uses: docker/setup-buildx-action@v4
       - name: Build preinstalled image (cached)
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v7
         with:
           context: tests/e2e
           file: tests/e2e/Dockerfile.preinstalled
@@ -76,10 +76,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
-      - uses: docker/setup-buildx-action@v3
+      - uses: actions/checkout@v6
+      - uses: docker/setup-buildx-action@v4
       - name: Build ubuntu image (cached)
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v7
         with:
           context: tests/e2e
           file: tests/e2e/Dockerfile.ubuntu
@@ -97,10 +97,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4
-      - uses: docker/setup-buildx-action@v3
+      - uses: actions/checkout@v6
+      - uses: docker/setup-buildx-action@v4
       - name: Build wsl image (cached)
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v7
         with:
           context: tests/e2e
           file: tests/e2e/Dockerfile.wsl
@@ -118,10 +118,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4
-      - uses: docker/setup-buildx-action@v3
+      - uses: actions/checkout@v6
+      - uses: docker/setup-buildx-action@v4
       - name: "Build local-marketplace image (cached, heavy: Node + Claude CLI)"
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v7
         with:
           context: tests/e2e
           file: tests/e2e/Dockerfile.local-marketplace

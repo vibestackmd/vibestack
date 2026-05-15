@@ -1,7 +1,7 @@
 <p align="center">
   <h1 align="center"><img src="site/public/favicon.svg" width="36" height="36" alt="VibeStack logo" style="vertical-align: middle;"> VibeStack</h1>
   <p align="center">
-    <strong>Senior Developer's Conventions as a Plugin You Can Install.</strong>
+    <strong>Senior Developer Conventions as a Plugin You Can Install.</strong>
   </p>
   <p align="center">
     <a href="https://github.com/vibestackmd/vibestack">GitHub</a> &nbsp;·&nbsp; <a href="https://vibestack.md">Website</a> &nbsp;·&nbsp; <a href="LICENSE">MIT</a>

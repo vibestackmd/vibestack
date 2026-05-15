@@ -17,8 +17,23 @@ YELLOW="\033[1;33m"
 DIM="\033[2m"
 RESET="\033[0m"
 
-echo -e "${CYAN}▓▒░ VibeStack Installer${RESET}"
-echo -e "${DIM}Installing to $USER_DIR${RESET}"
+# 256-color codes for the hero logo. Each bar maps to a favicon gradient stop
+# (purple → cyan → yellow → coral, top to bottom), with two sparkles up top.
+LOGO_PURPLE="\033[38;5;141m"
+LOGO_CYAN="\033[38;5;81m"
+LOGO_YELLOW="\033[38;5;221m"
+LOGO_CORAL="\033[38;5;209m"
+LOGO_PINK="\033[38;5;213m"
+
+echo ""
+echo -e "                  ${LOGO_PINK}·${RESET}  ${LOGO_YELLOW}✦${RESET}"
+echo -e "         ${LOGO_PURPLE}▄▄▄▄▄▄▄▄${RESET}"
+echo -e "        ${LOGO_CYAN}▄▄▄▄▄▄▄▄▄▄${RESET}"
+echo -e "       ${LOGO_YELLOW}▄▄▄▄▄▄▄▄▄▄▄▄${RESET}"
+echo -e "      ${LOGO_CORAL}▄▄▄▄▄▄▄▄▄▄▄▄▄▄${RESET}"
+echo ""
+echo -e "      ${CYAN}V I B E S T A C K${RESET}"
+echo -e "      ${DIM}Senior Developer Conventions as a Plugin You Can Install.${RESET}"
 echo ""
 
 # Skills and plugin hooks come from the VibeStack Claude plugin (installed via
@@ -28,9 +43,6 @@ echo ""
 # CLI auto-install, and triggering the plugin install. The user-level keys live
 # in user.settings.json at the repo root.
 SETTINGS_PATH="user.settings.json"
-
-installed=0
-merged=0
 
 ask() {
   if [[ "${NONINTERACTIVE:-0}" == "1" ]]; then
@@ -56,14 +68,17 @@ ask_yes() {
 # VibeStack needs `claude` on $PATH so we can chain-install plugins on the
 # user's behalf. If it's missing, offer the official curl installer.
 
+echo -e "${CYAN}── Claude CLI ──${RESET}"
+echo ""
+
 CLAUDE_AVAILABLE=false
 if command -v claude >/dev/null 2>&1; then
   CLAUDE_AVAILABLE=true
-  echo -e "${DIM}Claude CLI detected: $(claude --version 2>/dev/null | head -1)${RESET}"
+  echo -e "  ${GREEN}ok${RESET}    $(claude --version 2>/dev/null | head -1)"
 else
-  echo -e "${YELLOW}Claude CLI not found on \$PATH.${RESET}"
-  echo "  VibeStack ships skills, hooks, and settings, but the LSP and frontend-design"
-  echo "  plugins need the Claude CLI to install. Without it, those plugins won't be set up."
+  echo -e "  ${YELLOW}Claude CLI not found on \$PATH.${RESET}"
+  echo "  Needed to chain-install the LSP and frontend-design plugins."
+  echo "  Without it, those will be skipped."
   echo ""
   if ask_yes "  Install Claude CLI now (via official installer)?"; then
     if curl -fsSL https://claude.ai/install.sh | bash; then
@@ -76,33 +91,36 @@ else
         fi
       done
       if command -v claude >/dev/null 2>&1; then
-        echo -e "  ${GREEN}Claude CLI installed.${RESET}"
+        echo -e "  ${GREEN}ok${RESET}    Claude CLI installed"
         CLAUDE_AVAILABLE=true
       else
-        echo -e "  ${YELLOW}Claude installer ran but \`claude\` is still not on \$PATH.${RESET}"
-        echo "  You may need to open a new shell. Plugin install will be skipped."
+        echo -e "  ${YELLOW}skip${RESET}  installer ran but \`claude\` is still not on \$PATH (open a new shell)"
       fi
     else
-      echo -e "  ${YELLOW}Claude install failed. Plugin install will be skipped.${RESET}"
+      echo -e "  ${YELLOW}skip${RESET}  Claude install failed, plugin install will be skipped"
     fi
   else
-    echo -e "  ${DIM}Skipping plugin install. You can install Claude CLI later from https://claude.ai/install.sh${RESET}"
+    echo -e "  ${DIM}skipping, install later from https://claude.ai/install.sh${RESET}"
   fi
 fi
 echo ""
 
+# ── Settings ──────────────────────────────────────────────
 # Deep-merge settings.json. Existing user values win except for two clobber
 # paths (skipDangerousModePermissionPrompt and permissions.defaultMode), which
 # are the framework's load-bearing opinions and overwrite unconditionally.
+
+echo -e "${CYAN}── Settings ──${RESET}"
+echo ""
+
 mkdir -p "$USER_DIR"
 tmp=$(mktemp)
 if ! curl -fsSL "$REPO/$SETTINGS_PATH" -o "$tmp"; then
-  echo -e "  ${YELLOW}fail${RESET}  ${USER_DIR/#$HOME/~}/settings.json"
+  echo -e "  ${YELLOW}fail${RESET}  ~/.claude/settings.json"
   rm -f "$tmp"
 elif [[ ! -f "$USER_DIR/settings.json" ]]; then
   mv "$tmp" "$USER_DIR/settings.json"
   echo -e "  ${GREEN}add${RESET}   ~/.claude/settings.json"
-  ((++installed))
 else
   merged_json=$(/usr/bin/python3 -c "
 import json, sys
@@ -163,21 +181,22 @@ print(json.dumps(merged, indent=2))
   if [[ -n "$merged_json" ]]; then
     echo "$merged_json" > "$USER_DIR/settings.json"
     echo -e "  ${GREEN}merge${RESET} ~/.claude/settings.json"
-    ((++merged))
   else
     echo -e "  ${YELLOW}fail${RESET}  ~/.claude/settings.json (merge failed, kept existing)"
   fi
   rm -f "$tmp"
 fi
-
 echo ""
-echo -e "${GREEN}Settings ready.${RESET} Added $installed, merged $merged."
 
 # ── User-level hook scripts ──────────────────────────────
 # The main statusLine is registered in user-level settings.json (plugins can
 # only ship subagentStatusLine, not the main statusLine). The script it runs
 # has to exist at a stable user-level path, so we drop it into ~/.claude/hooks/
 # alongside settings.json. The Stop hook stays plugin-scoped via hooks/hooks.json.
+
+echo -e "${CYAN}── Hooks ──${RESET}"
+echo ""
+
 mkdir -p "$USER_DIR/hooks"
 if curl -fsSL "$REPO/hooks/statusline.sh" -o "$USER_DIR/hooks/statusline.sh"; then
   chmod +x "$USER_DIR/hooks/statusline.sh"
@@ -185,6 +204,7 @@ if curl -fsSL "$REPO/hooks/statusline.sh" -o "$USER_DIR/hooks/statusline.sh"; th
 else
   echo -e "  ${YELLOW}fail${RESET}  ~/.claude/hooks/statusline.sh (statusLine will not render)"
 fi
+echo ""
 
 # ── Plugin install ──────────────────────────────────────
 # Install the VibeStack plugin via Claude. Its `dependencies` field chain-
@@ -193,8 +213,7 @@ fi
 # Skipped silently if claude isn't available.
 
 if $CLAUDE_AVAILABLE; then
-  echo ""
-  echo -e "${CYAN}── Installing Claude plugins ──${RESET}"
+  echo -e "${CYAN}── Plugin ──${RESET}"
   echo ""
 
   # Marketplace ref. Defaults to the published GitHub repo; tests override this
@@ -232,6 +251,7 @@ if $CLAUDE_AVAILABLE; then
   else
     echo -e "  ${YELLOW}skip${RESET}  vibestack plugin install failed, run \`claude plugin install vibestack@vibestackmd-vibestack\` manually"
   fi
+  echo ""
 fi
 
 # ── Optional: Dev Tools Installer ───────────────────────
@@ -249,56 +269,30 @@ case "$(uname -s)" in
     ;;
 esac
 
+echo -e "${CYAN}── Dev tools (optional) ──${RESET}"
 echo ""
-echo -e "${CYAN}── Optional: Dev Environment Setup ──${RESET}"
-echo ""
-echo "VibeStack ships an opinionated dev-tools installer that sets up your entire"
-echo "development environment in one pass. It's designed so every developer on"
-echo "a team has the same tools available, and so Claude has CLI access to the"
-echo "most popular platforms."
-echo ""
-echo "  What it installs (each tool is optional, you pick during setup):"
-echo ""
-echo "    Languages & Runtimes   Node.js (via NVM), PNPM, Deno, Rust"
-echo "    Cloud & Deploy         AWS CLI, Vercel CLI, Supabase CLI"
-echo "    Code & Git             GitHub CLI, Git, SSH key, VS Code"
-echo "    Payments               Stripe CLI"
-echo "    Database               PostgreSQL CLI (psql)"
-echo "    AI                     Claude Code CLI + claw alias"
-echo "    Utilities              Zsh (Linux)"
-echo ""
-echo -e "  ${YELLOW}This is opinionated.${RESET} It installs real tools globally and offers to log"
-echo "  you into services. Great for onboarding new devs or standardizing a team."
-echo "  Every tool prompts individually, nothing is installed without asking."
+echo "  One pass to install the platform CLIs (AWS, Vercel, Supabase, Stripe,"
+echo "  GitHub) so Claude manages infrastructure from the terminal. Each tool"
+echo "  prompts individually, nothing is installed without asking."
 echo ""
 
 if [[ "${SKIP_DEVTOOLS:-0}" == "1" ]]; then
-  echo -e "  ${DIM}Skipped (SKIP_DEVTOOLS=1).${RESET}"
+  echo -e "  ${DIM}skipped (SKIP_DEVTOOLS=1)${RESET}"
   echo ""
 elif $is_windows_native; then
-  echo -e "  ${YELLOW}Detected: Windows (native shell)${RESET}"
-  echo ""
-  echo "  The dev-tools installer runs inside WSL (Windows Subsystem for Linux)."
-  echo "  VibeStack includes a PowerShell bootstrap that sets up WSL + Ubuntu"
-  echo "  and then runs the dev-tools installer inside it automatically."
-  echo ""
-  echo "  To set it up, open PowerShell as Administrator and run:"
+  echo -e "  ${YELLOW}note${RESET}  Windows native shell detected. The installer runs inside WSL."
+  echo "        Open PowerShell as Administrator and run:"
   echo ""
   echo -e "    ${CYAN}Invoke-RestMethod \"${DEV_TOOLS_REPO}/bootstrap-windows.ps1\" | Set-Content \"\$env:TEMP\\bootstrap-windows.ps1\"; powershell -ExecutionPolicy Bypass -File \"\$env:TEMP\\bootstrap-windows.ps1\"${RESET}"
   echo ""
-  echo "  This will:"
-  echo "    1. Enable WSL 2 (may require a restart)"
-  echo "    2. Install Ubuntu"
-  echo "    3. Run the dev-tools installer inside Ubuntu"
-  echo ""
 else
   if $is_wsl; then
-    echo -e "  ${DIM}Detected: WSL, the installer handles WSL-specific setup automatically.${RESET}"
+    echo -e "  ${DIM}WSL detected, the installer handles WSL-specific setup automatically.${RESET}"
     echo ""
   fi
   if ! ask "  Run the dev-tools installer now?"; then
     echo ""
-    echo "  No problem. You can run it anytime:"
+    echo "  Run it anytime:"
     echo ""
     echo -e "    ${CYAN}curl -fsSL ${DEV_TOOLS_REPO}/install.sh | bash${RESET}"
     echo ""
@@ -308,14 +302,13 @@ else
   fi
 fi
 
+echo -e "${CYAN}── Next ──${RESET}"
 echo ""
-echo "Next steps:"
-echo "  • Open Claude Code in any project and run /vibestack to scaffold it"
-echo "  • All VibeStack skills are now available globally, no per-project install needed"
+echo -e "  Open Claude in any project and run ${GREEN}/vibestack${RESET}."
 if ! $CLAUDE_AVAILABLE; then
   echo ""
-  echo "  ${YELLOW}Plugin install was skipped${RESET} (Claude CLI not available)."
-  echo "  Once you install Claude CLI, run these to finish setup:"
+  echo -e "  ${YELLOW}Plugin install was skipped${RESET} (Claude CLI not available)."
+  echo "  Once you install Claude CLI, run:"
   echo ""
   echo "    claude plugin marketplace add vibestackmd/vibestack"
   echo "    claude plugin install vibestack@vibestackmd-vibestack --scope user"

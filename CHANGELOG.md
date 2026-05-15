@@ -2,6 +2,10 @@
 
 All notable changes to VibeStack. Versions follow the `VERSION` file, which is the single source of truth; releases are cut with `make release-*`.
 
+## v1.0.13
+
+Refreshed `install.sh` CLI output to match the README's voice. Added a 256-color ASCII logo echoing the favicon's stacked-bar gradient (purple → cyan → yellow → coral) with sparkles, standardized section dividers across the install (Claude CLI, Settings, Hooks, Plugin, Dev tools, Next), dropped the duplicate "Settings ready" summary, and trimmed the dev-tools and next-steps prose. Tightened the tagline from "Senior Developer's Conventions" to "Senior Developer Conventions" in the README hero and `demo.tape`, and regenerated `site/public/demo.gif` so the README hero shows the new install output.
+
 ## v1.0.12
 
 Polish pass. Fixed the broken `kit/extras/` install URLs in the dev-tools README and bootstrap script (same v3-restructure breakage caught earlier in ci-guards). Added this `CHANGELOG.md`. Expanded `/prose` to cover secondary AI tells beyond em dashes: inflated verbs ("delve", "leverage"), boilerplate scaffolding, and structural tics. Added `tests/validate-skills.sh`, a Docker-free skill lint that checks frontmatter and validates the `/cicd` skill's embedded workflow YAML; it runs inside `make plugin`. Deleted the orphaned `v1.0.7` tag left behind by that release's CI failure.

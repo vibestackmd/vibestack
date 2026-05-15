@@ -37,7 +37,7 @@ Enter
 Show
 
 # --- the pitch (matches the README tagline) ---
-Type "# Senior Developer's Conventions as a Plugin You Can Install"
+Type "# Senior Developer Conventions as a Plugin You Can Install"
 Sleep 500ms
 Enter
 Sleep 1s

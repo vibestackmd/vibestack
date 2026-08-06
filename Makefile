@@ -61,7 +61,11 @@ define do-release
 	@./scripts/build-plugin.sh $(1)
 	@git add VERSION .claude-plugin/plugin.json .claude-plugin/marketplace.json
 	@git commit -m "release v$(1)"
-	@git tag v$(1)
+	@# -m is required, not cosmetic: with tag.gpgsign=true a tag is annotated,
+	@# and an annotated tag with no message opens an editor. Under `echo y |`
+	@# there is no TTY, so bare `git tag` aborts with "fatal: no tag message?"
+	@# after the release commit already exists, leaving a half-cut release.
+	@git tag -m "release v$(1)" v$(1)
 	@git push origin main v$(1)
 	@echo ""
 	@echo "  \033[32mPushed v$(1), GitHub Actions will create the release.\033[0m"

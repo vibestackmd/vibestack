@@ -96,6 +96,29 @@ Common pitfalls:
 - **Divergent branches:** Always use `git pull --rebase`. Never a plain `git pull` (no pull strategy is configured globally).
 - **Out of sync after rebase:** Rebasing changes the commit hash. So you must `git push` before `make release-*` will pass the sync check.
 - **Don't create tags manually.** The Makefile handles tagging. Manual tags will desync from VERSION.
+- **Signed tags need a message.** This repo's git config sets `tag.gpgsign=true`, which makes every tag annotated, and an annotated tag with no message opens an editor. Under `echo y |` there is no TTY, so the tag step aborts with `fatal: no tag message?`. The Makefile passes `-m` for this reason; do not remove it.
+- **GitHub can be slow to fire the tag workflow.** After a successful push, `Release Plugin` has taken several minutes to appear in `gh run list`. Wait before concluding it failed.
+
+### Recovering a half-cut release
+
+If `make release-*` fails *after* the release commit but *before* the push, the
+tree has a `release vX.Y.Z` commit with `VERSION` and both manifests already
+bumped, but no tag and nothing pushed. Do not re-run `make release-*`, its
+preflight will reject the dirty state or the existing version. Finish the two
+steps it did not reach:
+
+```bash
+git tag -m "release vX.Y.Z" vX.Y.Z
+git push origin main vX.Y.Z
+```
+
+**Never delete a tag that already has a published GitHub Release.** Deleting the
+tag demotes the release to a **draft**, so `gh release list` shows the previous
+version as Latest even though the new tag exists. If that happens:
+
+```bash
+gh release edit vX.Y.Z --draft=false
+```
 
 ## Verifying install/uninstall changes
 

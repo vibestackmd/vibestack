@@ -2,6 +2,10 @@
 
 All notable changes to VibeStack. Versions follow the `VERSION` file, which is the single source of truth; releases are cut with `make release-*`.
 
+## v1.0.15
+
+Added the `/pr-sandwich` skill: a structure for pull request reviews, PR descriptions, issues, and comments that opens with a specific and verifiable observation about the work, orders findings by severity in the middle, and closes by naming the most plausible reason the suggestion itself could be wrong. The closing hedge is the load-bearing part. An agent handed "do X" applies X, while an agent handed "do X unless Y" has a guard condition to evaluate first, so the structure stops confidently wrong review feedback from being applied mechanically. The skill is deliberately not always-on: it documents when to skip the structure, covering clean approvals with no findings, mechanical changes like dependency bumps, security findings that must not be softened into deniability, and incident response. It also restricts the full three-part shape to the review summary rather than repeating it on every inline comment, which is the fastest way to make the pattern obnoxious.
+
 ## v1.0.14
 
 Tagline tightening: "Senior Developer Conventions as a Plugin You Can Install." became "Senior Developer Conventions as a Claude plugin." in the README hero, `install.sh` logo, and `demo.tape`. Added `site/public/llms.txt` following the https://llmstxt.org convention, served at `vibestack.md/llms.txt`, so agents discovering the site get a structured summary with links to install, slash-command skills, and auto-loaded reference skills. Regenerated `site/public/demo.gif` to capture the new tagline.
